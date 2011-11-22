@@ -12,3 +12,10 @@ a {
 a:hover {
   text-decoration: underline;
 }
+h1 {
+  color: green;
+}
+h2 {
+  color: #119933;
+}
+
