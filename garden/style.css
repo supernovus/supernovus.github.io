@@ -18,4 +18,12 @@ h1 {
 h2 {
   color: #119933;
 }
+#footer {
+  font-size: 0.75em;
+  text-align: center;
+  color: #aaaaaa;
+}
+#footer a {
+  color: gray;
+}
 
