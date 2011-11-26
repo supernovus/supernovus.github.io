@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>Garden: Table of Contents</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<h1>Garden -- A Functional Template Language</h1>
+<h2>VERSION 1-PREDRAFT2</h2>
+<h2>Table of Contents</h2>
+<ul>
+<li>Core Concepts
+<ul>
+<li>
+<a href="#intro">Introduction</a>
+</li>
+<li>
+<a href="#namespaces">Namespaces</a>
+</li>
+<li>
+<a href="#statements">Statements</a>
+</li>
+<li>
+<a href="#blocks">Template Blocks</a>
+</li>
+<li>
+<a href="#dicts">Dictionaries</a>
+</li>
+<li>
+<a href="#imports">Importation</a>
+</li>
+<li>
+<a href="#exports">Exportation</a>
+</li>
+
+</ul>
+</li>
+<li>Template Language
+<ul>
+<li>
+<a href="#vars">Variables</a>
+</li>
+<li>
+<a href="#aliases">Local Aliases</a>
+</li>
+<li>
+<a href="#methods">Method calls</a>
+</li>
+<li>
+<a href="#templates">Nested Templates</a>
+</li>
+<li>
+<a href="#apply">Applying Templates</a>
+</li>
+<li>
+<a href="#conditional">Conditionals</a>
+</li>
+
+</ul>
+</li>
+<li>Customization and Extensions
+<ul>
+<li>
+<a href="#syntax">Overriding Syntax</a>
+</li>
+<li>
+<a href="#globals">Global Variables</a>
+</li>
+<li>
+<a href="#plugins">Plugins</a>
+</li>
+<li>
+<a href="#json">JSON Blocks</a>
+</li>
+<li>
+<a href="#ideas">Future ideas</a>
+</li>
+
+</ul>
+</li>
+
+</ul>
+<h2>Core Concepts</h2>
+<h3 name="intro" id="intro">Introduction</h3>
+<h4>Added in version 1</h4>
+<p>
+Garden is a general-purpose functional template langauge. It doesn't
+care what it's source textual format is and offers a great deal of flexibility 
+without forcing too much application logic into your templates.
+</p>
+<p>
+It offers a very different approach to recursion (looping) and conditional
+sections of templates than most template engines, having been inspired by
+StringTemplate (a Java-based functional template engine) and my own previous 
+project: Flower (a Perl 6 XML Application Engine, with a TAL/METAL template
+language included.)
+</p>
+<p>
+One of the defining features of Garden is that it is very customizable.
+It offers a flexible way to override certain syntax, to ensure the Garden
+statements don't conflict with the textual content of your templates.
+It also offers optional extensions that individual implementations may
+choose to implement, and templates can request individually.
+</p>
+<p>
+This specification defines the full language, as well as a few recommended
+extensions. An implementation must implement all non-extension features
+in order to comply with the specification.
+</p>
+
+
+<h3 name="namespaces" id="namespaces">Namespaces</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe namespace statements here.
+</p>
+
+
+<h3 name="statements" id="statements">Statements</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe namespace statements here.
+</p>
+
+
+<h3 name="blocks" id="blocks">Template Blocks</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe the two kinds of template blocks here.
+</p>
+
+
+<h3 name="dicts" id="dicts">Dictionaries</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe template dictionaries here.
+</p>
+
+
+<h3 name="imports" id="imports">Importation</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe how to import namespaces here.
+</p>
+
+
+<h3 name="exports" id="exports">Exportation</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe how to export to other namespaces here.
+</p>
+
+
+
+<h2>Template Language</h2>
+<h3 name="vars" id="vars">Variables</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe basic variables here.
+</p>
+
+
+<h3 name="aliases" id="aliases">Local Aliases</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe local variable aliases here.
+</p>
+
+
+<h3 name="methods" id="methods">Method calls</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe variable method calls here.
+</p>
+
+
+<h3 name="templates" id="templates">Nested Templates</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe nested template calls here.
+</p>
+
+
+<h3 name="apply" id="apply">Applying Templates</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe template application (recursion) here.
+</p>
+
+
+<h3 name="conditional" id="conditional">Conditionals</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe conditional statements here.
+</p>
+
+
+
+<h2>Customization and Extensions</h2>
+<h3 name="syntax" id="syntax">Overriding Syntax</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe how to customize the syntax here.
+</p>
+
+
+<h3 name="globals" id="globals">Global Variables</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe global variables here.
+</p>
+
+
+<h3 name="plugins" id="plugins">Plugins</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe how plugins should work here.
+</p>
+
+
+<h3 name="json" id="json">JSON Blocks</h3>
+<h4>Added in version 1</h4>
+<p>
+Describe the JSON extension here.
+</p>
+
+
+<h3 name="ideas" id="ideas">Future ideas</h3>
+<h4>Added in version 0</h4>
+<p>
+Describe things that may show up later here, such as anonymous templates,
+and template blocks that ignore leading and trailing whitespace.
+</p>
+
+
+
+
+
+<p id="footer"> 
+<a href="index.html">Table of Contents</a> |
+<a href="single_page.html">Single Page Version</a> |
+<a href="https://github.com/supernovus/garden-spec/">Source</a>
+</p>
+</body>
+</html>
+

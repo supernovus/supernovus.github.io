@@ -22,6 +22,13 @@ h1 {
 h2 {
   color: #119933;
 }
+h3 {
+  color: purple;
+}
+h4 {
+  color: gray;
+  font-size: 0.75em;
+}
 #footer {
   font-size: 0.75em;
   text-align: center;
