@@ -1,2 +1,5 @@
 This repository holds the files for http://supernovus.github.com/
-It will eventually be generated using some form of script.
+
+The index.html is built using bin/build.pl which is powered by the Perl 5
+implementation of Garden.
+
