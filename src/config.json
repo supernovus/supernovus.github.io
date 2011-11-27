@@ -1,0 +1,172 @@
+{
+  "updated" : "2011-11-27",
+  "statuses" : [
+    {
+      "id"   : "active",
+      "name" : "Active",
+      "desc" : "These are the projects that I update regularly."
+    },
+    {
+      "id"   : "maint",
+      "name" : "Maintained",
+      "desc" : "These projects are not as active as the above ones, but are still being maintained."
+    },
+    {
+      "id"   : "incomp",
+      "name" : "Unfinished",
+      "desc" : "These are projecst that are in an unfinished state. They are still in development, but aren't fully functional yet."
+    },
+    {
+      "id"   : "old",
+      "name" : "Unmaintained",
+      "desc" : "These are projects that may still work, but aren't being maintained anymore. They may eventually be resurrected, but at the moment, they are on hold."
+    },
+    {
+      "id"   : "dead",
+      "name" : "Abandoned",
+      "desc" : "Some may work, others may not, whatever the case, these projects are kept for historical purposes only. They are officially discontinued, never to be resurrected."
+    }
+  ],
+  "projects" : {
+    "garden" : {
+      "name"  : "Garden",
+      "desc"  : "A Functional Template Language.",
+      "lang"  : "multi",
+      "is"    : "active",
+      "links" : [
+        {
+          "name" : "Specification",
+          "url"  : "garden/"
+        },
+        {
+          "name" : "Spec Source",
+          "proj" : "garden-spec"
+        },
+        {
+          "name" : "Perl 5 Source",
+          "proj" : "garden-perl5"
+        }
+      ]
+    },
+    "exemel" : {
+      "name" : "Exemel",
+      "desc" : "An object-oriented XML library",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "perl6-www-app" : {
+      "name" : "WWW::App",
+      "desc" : "A Web Application Framework",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "SCGI" : {
+      "name" : "SCGI",
+      "desc" : "A library for building SimpleCGI applications.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "perl6-http-easy" : {
+      "name" : "HTTP::Easy",
+      "desc" : "Build HTTP servers (with PSGI support) easily.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "perl6-http-client" : {
+      "name" : "HTTP::Client",
+      "desc" : "Build HTTP clients easily.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "perl6-http-status" : {
+      "name" : "HTTP::Status",
+      "desc" : "HTTP status messages library.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "perl6-mime-types" : {
+      "name" : "MIME::Types",
+      "desc" : "Parse and query mime.types files.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "flower" : {
+      "name" : "Flower",
+      "desc" : "XML Application Languages, including TAL/METAL.",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "moon" : {
+      "name" : "Rakudo Moon",
+      "desc" : "Build bleeding edge builds of Rakudo Perl 6 and related libraries",
+      "lang" : "bash",
+      "is"   : "maint"
+    },
+    "datetime-format-perl6" : {
+      "name" : "DateTime::Format::Perl6",
+      "desc" : "Perl 6 style date format support for DateTime",
+      "lang" : "perl5",
+      "is"   : "maint"
+    },
+    "perl5-disc-info" : {
+      "name" : "Disc::Info",
+      "desc" : "Query ISO discs and images for metadata.",
+      "lang" : "perl5",
+      "is"   : "maint"
+    },
+    "temporal-utils" : {
+      "name" : "DateTime::Utils",
+      "desc" : "Utilities for Perl 6's DateTime object.",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "blacknoise" : {
+      "name" : "Blacknoise",
+      "desc" : "Build static web sites in Perl 5 (without TAL)",
+      "lang" : "perl5",
+      "is"   : "maint"
+    },
+    "esquel" : {
+      "name" : "Esquel",
+      "desc" : "Build SQL queries using method calls, plus more.",
+      "lang" : "perl6",
+      "is"   : "incomp"
+    },
+    "nodemoo" : {
+      "name" : "NodeMOO",
+      "desc" : "A MUD/MOO for Node.js",
+      "lang" : "javascript",
+      "is"   : "incomp"
+    },
+    "greynoise" : {
+      "name" : "GreyNoise",
+      "desc" : "Build static websites using Perl 5 (with TAL)",
+      "lang" : "perl5",
+      "is"   : "old"
+    },
+    "whitenoise" : {
+      "name" : "WhiteNoise",
+      "desc" : "Build static websites using Perl 6",
+      "lang" : "perl6",
+      "is"   : "old"
+    },
+    "PSpec" : {
+      "name" : "PSpec and Pickle",
+      "desc" : "RSpec and Cucumber for Perl 6.",
+      "lang" : "perl6",
+      "is"   : "old"
+    },
+    "ww6" : {
+      "name" : "ww6",
+      "desc" : "A (complete) web framework. Missing deps, broken everywhere.",
+      "lang" : "perl6",
+      "is"   : "dead"
+    },
+    "HashConfig" : {
+      "name" : "HashConfig",
+      "desc" : "Configuration data in Hash objects, but with more magic.",
+      "lang" : "perl6",
+      "is"   : "dead"
+    }
+  }
+}

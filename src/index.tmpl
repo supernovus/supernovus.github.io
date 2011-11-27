@@ -1,0 +1,74 @@
+const {[
+  "github" : "http://github.com/supernovus/"
+]}
+
+index (updated, statuses) {{
+<html>
+<head>
+<title>Projects by supernovus</title>
+<link rel="stylesheet" href="style/main.css" />
+<link rel="stylesheet" href="style/projects.css" />
+</head>
+<body>
+<h1>Projects by supernovus</h1>
+<h2>Last updated</h2>
+<h3>[[updated]]</h3>
+
+<h2>Note</h2>
+<p>
+The projects within statuses are sorted by
+the project id (using Perl's sort algorithm, which is case
+sensitive, thus 'SCGI' comes before 'exemel'. Also, the project id
+may not be the same as the project name, for instance, Disc::Info's project
+id is 'perl5-disc-info'.)
+</p>
+
+<h2>Project Status</h2>
+
+[[statuses:renderStatus(*status)]]
+
+<h2>More Info?</h2>
+<p>
+Not too much else to say on this page. How about you check out one of the
+links below:
+</p>
+<ul>
+<li><a href="http://about.me/supernovus/">About Me</a></li>
+<li><a href="[[const.github]]">My Github Profile</a></li>
+<li><a href="http://twitter.com/supernovus/">My Twitter</a></li>
+</ul>
+</body>
+</html>
+}}
+
+renderStatus (status) {{
+<h3>[[status.name]]</h3>
+<p>
+[[status.desc]]
+</p>
+<table class="projects">
+[[status.items:statusItem(*item)]]
+</table>
+}}
+
+statusItem (item) {{
+<tr>
+<td><code class="language [[item.lang]]">[[item.lang]]</code></td>
+<td>[[item.name]]</td>
+<td>[[item.desc]]</td>
+<td>
+[[?item.src;item.links:showSource(src=item.src);showLinks(links=item.links)]]
+</td>
+</tr>
+}}
+
+showSource (src) {{ <a href="[[const.github]][[src]]">Source</a> }}
+
+showLinks (links) {{ [[links:showLink(*link); sep=", "]] }}
+
+showLink (link) {{ [[?link.url;link.proj:urlLink(link);projLink(link)]] }}
+
+urlLink (link) {{ <a href="[[link.url]]">[[link.name]]</a> }}
+
+projLink (link) {{ <a href="[[const.github]][[link.proj]]">[[link.name]]</a> }}
+

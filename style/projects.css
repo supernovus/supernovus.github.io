@@ -1,0 +1,43 @@
+td {
+  padding-left: 1em;
+}
+
+.projects a {
+  border-bottom: 1px dotted blue;
+  font-size: 0.8em;
+  color: #444444;
+  text-decoration: none;
+}
+
+.projects a:hover {
+  text-decoration: none;
+  background: blue;
+  color: white;
+}
+
+code.language {
+  border: 1px solid gray;
+  font-variant: small-caps;
+  padding: 1px;
+}
+
+code.perl6 {
+  background: #509ff0;
+}
+
+code.multi {
+  background: white;
+}
+
+code.perl5 {
+  background: #00ffff;
+}
+
+code.javascript {
+  background: yellow;
+}
+
+code.bash {
+  background: #f0005f;
+}
+
