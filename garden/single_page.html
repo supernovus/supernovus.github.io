@@ -2,10 +2,11 @@
 <head>
 <title>Garden: Table of Contents</title>
 <link rel="stylesheet" href="../style/main.css" />
+<link rel="stylesheet" href="../style/docs.css" />
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT2</h2>
+<h2>VERSION 1-PREDRAFT3</h2>
 <h2>Table of Contents</h2>
 <ul>
 <li>Core Concepts
@@ -20,7 +21,7 @@
 <a href="#statements">Statements</a>
 </li>
 <li>
-<a href="#blocks">Template Blocks</a>
+<a href="#templates">Templates</a>
 </li>
 <li>
 <a href="#dicts">Dictionaries</a>
@@ -46,7 +47,7 @@
 <a href="#methods">Method calls</a>
 </li>
 <li>
-<a href="#templates">Nested Templates</a>
+<a href="#nested">Nested Templates</a>
 </li>
 <li>
 <a href="#apply">Applying Templates</a>
@@ -81,7 +82,6 @@
 </ul>
 <h2>Core Concepts</h2>
 <h3 name="intro" id="intro">Introduction</h3>
-<h4>Added in version 1</h4>
 <p>
 Garden is a general-purpose functional template langauge. It doesn't
 care what it's source textual format is and offers a great deal of flexibility 
@@ -109,42 +109,274 @@ in order to comply with the specification.
 
 
 <h3 name="namespaces" id="namespaces">Namespaces</h3>
-<h4>Added in version 1</h4>
 <p>
-Describe namespace statements here.
+In Garden, all templates, dictionaries, or localized settings are contained
+in a namespace. Typically, each namespace is represented by a single file in 
+a folder. The global Garden object can be given a list of folders to search 
+for namespace files in. Individual namespaces can add additional folders to 
+their search path. The search folders can use sub-folders to break up 
+the namespaces better.
 </p>
+<p>
+In the examples below, except where stated otherwise, it is assumed we have
+a single search path, considing of the <i>./templates</i> folder.
+</p>
+<p>
+The Garden object should have a <code>get()</code> method which returns a 
+template to the application. 
+Template names can be simple strings such as <i class="t">example</i>, 
+or nested names such as <i class="t">common/example/mytemplate</i> 
+When you call the <code>get()</code> method, or call a template from inside 
+another template, you are always referring to the 
+<em class="t">template</em> you want, not the <em class="n">namespace</em>
+(although as the following will show, that can sometimes be the same name.)
+</p>
+<h4>Default Template</h4>
+<p>
+A namespace can have a default template. That is, a template with the same
+name as the namespace itself. So for instance, if you have a namespace file
+called <i class="n">./templates/example.tmpl</i> you could make a template 
+within that  file called <i class="t">example</i> which would then be used 
+as the default template. 
+Thus from any other namespace, calling 
+<code>[[<i class="t">example()</i>]]</code> would find 
+the  <i class="n">example</i> namespace, and parse the 
+<i class="t">example</i> template from within it.
+</p>
+<h4>Finding Templates</h4>
+<p>
+Okay, so if you use <code>get('common/example/mytemplate')</code> in the 
+program, or <code>[[<i class="t">common/example/mytemplate()</i>]]</code> 
+in a template, 
+Garden needs to determine what you are looking for. 
+In the case above, it could be one of two things:
+</p>
+<ol>
+<li>The <i class="t">mytemplate</i> template in the <i class="n">common/example/mytemplate</i> namespace.</li>
+<li>The <i class="t">mytemplate</i> template in the <i class="n">common/example</i> namespace.</li>
+</ol>
+<p>
+Well, first we look for a namespace with the given name, so if
+<i class="n">./templates/common/example/mytemplate.tmpl</i> exists, 
+we will return the <i class="t">mytemplate</i> template from that namespace.
+</p>
+<p>
+If it does not exist, then we see if 
+<i class="n">./templates/common/example.tmpl</i> exists,
+and if it does, we return the 
+<i class="t">mytemplate</i> template from that namespace.
+</p>
+<p>
+All of this is fairly simple so far, except in the case where you have more
+than one search path. In that case, the above tests are repeated in order
+for each path. More specific paths must be at the top of the search path
+list. So, as an example, given your search folders are:
+</p>
+<ol>
+<li><i>./templates/advanced</i></li>
+<li><i>./templates/default</i></li>
+</ol>
+<p>
+And you request <i class="t">common/example/mytemplate</i>, 
+the following order will be used to find the namespace for 
+the <i class="t">mytemplate</i> template:
+</p>
+<ol>
+<li><i class="t">./templates/advanced/common/example/mytemplate.tmpl</i></li>
+<li><i class="t">./templates/advanced/common/example.tmpl</i></li>
+<li><i class="t">./templates/default/common/example/mytemplate.tmpl</i></li>
+<li><i class="t">./templates/default/common/example.tmpl</i></li>
+</ol>
 
 
 <h3 name="statements" id="statements">Statements</h3>
-<h4>Added in version 1</h4>
 <p>
-Describe namespace statements here.
+In namespace files, only two things are parsed: statements and blocks.
+We'll get to the various kinds of block later, but for now let's focus on
+statements.
+</p>
+<p>
+Before that however, a rather large and important rule. 
+<strong>Any text not recognized as a statement or block, is ignored.</strong>
+That's right, we don't barf, or bail, or go "what the hell is that", we just
+ignore it. If it's not one of the known statements (either core, or extension),
+and it's not a known block (again, core or extension), then we ignore it.
+</p>
+<p>
+Okay, with that out of the way, let's move on to the known statements and
+what they do. Note: the list below is only for Core statements. Any
+statements added by extensions will be listed in the documentation for
+that extension.
+</p>
+
+<h4>The version statement</h4>
+<p>
+Using the <code>version</code> statement declares that your template
+requires at least the specified version of the Garden specification in order
+to be properly parsed. It's use is simple:
+</p>
+<code class="block">
+version <i>1</i>
+</code>
+<p>
+Where you replace the <i>1</i> with whatever version you are depending upon.
+</p>
+<p>
+By specifying a version, the Garden implementation can enable certain
+version-specific features, or changes to any default syntax. If you do
+not specify a version statement, backwards compatibility with version 1 is
+assumed. Additional features may be enabled with the lack of a version number,
+but only if enabling them is backwards compatible with version 1 templates.
+</p>
+
+<h4>The use statement</h4>
+<p>
+Some features in Garden are optional. These are called Extensions.
+There are two kinds of extensions: Recommended Extensions, and Implementation
+Extensions. The first kind, as the name suggests, are recommended to be
+available in every implementation, but that is not guaranteed.
+In order to enable an extension, you must <code>use</code> it.
+It's usage is again simple:
+</p>
+<code class="block">
+use <i>globals</i>
+</code>
+<p>
+Where <i>globals</i> is the extension you want to load. A list of recommended
+extensions can be found in the Customization and Extensions chapter.
+</p>
+
+<h4>The include statement</h4>
+<p>
+The <code>include</code> statement lets you add additional folders to
+the template search path. See the Importation section for more details.
+</p>
+
+<h4>The import statement</h4>
+<p>
+The <code>import</code> statement lets you import objects from one
+namespace into the current one, as well as specifying the export rules.
+See the Importation and Exportation sections for more details.
+</p>
+
+<h4>The export statements</h4>
+<p>
+The <code>no export</code> statement specifies that the namespace does
+not allow exportation into it.
+</p>
+<p>
+The <code>require export</code> statement specifies that the namespace
+cannot be used directly, and instead requires the exportation of other
+templates and dictionaries to be usable.
+</p>
+<p>
+See the Exportaion section for further details.
+</p>
+
+<h4>Syntax override statements</h4>
+<p>
+We're not going to cover these here. See the Overriding Syntax for details.
+The list of core language syntax overrides statements is:
+</p>
+<p>
+<code>delimiters</code>, 
+<code>block</code>, 
+<code>dictblock</code>,
+<code>comment</code>,
+<code>condition</code>,
+<code>alias</code>,
+<code>note</code>,
+<code>positional</code>,
+<code>apply</code>,
+<code>negate</code>.
 </p>
 
 
-<h3 name="blocks" id="blocks">Template Blocks</h3>
-<h4>Added in version 1</h4>
+<h3 name="templates" id="templates">Templates</h3>
 <p>
-Describe the two kinds of template blocks here.
+At the heart of any template engine, is the templates themselves.
+Many template engines require that you have a single monolithic template
+for each page or section of your application. 
+One of the core concepts of Garden is instead using modular template
+components to build your full templates. Not only does Garden support
+nested templates, it relies on them for several aspects of the design itself
+such as recursion and conditional sections.
+</p>
+<p>
+In your namespace, you will likely have several template blocks, each
+representing a "piece" of the template. In namespaces meant to represent
+a single template, you should have a default template, with the same name
+as the namespace itself. The other templates can be called from one another
+easily.
+</p>
+<p>
+If you have common components that are used in many different pages, you
+can build a namespace to contain them, and call them from your other
+templates (either by using the full namespace prefix, or by importing
+the namespace.)
+</p>
+
+<h4>Template Block</h4>
+<p>
+A template block is defined using the following syntax:
+</p>
+<code class="block">
+<i class="t">nameOfTemplate</i> (<i class="v">the</i>, <i class="v">parameters</i>, <i class="v">you</i>, <i class="v">require</i>) <i class="s">{{</i>
+The content of the template.
+<i class="s">}}</i>
+</code>
+<p>
+Everything past the <i class="s">{{</i> symbol is the content of your template.
+It will be parsed for template statements (see the Template Language chapter.)
+The <i class="s">}}</i> symbol marks the end of the template block.
+</p>
+<p class="note">
+The <i class="s">{{</i> and <i class="s">}}</i> symbols are customizable.
+See the Overriding Syntax section for more details.
+</p>
+<p>
+If the template block is on a single line, the whitespace at the beginning
+and end of the block will be ignored, and no newline character will be put
+at the end. Otherwise, it is assumed that all whitespace is to be preserved
+"as is", including the newline at the end of the block.
+</p>
+<code class="block">
+<i class="t">snippetBlock</i> () <i class="s">{{</i> Hello World <i class="s">}}</i>
+</code>
+
+<h4>Template Object</h4>
+<p>
+The Garden object's <code>get()</code> method should return an object
+representing the template. This should have a <code>render()</code> method 
+(or something similar) which you can pass the parameters in with. 
+The parameters are all
+named, so in the <i class="t">nameOfTemplate</i> example above, the
+parameters you would need to pass
+<code>the</code>,
+<code>parameters</code>
+<code>you</code>
+<code>require</code>
+as named parameters to the template's <code>render()</code> method.
+</p>
+<p>
+All of the parameters in the signature must be passed to the template,
+even if its value is undefined or false.
 </p>
 
 
 <h3 name="dicts" id="dicts">Dictionaries</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe template dictionaries here.
 </p>
 
 
 <h3 name="imports" id="imports">Importation</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe how to import namespaces here.
 </p>
 
 
 <h3 name="exports" id="exports">Exportation</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe how to export to other namespaces here.
 </p>
@@ -153,42 +385,36 @@ Describe how to export to other namespaces here.
 
 <h2>Template Language</h2>
 <h3 name="vars" id="vars">Variables</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe basic variables here.
 </p>
 
 
 <h3 name="aliases" id="aliases">Local Aliases</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe local variable aliases here.
 </p>
 
 
 <h3 name="methods" id="methods">Method calls</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe variable method calls here.
 </p>
 
 
-<h3 name="templates" id="templates">Nested Templates</h3>
-<h4>Added in version 1</h4>
+<h3 name="nested" id="nested">Nested Templates</h3>
 <p>
 Describe nested template calls here.
 </p>
 
 
 <h3 name="apply" id="apply">Applying Templates</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe template application (recursion) here.
 </p>
 
 
 <h3 name="conditional" id="conditional">Conditionals</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe conditional statements here.
 </p>
@@ -197,35 +423,30 @@ Describe conditional statements here.
 
 <h2>Customization and Extensions</h2>
 <h3 name="syntax" id="syntax">Overriding Syntax</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe how to customize the syntax here.
 </p>
 
 
 <h3 name="globals" id="globals">Global Variables</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe global variables here.
 </p>
 
 
 <h3 name="plugins" id="plugins">Plugins</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe how plugins should work here.
 </p>
 
 
 <h3 name="json" id="json">JSON Blocks</h3>
-<h4>Added in version 1</h4>
 <p>
 Describe the JSON extension here.
 </p>
 
 
 <h3 name="ideas" id="ideas">Future ideas</h3>
-<h4>Added in version 0</h4>
 <p>
 Describe things that may show up later here, such as anonymous templates,
 and template blocks that ignore leading and trailing whitespace.

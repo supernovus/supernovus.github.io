@@ -39,10 +39,6 @@
           "url"  : "garden/"
         },
         {
-          "name" : "Spec Source",
-          "proj" : "garden-spec"
-        },
-        {
           "name" : "Perl 5 Source",
           "proj" : "garden-perl5"
         }

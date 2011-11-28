@@ -1,0 +1,49 @@
+code {
+  background: #aaaaaa;
+  font-family: monospace;
+}
+
+code.block {
+  border: 1px gray solid;
+  white-space: pre;
+  display: block;
+  margin-left: 5%;
+  margin-right: 10%;
+  padding: 5px;
+  padding-top: 0;
+}
+
+/* We are using <i/> for Identifiers, not Italics. */
+i, .i {
+  border-bottom: 1px dotted green;
+  font-style: normal;
+  font-family: monospace;
+}
+
+ol li {
+  color: #232323;
+}
+
+.t {
+  color: blue;
+}
+.n {
+  color: purple;
+}
+.v {
+  color: #303030;
+}
+.d {
+  color: red;
+}
+.s {
+  color: green;
+}
+
+.note {
+  margin-left: 10%;
+  margin-right: 15%;
+  border: 1px solid gray;
+  background: #ffffe0;
+}
+

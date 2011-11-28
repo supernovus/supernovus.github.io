@@ -2,13 +2,111 @@
 <head>
 <title>Garden: Statements</title>
 <link rel="stylesheet" href="../style/main.css" />
+<link rel="stylesheet" href="../style/docs.css" />
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT2</h2>
+<h2>VERSION 1-PREDRAFT3</h2>
 <h2>Statements</h2>
 <p>
-Describe namespace statements here.
+In namespace files, only two things are parsed: statements and blocks.
+We'll get to the various kinds of block later, but for now let's focus on
+statements.
+</p>
+<p>
+Before that however, a rather large and important rule. 
+<strong>Any text not recognized as a statement or block, is ignored.</strong>
+That's right, we don't barf, or bail, or go "what the hell is that", we just
+ignore it. If it's not one of the known statements (either core, or extension),
+and it's not a known block (again, core or extension), then we ignore it.
+</p>
+<p>
+Okay, with that out of the way, let's move on to the known statements and
+what they do. Note: the list below is only for Core statements. Any
+statements added by extensions will be listed in the documentation for
+that extension.
+</p>
+
+<h4>The version statement</h4>
+<p>
+Using the <code>version</code> statement declares that your template
+requires at least the specified version of the Garden specification in order
+to be properly parsed. It's use is simple:
+</p>
+<code class="block">
+version <i>1</i>
+</code>
+<p>
+Where you replace the <i>1</i> with whatever version you are depending upon.
+</p>
+<p>
+By specifying a version, the Garden implementation can enable certain
+version-specific features, or changes to any default syntax. If you do
+not specify a version statement, backwards compatibility with version 1 is
+assumed. Additional features may be enabled with the lack of a version number,
+but only if enabling them is backwards compatible with version 1 templates.
+</p>
+
+<h4>The use statement</h4>
+<p>
+Some features in Garden are optional. These are called Extensions.
+There are two kinds of extensions: Recommended Extensions, and Implementation
+Extensions. The first kind, as the name suggests, are recommended to be
+available in every implementation, but that is not guaranteed.
+In order to enable an extension, you must <code>use</code> it.
+It's usage is again simple:
+</p>
+<code class="block">
+use <i>globals</i>
+</code>
+<p>
+Where <i>globals</i> is the extension you want to load. A list of recommended
+extensions can be found in the Customization and Extensions chapter.
+</p>
+
+<h4>The include statement</h4>
+<p>
+The <code>include</code> statement lets you add additional folders to
+the template search path. See the Importation section for more details.
+</p>
+
+<h4>The import statement</h4>
+<p>
+The <code>import</code> statement lets you import objects from one
+namespace into the current one, as well as specifying the export rules.
+See the Importation and Exportation sections for more details.
+</p>
+
+<h4>The export statements</h4>
+<p>
+The <code>no export</code> statement specifies that the namespace does
+not allow exportation into it.
+</p>
+<p>
+The <code>require export</code> statement specifies that the namespace
+cannot be used directly, and instead requires the exportation of other
+templates and dictionaries to be usable.
+</p>
+<p>
+See the Exportaion section for further details.
+</p>
+
+<h4>Syntax override statements</h4>
+<p>
+We're not going to cover these here. See the Overriding Syntax for details.
+The list of core language syntax overrides statements is:
+</p>
+<p>
+<code>delimiters</code>, 
+<code>block</code>, 
+<code>dictblock</code>,
+<code>comment</code>,
+<code>condition</code>,
+<code>alias</code>,
+<code>note</code>,
+<code>positional</code>,
+<code>apply</code>,
+<code>negate</code>.
 </p>
 
 <p id="footer"> 
