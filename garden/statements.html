@@ -29,12 +29,12 @@ that extension.
 
 <h4>The version statement</h4>
 <p>
-Using the <code>version</code> statement declares that your template
+Using the <code class="b">version</code> statement declares that your template
 requires at least the specified version of the Garden specification in order
 to be properly parsed. It's use is simple:
 </p>
 <code class="block">
-version <i>1</i>
+<b>version</b> <i>1</i>
 </code>
 <p>
 Where you replace the <i>1</i> with whatever version you are depending upon.
@@ -53,11 +53,11 @@ Some features in Garden are optional. These are called Extensions.
 There are two kinds of extensions: Recommended Extensions, and Implementation
 Extensions. The first kind, as the name suggests, are recommended to be
 available in every implementation, but that is not guaranteed.
-In order to enable an extension, you must <code>use</code> it.
+In order to enable an extension, you must <code class="b">use</code> it.
 It's usage is again simple:
 </p>
 <code class="block">
-use <i>globals</i>
+<b>use</b> <i>globals</i>
 </code>
 <p>
 Where <i>globals</i> is the extension you want to load. A list of recommended
@@ -66,26 +66,26 @@ extensions can be found in the Customization and Extensions chapter.
 
 <h4>The include statement</h4>
 <p>
-The <code>include</code> statement lets you add additional folders to
+The <code class="b">include</code> statement lets you add additional folders to
 the template search path. See the Importation section for more details.
 </p>
 
 <h4>The import statement</h4>
 <p>
-The <code>import</code> statement lets you import objects from one
+The <code class="b">import</code> statement lets you import objects from one
 namespace into the current one, as well as specifying the export rules.
 See the Importation and Exportation sections for more details.
 </p>
 
 <h4>The export statements</h4>
 <p>
-The <code>no export</code> statement specifies that the namespace does
-not allow exportation into it.
+The <code class="b">no export</code> statement specifies that the namespace 
+does not allow exportation into it.
 </p>
 <p>
-The <code>require export</code> statement specifies that the namespace
-cannot be used directly, and instead requires the exportation of other
-templates and dictionaries to be usable.
+The <code class="b">require export</code> statement specifies that the 
+namespace cannot be used directly, and instead requires the exportation of 
+other templates and dictionaries to be usable.
 </p>
 <p>
 See the Exportaion section for further details.
@@ -97,16 +97,16 @@ We're not going to cover these here. See the Overriding Syntax for details.
 The list of core language syntax overrides statements is:
 </p>
 <p>
-<code>delimiters</code>, 
-<code>block</code>, 
-<code>dictblock</code>,
-<code>comment</code>,
-<code>condition</code>,
-<code>alias</code>,
-<code>note</code>,
-<code>positional</code>,
-<code>apply</code>,
-<code>negate</code>.
+<code class="b">delimiters</code>, 
+<code class="b">block</code>, 
+<code class="b">dictblock</code>,
+<code class="b">comment</code>,
+<code class="b">condition</code>,
+<code class="b">alias</code>,
+<code class="b">note</code>,
+<code class="b">positional</code>,
+<code class="b">apply</code>,
+<code class="b">negate</code>.
 </p>
 
 <p id="footer"> 

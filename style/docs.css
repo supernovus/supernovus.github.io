@@ -39,11 +39,13 @@ ol li {
 .s {
   color: green;
 }
+.f {
+  color: #9f5500;
+}
 
-.note {
-  margin-left: 10%;
-  margin-right: 15%;
-  border: 1px solid gray;
-  background: #ffffe0;
+/* We are using <b/> for recognized statements. */
+b, .b {
+  color: green;
+  font-weight: bold;
 }
 

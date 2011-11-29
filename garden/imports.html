@@ -9,7 +9,64 @@
 <h2>VERSION 1-PREDRAFT3</h2>
 <h2>Importation</h2>
 <p>
-Describe how to import namespaces here.
+Sometimes its useful to create common namespaces, which contain templates
+and dictionaries that can be shared between other namespaces. In the current
+version of the specification, you can reference templates from other namespaces
+from any other namespace, by using the full name of the template (including
+the namespace.) However, as of version 1, there is no way to reference
+dictionaries or other data from other namespaces (this is on the TODO list
+for version 2.)
+</p>
+<p>
+So in the cases where you want shared dictionaries, or in the cases where
+you don't want to have to type the full name of a template, wouldn't it be
+nice if you could just import the objects from one namespace into another one?
+</p>
+<p>
+Well, you can. That's what the <code class="b">import</code> statement is for.
+</p>
+<h4>The import statement, in detail.</h4>
+<p>
+The <code class="b">import</code> statement does exactly what 
+it says on the box, 
+imports objects from one namespace into another. 
+By default it imports templates and
+dictionaries, however, it can import other data if requested. The basic
+usage (importing the default objects) is simple:
+</p>
+<code class="block">
+<b>import</b> "<i class="n">another/namespace</i>"
+</code>
+<p>
+Yeah, that's it. You now have access to the templates and dictionaries from
+<i class="n">another/namespace</i> in your current namespace. Pretty easy huh?
+</p>
+<p>
+But that's not all. Say all of your templates are using a super custom
+syntax, and you want to be able to share that syntax between all of your
+namespaces without having to add all of those override statements to each
+and every one of your namespace files. Well, that's where the 
+<i class="f">:syntax</i> flag comes in handy:
+</p>
+<code class="block">
+<b>import</b> "<i class="n">common</i>" <i class="f">:syntax</i>
+</code>
+<p>
+Now, you've not only gained the templates and dictionaries from
+<i class="n">common</i>, but you've imported the custom syntax rules too.
+</p>
+<p>
+There are other flags that modify what you can import, such as the
+<i class="f">:plugins</i> flag, but that's only applicable to the
+Plugins extension, so we'll talk about it more when we get to that
+section.
+</p>
+<p>
+There is one other flag that the <code class="b">import</code> statement 
+supports, <i class="f">:export</i>. This is a magic flag, in that it 
+doesn't import anything extra, but instead changes how your namespace 
+interacts with the namespace you've imported. 
+See the Exportation section (coming up next) for more details on that.
 </p>
 
 <p id="footer"> 

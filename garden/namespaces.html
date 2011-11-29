@@ -38,14 +38,15 @@ called <i class="n">./templates/example.tmpl</i> you could make a template
 within that  file called <i class="t">example</i> which would then be used 
 as the default template. 
 Thus from any other namespace, calling 
-<code>[[<i class="t">example()</i>]]</code> would find 
+<code><i class="s">[[</i><i class="t">example()</i><i class="s">]]</i></code> would find 
 the  <i class="n">example</i> namespace, and parse the 
 <i class="t">example</i> template from within it.
 </p>
 <h4>Finding Templates</h4>
 <p>
 Okay, so if you use <code>get('common/example/mytemplate')</code> in the 
-program, or <code>[[<i class="t">common/example/mytemplate()</i>]]</code> 
+program, or 
+<code><i class="s">[[</i><i class="t">common/example/mytemplate()</i><i class="s">]]</i></code> 
 in a template, 
 Garden needs to determine what you are looking for. 
 In the case above, it could be one of two things:
