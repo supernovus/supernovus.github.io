@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Dictionaries</h2>
 <p>
 Sometimes you may want to use certain repeated strings or values in
@@ -24,11 +24,11 @@ A dictionary block looks similar to a template block, except that it does not
 have a signature, and uses different delimiters:
 </p>
 <code class="block">
-<i class="d">myDict</i> <i class="s">{[</i>
+<i class="d">myDict</i> <u>{[</u>
   "<i>name</i>" : "Garden"
   "<i>desc</i>" : "A template language"
   "<i>ver</i>"  : "1"
-<i class="s">]}</i>
+<u>]}</u>
 </code>
 <p class="note">
 The <i class="s">{[</i> and <i class="s">]}</i> symbols are
@@ -39,7 +39,7 @@ customizable. See the Overriding Syntax section for more details.
 You can then access the dictionary object as another variable in your template.
 Each key will be an object member, so in the above call, you could have a
 call to 
-<code><i class="s">[[</i><i class="d">myDict</i>.<i class="v">desc</i><i class="s">]]</i></code> 
+<code><u>[[</u><i class="d">myDict</i>.<i class="v">desc</i><u>]]</u></code> 
 which would be replaced by the string "<em>A template language</em>".
 </p>
 <p class="note">

@@ -24,21 +24,27 @@ ol li {
   color: #232323;
 }
 
+/* template */
 .t {
   color: blue;
 }
+/* namespace */
 .n {
   color: purple;
 }
+/* variable */
 .v {
   color: #303030;
 }
+/* dictionary */
 .d {
   color: red;
 }
+/* syntax/statement */
 .s {
   color: green;
 }
+/* flag */
 .f {
   color: #9f5500;
 }
@@ -47,5 +53,11 @@ ol li {
 b, .b {
   color: green;
   font-weight: bold;
+}
+
+/* We are using <u/> for overridable syntax. */
+u {
+  color: green;
+  text-decoration: none;
 }
 

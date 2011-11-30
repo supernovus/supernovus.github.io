@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Templates</h2>
 <p>
 At the heart of any template engine, is the templates themselves.
@@ -36,14 +36,14 @@ the namespace.)
 A template block is defined using the following syntax:
 </p>
 <code class="block">
-<i class="t">nameOfTemplate</i> (<i class="v">the</i>, <i class="v">parameters</i>, <i class="v">you</i>, <i class="v">require</i>) <i class="s">{{</i>
+<i class="t">nameOfTemplate</i> (<i class="v">the</i>, <i class="v">parameters</i>, <i class="v">you</i>, <i class="v">require</i>) <u>{{</u>
 The content of the template.
-<i class="s">}}</i>
+<u>}}</u>
 </code>
 <p>
-Everything past the <i class="s">{{</i> symbol is the content of your template.
+Everything past the <u>{{</u> symbol is the content of your template.
 It will be parsed for template statements (see the Template Language chapter.)
-The <i class="s">}}</i> symbol marks the end of the template block.
+The <u>}}</u> symbol marks the end of the template block.
 </p>
 <p class="note">
 The <i class="s">{{</i> and <i class="s">}}</i> symbols are
@@ -57,7 +57,7 @@ at the end. Otherwise, it is assumed that all whitespace is to be preserved
 "as is", including the newline at the end of the block.
 </p>
 <code class="block">
-<i class="t">snippetBlock</i> () <i class="s">{{</i> Hello World <i class="s">}}</i>
+<i class="t">snippetBlock</i> () <u>{{</u> Hello World <u>}}</u>
 </code>
 
 <h4>Template Object</h4>

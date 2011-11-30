@@ -6,10 +6,46 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Nested Templates</h2>
 <p>
-Describe nested template calls here.
+A core principle in Garden is to split up templates into modular sections.
+Instead of having one large monolithic template, it's easier to make little
+template snippets, and compose them together into your desired template.
+</p>
+<p>
+The template snippets can be used in a few ways. Here we're going to describe
+how to make direct calls to those templates.
+</p>
+<h4>A template with no parameters</h4>
+<p>
+You may have little common snippets that take no parameters, if that is
+the case, you can call the template very easily:
+</p>
+<code class="block">
+<u>[[</u><i class="t">templateName</i>()<u>]]</u>
+</code>
+<h4>A template with parameters</h4>
+<p>
+However, more often than not, templates have parameters, and you need
+to be able to specify those parameters in the template you are calling.
+To do this, we specify the parameters in the template call signature.
+</p>
+<code class="block">
+  <i class="t">firstTemplate</i> (<i class="v">company</i>, <i class="v">user</i>) <u>{{</u>
+  Here we will call another template: <u>[[</u><i class="t">secondTemplate</i>(<i class="v">company</i>, <i class="v">name</i>=<i class="v">user.name</i>)<u>]]</u>
+  <u>}}</u>
+  <i class="t">secondTemplate</i> (<i class="v">company</i>, <i class="v">name</i>) <u>{{</u>
+  Yes, <u>[[</u><i class="v">name</i><u>]]</u> works for <u>[[</u><i class="v">company</i><u>]]</u>.
+  <u>}}</u>
+</code>
+<p>
+Here our <i class="t">firstTemplate</i> is making a call to
+<i class="t">secondTemplate</i>, passing the <i class="v">company</i>
+variable through directly (as long as two templates have variables of
+the same name, this is possible) and passing the <i class="v">user.name</i>
+variable through as <i class="v">name</i> which is what 
+<i class="t">secondTemplate</i> is looking for.
 </p>
 
 <p id="footer"> 

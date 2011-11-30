@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Table of Contents</h2>
 <ul>
 <li>Core Concepts
@@ -44,13 +44,10 @@
 <a href="#aliases">Local Aliases</a>
 </li>
 <li>
-<a href="#methods">Method calls</a>
-</li>
-<li>
 <a href="#nested">Nested Templates</a>
 </li>
 <li>
-<a href="#apply">Applying Templates</a>
+<a href="#apply">Recursive Templates</a>
 </li>
 <li>
 <a href="#conditional">Conditionals</a>
@@ -142,7 +139,7 @@ called <i class="n">./templates/example.tmpl</i> you could make a template
 within that  file called <i class="t">example</i> which would then be used 
 as the default template. 
 Thus from any other namespace, calling 
-<code><i class="s">[[</i><i class="t">example()</i><i class="s">]]</i></code> would find 
+<code><u>[[</u><i class="t">example()</i><u>]]</u></code> would find 
 the  <i class="n">example</i> namespace, and parse the 
 <i class="t">example</i> template from within it.
 </p>
@@ -150,7 +147,7 @@ the  <i class="n">example</i> namespace, and parse the
 <p>
 Okay, so if you use <code>get('common/example/mytemplate')</code> in the 
 program, or 
-<code><i class="s">[[</i><i class="t">common/example/mytemplate()</i><i class="s">]]</i></code> 
+<code><u>[[</u><i class="t">common/example/mytemplate()</i><u>]]</u></code> 
 in a template, 
 Garden needs to determine what you are looking for. 
 In the case above, it could be one of two things:
@@ -325,14 +322,14 @@ the namespace.)
 A template block is defined using the following syntax:
 </p>
 <code class="block">
-<i class="t">nameOfTemplate</i> (<i class="v">the</i>, <i class="v">parameters</i>, <i class="v">you</i>, <i class="v">require</i>) <i class="s">{{</i>
+<i class="t">nameOfTemplate</i> (<i class="v">the</i>, <i class="v">parameters</i>, <i class="v">you</i>, <i class="v">require</i>) <u>{{</u>
 The content of the template.
-<i class="s">}}</i>
+<u>}}</u>
 </code>
 <p>
-Everything past the <i class="s">{{</i> symbol is the content of your template.
+Everything past the <u>{{</u> symbol is the content of your template.
 It will be parsed for template statements (see the Template Language chapter.)
-The <i class="s">}}</i> symbol marks the end of the template block.
+The <u>}}</u> symbol marks the end of the template block.
 </p>
 <p class="note">
 The <i class="s">{{</i> and <i class="s">}}</i> symbols are
@@ -346,7 +343,7 @@ at the end. Otherwise, it is assumed that all whitespace is to be preserved
 "as is", including the newline at the end of the block.
 </p>
 <code class="block">
-<i class="t">snippetBlock</i> () <i class="s">{{</i> Hello World <i class="s">}}</i>
+<i class="t">snippetBlock</i> () <u>{{</u> Hello World <u>}}</u>
 </code>
 
 <h4>Template Object</h4>
@@ -386,11 +383,11 @@ A dictionary block looks similar to a template block, except that it does not
 have a signature, and uses different delimiters:
 </p>
 <code class="block">
-<i class="d">myDict</i> <i class="s">{[</i>
+<i class="d">myDict</i> <u>{[</u>
   "<i>name</i>" : "Garden"
   "<i>desc</i>" : "A template language"
   "<i>ver</i>"  : "1"
-<i class="s">]}</i>
+<u>]}</u>
 </code>
 <p class="note">
 The <i class="s">{[</i> and <i class="s">]}</i> symbols are
@@ -401,7 +398,7 @@ customizable. See the Overriding Syntax section for more details.
 You can then access the dictionary object as another variable in your template.
 Each key will be an object member, so in the above call, you could have a
 call to 
-<code><i class="s">[[</i><i class="d">myDict</i>.<i class="v">desc</i><i class="s">]]</i></code> 
+<code><u>[[</u><i class="d">myDict</i>.<i class="v">desc</i><u>]]</u></code> 
 which would be replaced by the string "<em>A template language</em>".
 </p>
 <p class="note">
@@ -503,9 +500,9 @@ in your local namespace.
 <p>
 What this means on a practical note is that if you do override the
 <i class="t">Page</i> template, it will be used in your local namespace
-whenever you make a <code><i class="s">[[</i><i class="t">Page()</i><i class="s">]]</i></code> call.
+whenever you make a <code><u>[[</u><i class="t">Page()</i><u>]]</u></code> call.
 However, any imported templates from <i class="n">common</i> that make
-a <code><i class="s">[[</i><i class="t">Page()</i><i class="s">]]</i></code> call, will be referring to the <i class="t">Page</i> template
+a <code><u>[[</u><i class="t">Page()</i><u>]]</u></code> call, will be referring to the <i class="t">Page</i> template
 within the <i class="n">common</i> namespace.
 </p>
 <p>
@@ -554,37 +551,393 @@ flag is made.
 <h2>Template Language</h2>
 <h3 name="vars" id="vars">Variables</h3>
 <p>
-Describe basic variables here.
+The most fundamental part of any template language, is the ability to
+replace specific identifiers with data provided by the application.
+As these identifiers represent variable data, we call them variables.
 </p>
+<p>
+In Garden, a variable can point to a number of different things, and the
+order in which they are searched is important, as the first matching
+variable overrides any with the same name in a later search location.
+</p>
+<ol>
+<li>Variables defined within the template itself (aliases.)</li>
+<li>Special variables specific to the current template context.</li>
+<li>One of the named parameters sent to the template.</li>
+<li>A definition within a Dictionary object.</li>
+<li>Other variables added by extensions.</li>
+</ol>
+<p>
+Typically a variable will contain a single value, such as a string, or
+a number, but Garden also supports lists (arrays) and maps (hashes), although
+they may be more useful in template application (see Recursive Templates.)
+</p>
+<p>
+The basic usage for a variable containing a single value is:
+</p>
+<code class="block">
+<u>[[</u><i class="v">variablename</i><u>]]</u>
+</code>
+<p class="note">
+The <i class="s">[[</i> and <i class="s">]]</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
+<p>
+This will replace <i class="v">variablename</i> with whatever content
+that variable contains.
+</p>
+<h4>Simple list expansion</h4>
+<p>
+If you have a simple list variable, and wish to just join the elements
+together with a separator, that's also easy using the <i class="f">sep</i>
+option:
+</p>
+<code class="block">
+<u>[[</u><i class="v">arrayvar</i>; <i class="f">sep</i>=", "<u>]]</u>
+</code>
+<p>
+In this example, all of the elements of the <i class="v">arrayvar</i>
+variable will be joined together with ", ". For more advanced use of
+lists/arrays and maps/hashes, see the Recursive Templates section.
+</p>
+<h4>Variable members</h4>
+<p>
+If a variable is a map/hash or object, it can contain named <em>members</em>,
+which you can access with a dot.
+</p>
+<code class="block">
+<u>[[</u><i class="v">objvar.member.nested</i><u>]]</u>
+</code>
+<h4>Variable method calls</h4>
+<p>
+Some members may actually be method calls, in which case you need to be
+able to specify parameters for the methods. Member method call parameters can 
+be either positional or named:
+</p>
+<code class="block">
+<u>[[</u><i class="v">objvar.myMethod</i>(<i class="v">posparam</i>, <i class="v">namedparam</i>=<i class="v">localvar</i>)<u>]]</u>
+</code>
+<p>
+In the above example, the <code>myMethod()</code> method on the
+<i class="v">objvar</i> object will be called with its first positional
+parameter being set to the value of the <i class="v">posparam</i>
+variable, and a named parameter of <i class="v">namedparam</i> being
+set to the value of the <i class="v">localvar</i> variable.
+</p>
+<p>
+The parameters can also be the output of templates. See the Nested Templates
+section for more details on how to call a template.
+</p>
+<h4>Indirect member access</h4>
+<p>
+Sometimes you want to access a member based on a variable. In this case
+you will use indirect member access.
+</p>
+<code class="block">
+<u>[[</u><i class="v">objvar</i>.<u>`</u><i class="v">membername</i><u>`</u><u>]]</u>
+</code>
+<p>
+In this example, you have a variable called 
+<i class="v">membername</i> which will
+contain the name of the member you want to get from the
+<i class="v">objvar</i> variable. So if <i class="v">membername</i> was
+set to "<em>id</em>", then the <i class="v">objvar.id</i> member would be
+returned.
+</p>
+<p>
+Indirect members can be nested within large path statements such as:
+</p>
+<code class="block">
+<u>[[</u><i class="v">objvar</i>.<u>`</u><i class="v">what</i><u>`</u>.<i class="var">name</i><u>]]</u>
+</code>
+<p class="note">
+The <i class="s">`</i> and <i class="s">`</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
 
 
 <h3 name="aliases" id="aliases">Local Aliases</h3>
 <p>
-Describe local variable aliases here.
+Sometimes you'll want to make local variables that apply to your current
+template, to make it easy to refer to what otherwise could be a long
+nested variable expression. This is simple using aliases.
 </p>
-
-
-<h3 name="methods" id="methods">Method calls</h3>
+<code class="block">
+<u>[[</u><i class="v">aliasname</i><u>=</u><i class="v">some.large</i>.<u>`</u>nested<u>`</u>.statement(param)<u>]]</u>
+Okay, now we're going to refer to the <u>[[</u><i class="v">aliasname</i><u>]]</u>
+variable from now on.
+</code>
 <p>
-Describe variable method calls here.
+By assigning a local alias variable to a long expression, it makes it easy to
+reuse elsewhere.
 </p>
+<p>
+The above example showed assigning an alias to a nested variable expression,
+but it is also possible to assign an alias to the output of a template:
+</p>
+<code class="block">
+<u>[[</u><i class="v">content</i><u>=</u><i class="t">myTemplate()</i><u>]]</u>
+Now <i class="v">content</i> contains the output from the
+<i class="t">myTemplate</i> template.
+</code>
+<p>
+See the Nested Templates section for more information on how to make
+template calls.
+</p>
+<p class="note">
+The <i class="s">=</i> symbol is customizable. See the Overriding Syntax section for more details.
+</p>
+
 
 
 <h3 name="nested" id="nested">Nested Templates</h3>
 <p>
-Describe nested template calls here.
+A core principle in Garden is to split up templates into modular sections.
+Instead of having one large monolithic template, it's easier to make little
+template snippets, and compose them together into your desired template.
+</p>
+<p>
+The template snippets can be used in a few ways. Here we're going to describe
+how to make direct calls to those templates.
+</p>
+<h4>A template with no parameters</h4>
+<p>
+You may have little common snippets that take no parameters, if that is
+the case, you can call the template very easily:
+</p>
+<code class="block">
+<u>[[</u><i class="t">templateName</i>()<u>]]</u>
+</code>
+<h4>A template with parameters</h4>
+<p>
+However, more often than not, templates have parameters, and you need
+to be able to specify those parameters in the template you are calling.
+To do this, we specify the parameters in the template call signature.
+</p>
+<code class="block">
+  <i class="t">firstTemplate</i> (<i class="v">company</i>, <i class="v">user</i>) <u>{{</u>
+  Here we will call another template: <u>[[</u><i class="t">secondTemplate</i>(<i class="v">company</i>, <i class="v">name</i>=<i class="v">user.name</i>)<u>]]</u>
+  <u>}}</u>
+  <i class="t">secondTemplate</i> (<i class="v">company</i>, <i class="v">name</i>) <u>{{</u>
+  Yes, <u>[[</u><i class="v">name</i><u>]]</u> works for <u>[[</u><i class="v">company</i><u>]]</u>.
+  <u>}}</u>
+</code>
+<p>
+Here our <i class="t">firstTemplate</i> is making a call to
+<i class="t">secondTemplate</i>, passing the <i class="v">company</i>
+variable through directly (as long as two templates have variables of
+the same name, this is possible) and passing the <i class="v">user.name</i>
+variable through as <i class="v">name</i> which is what 
+<i class="t">secondTemplate</i> is looking for.
 </p>
 
 
-<h3 name="apply" id="apply">Applying Templates</h3>
+<h3 name="apply" id="apply">Recursive Templates</h3>
 <p>
-Describe template application (recursion) here.
+Most template languages support looping constructs similar to programming
+languages. These looping constructs are used to apply sections of the
+template to every item in a list.
+</p>
+<p>
+In Garden, instead of specifying a block of your template as the portion to
+be recursed over, we specify another template to apply to the list, as well
+as the positional parameter(s) that each item in the list will be assigned to.
+How many parameters depends on if the variable is a flat list (array) or
+a map (hash).
+</p>
+<p>
+As an example of applying a template to a simple flat list of user items:
+</p>
+<code class="block">
+<i class="t">testTemplate</i> (<i class="v">userlist</i>) <u>{{</u>
+Okay, we have the following users:
+<u>[[</u><i class="v">userlist</i><u>:</u><i class="t">userItem</i>(<u>*</u><i class="v">user</i>)<u>]]</u>
+<u>}}</u>
+
+<i class="t">userItem</i> (<i class="v">user</i>) <u>{{</u>
+ * <u>[[</u><i class="v">user.name</i><u>]]</u>
+<u>}}</u>
+</code>
+<p class="note">
+The <i class="s">:</i> and <i class="s">*</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
+<p>
+Alternatively, say instead of the flat list of user items, you had a map/hash
+where the key was the username, and the value was their real name. In that
+case you could apply a template like this:
+</p>
+<code class="block">
+<i class="t">hashTest</i> (<i class="v">userhash</i>) <u>{{</u>
+We have the following users:
+<u>[[</u><i class="v">userhash</i><u>:</u><i class="t">userList</i>(<u>*</u><i class="v">id</i>, <u>*</u><i class="v">name</i>)<u>]]</u>
+<u>}}</u>
+
+<i class="t">userList</i> (<i class="v">id</i>, <i class="v">name</i>) <u>{{</u>
+ * <u>[[</u><i class="v">id</i><u>]]</u>: <u>[[</u><i class="v">name</i><u>]]</u>
+<u>}}</u>
+</code>
+<p>
+Additional parameters can be sent in the template call, by using the standard
+parameter passing syntax. Only the special positional parameters use the
+<u>*</u> prefix. Flat lists (arrays) require one positional parameter.
+Maps (hashes) require one positional parameter, and support two parameters:
+the first will be assigned to the key, and the second to the value.
+</p>
+<h4>Separator</h4>
+<p>
+As seen previously in the Variables section, if you want a specific separator
+between the items, you can specify a <i class="f">sep</i> option.
+</p>
+<code class="block">
+<u>[[</u><i class="v">users</i><u>:</u><i class="t">userList</i>(<u>*</u><i class="v">user</i>); <i class="f">sep</i>=", "<u>]]</u>
+</code>
+<h4>The Repeat Object</h4>
+<p>
+One magic feature now shown yet, is the repeat object that is created
+automatically when you use template application. The repeat object is
+always created with the same name as the template it applies to. It offers
+the following members:
+</p>
+<dl>
+<dt><i class="v">index</i></dt>
+<dd>The current iteration number (starts from 0)</dd>
+<dt><i class="v">count</i></dt>
+<dd>The number of items in the list we are recursing</dd>
+<dt><i class="v">length</i></dt>
+<dd>An alias to count.</dd>
+<dt><i class="v">number</i></dt>
+<dd>The current item number (starts from 1). This will always be
+the same as <i class="v">index</i> + 1.</dd>
+<dt><i class="v">start</i></dt>
+<dd>Returns true if this is the first item.</dd>
+<dt><i class="v">end</i></dt>
+<dd>Returns true if this is the last item.</dd>
+<dt><i class="v">odd</i></dt>
+<dd>Returns true if the <i class="v">number</i> is odd.</dd>
+<dt><i class="v">even</i></dt>
+<dd>Returns true if the <i class="v">number</i> is even.</dd>
+<dt><i class="v">every</i>(<i class="v">num</i>)</dt>
+<dd>Returns true every <i class="v">num</i> number of iterations.</dd>
+<dt><i class="v">skip</i>(<i class="v">num</i>)</dt>
+<dd>Returns false every <i class="v">num</i> number of iterations.</dd>
+<dt><i class="v">lt</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is less than <i class="v">num</i></dd>
+<dt><i class="v">gt</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is greater than <i class="v">num</i></dd>
+<dt><i class="v">lte</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is less than or equal to <i class="v">num</i></dd>
+<dt><i class="v">gte</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is greater than or equal to <i class="v">num</i></dd>
+<dt><i class="v">eq</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is equal to <i class="v">num</i></dd>
+<dt><i class="v">ne</i>(<i class="v">num</i>)</dt>
+<dd>Returns true if <i class="v">number</i> is not equal to <i class="v">num</i></dd>
+<dt><i class="v">repeatEvery</i>(<i class="v">num</i>)</dt>
+<dd>Returns true on the first item, and every <i class="v">num</i> iterations.</dd>
+</dl>
+<p>
+A simple example of the use of the repeat object:
+</p>
+<code class="block">
+<i class="t">myTemplate</i> (<i class="v">rows</i>) <u>{{</u>
+<u>[[</u><i class="v">rows</i><u>:</u><i class="t">showRow</i>(<u>*</u><i class="v">row</i>)<u>]]</u>
+<u>}}</u>
+
+<i class="t">showRow</i> (<i class="v">row</i>) <u>{{</u>
+ <u>[[</u><i class="v">showRow.number</i><u>]]</u>.) <u>[[</u><i class="v">row</i><u>]]</u>
+<u>}}</u>
+</code>
+<p>
+See the Conditionals section for an example of how to use some of the
+repeat object's members that return boolean values.
 </p>
 
 
 <h3 name="conditional" id="conditional">Conditionals</h3>
 <p>
-Describe conditional statements here.
+Often there are portions of your template that show only show up under
+certain circumstances. Many template languages have complex constructs
+for creating conditional sections, with tags like if, elseif, else, and
+all sorts of comparison operators. Garden takes a different approach.
+</p>
+<p>
+First of all, we don't have any comparison operators. It's conditional
+statements check for truth or falseness of a single variable.
+Your application controller should handle any special logic to create the
+variables for testing against.
+</p>
+<p>
+That said, Garden does support elseif and else statements, in its own way.
+</p>
+<p>
+First thing to note, like recursion, conditional statements work
+by calling (applying) a template based on the results of the condition.
+</p>
+
+<h4>A simple condition</h4>
+<p>
+The following shows a simple condition, which will call a template if
+the variable is true, and won't call the template if it is false.
+</p>
+<code class="block">
+<u>[[</u><u>?</u><i class="v">vartotest</i><u>:</u><i class="t">trueTemplate()</i><u>]]</u>
+</code>
+<p>
+The context is simple, if <i class="v">vartotest</i> is a true value, which
+means it's defined, not 0, and not equal to its own name (i.e. 
+<i class="v">vartotest</i> will be false if it is returned as <em>vartotest</em>), then the
+<i class="t">trueTemplate()</i> will be called. Like any other template call,
+you can pass whatever parameters you need to it.
+</p>
+<p class="note">
+The <i class="s">?</i> and <i class="s">:</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
+<h4>An else statement</h4>
+<p>
+Often not only do you want to apply a statement if the value is true, but
+you want to apply a different statement if the value is false.
+</p>
+<code class="block">
+<u>[[</u><u>?</u><i class="v">vartotest</i><u>:</u><i class="t">trueTemplate()</i><u>;</u><i class="t">falseTemplate()</i><u>]]</u>
+</code>
+<p>
+So like the first example, we test to see if <i class="v">vartotest</i> is true. If it is,
+like before, we show <i class="t">trueTemplate()</i>. The difference is, this time if it is not
+true, we show <i class="t">falseTemplate()</i> instead.
+</p>
+<p class="note">
+The <i class="s">;</i> symbol is customizable. See the Overriding Syntax section for more details.
+</p>
+
+<h4>An elseif statement</h4>
+<p>
+Sometimes you want to test two different variables, if the first is true,
+apply a template, if not, then if the second is true, apply a template.
+If neither are true, then if we have an third template, apply it instead.
+</p>
+<code class="block">
+<u>[[</u><u>?</u><i class="v">var1</i><u>;</u><i class="v">var2</i><u>:</u><i class="t">templateOne()</i><u>;</u><i class="t">templateTwo()</i><u>;</u><i class="t">falseTemplate()</i><u>]]</u>
+</code>
+<p>
+If <i class="v">var1</i> is true, we apply <i class="t">templateOne()</i>. Otherwise, if <i class="v">var2</i> is true
+we apply <i class="t">templateTwo()</i>. Finally, if neither are true, we apply <i class="t">falseTemplate()</i>.
+You can leave off the final template if you don't want anything to be
+applied in the case that none of the variables are true. You can put as many
+variables as you want between the separator (<u>;</u>), as long as you have
+at least that many templates after the apply symbol (<u>:</u>). You can always
+supply one extra template to be used if none of the variables are true.
+</p>
+<p class="note">
+This version of Garden has no support for comparison operators. In a future
+version, I may add an extension to allow something that allows a limited
+form of chained comparison operators into the template language itself.
+What form it will take is yet undecided.
 </p>
 
 

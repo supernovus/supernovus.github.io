@@ -6,11 +6,39 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Local Aliases</h2>
 <p>
-Describe local variable aliases here.
+Sometimes you'll want to make local variables that apply to your current
+template, to make it easy to refer to what otherwise could be a long
+nested variable expression. This is simple using aliases.
 </p>
+<code class="block">
+<u>[[</u><i class="v">aliasname</i><u>=</u><i class="v">some.large</i>.<u>`</u>nested<u>`</u>.statement(param)<u>]]</u>
+Okay, now we're going to refer to the <u>[[</u><i class="v">aliasname</i><u>]]</u>
+variable from now on.
+</code>
+<p>
+By assigning a local alias variable to a long expression, it makes it easy to
+reuse elsewhere.
+</p>
+<p>
+The above example showed assigning an alias to a nested variable expression,
+but it is also possible to assign an alias to the output of a template:
+</p>
+<code class="block">
+<u>[[</u><i class="v">content</i><u>=</u><i class="t">myTemplate()</i><u>]]</u>
+Now <i class="v">content</i> contains the output from the
+<i class="t">myTemplate</i> template.
+</code>
+<p>
+See the Nested Templates section for more information on how to make
+template calls.
+</p>
+<p class="note">
+The <i class="s">=</i> symbol is customizable. See the Overriding Syntax section for more details.
+</p>
+
 
 <p id="footer"> 
 <a href="index.html">Table of Contents</a> |

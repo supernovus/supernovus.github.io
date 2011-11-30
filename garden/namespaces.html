@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT4</h2>
+<h2>VERSION 1-PREDRAFT5</h2>
 <h2>Namespaces</h2>
 <p>
 In Garden, all templates, dictionaries, or localized settings are contained
@@ -38,7 +38,7 @@ called <i class="n">./templates/example.tmpl</i> you could make a template
 within that  file called <i class="t">example</i> which would then be used 
 as the default template. 
 Thus from any other namespace, calling 
-<code><i class="s">[[</i><i class="t">example()</i><i class="s">]]</i></code> would find 
+<code><u>[[</u><i class="t">example()</i><u>]]</u></code> would find 
 the  <i class="n">example</i> namespace, and parse the 
 <i class="t">example</i> template from within it.
 </p>
@@ -46,7 +46,7 @@ the  <i class="n">example</i> namespace, and parse the
 <p>
 Okay, so if you use <code>get('common/example/mytemplate')</code> in the 
 program, or 
-<code><i class="s">[[</i><i class="t">common/example/mytemplate()</i><i class="s">]]</i></code> 
+<code><u>[[</u><i class="t">common/example/mytemplate()</i><u>]]</u></code> 
 in a template, 
 Garden needs to determine what you are looking for. 
 In the case above, it could be one of two things:
