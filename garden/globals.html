@@ -9,7 +9,31 @@
 <h2>VERSION 1-DRAFT1</h2>
 <h2>Global Variables</h2>
 <p>
-Describe global variables here.
+Sometimes you want to be able to access certain variables
+from any template, without having to pass them around. That's where
+the <em>Global Variables</em> extension comes into play.
+</p>
+<p>
+Global variables give you special variables that are accessible from any
+template, in any namespace that declares it requires them. The variables
+must be initialized in the Garden object prior to loading a template from
+a namespace that requires them.
+</p>
+<p>
+Enabling global variables is as simple as adding the 
+<code><b>use globals</b></code> statement to your namespace file.
+After that, you need to declare which global variables your namespace
+expects. Then any attempt to use templates from that namespace from a
+Garden instance that has not declared the required global variables, will fail.
+Declaring these is done with the <code class="b">global</code> statement:
+</p>
+<code class="block">
+<b>global</b> <i>var1</i>
+<b>global</b> <i>var2</i>
+</code>
+<p class="note">
+There is no fixed standard for how the programming API will populate the
+global variables, and that is left up to the implementations.
 </p>
 
 <p id="footer"> 

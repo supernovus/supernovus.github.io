@@ -9,7 +9,36 @@
 <h2>VERSION 1-DRAFT1</h2>
 <h2>Plugins</h2>
 <p>
-Describe how plugins should work here.
+Inspired by the plugins functionality from Flower, which in turn was inspired
+by the Petal::Utils library from Perl 5, this extension offers the ability to
+add plugins to Garden.
+</p>
+<p>
+The exact nature of the plugins is not described, except that they should
+receive a reference to the Garden object itself, and a reference to the
+namespace object which they were loaded from.
+</p>
+<p>
+You can enable the plugins extension by declaring 
+<code class="b">use plugins</code> in your namespace file. Then after that
+statement, add <code class="b">plugin</code> statements for each of the plugins you want
+to load:
+</p>
+<code class="block">
+<b>plugin</b> "<i class="v">varname</i>" "<i class="v">pluginname</i>"
+</code>
+<p>
+You will be able to call methods on the plugin by referecing its variable name.
+</p>
+<code class="block">
+<u>[[</u><i class="v">varname</i>.<i>methodName</i>(<i class="v">param</i>)`<u>]]</u>
+</code>
+<h4>Addition to the import statement</h4>
+<p>
+By declaring the <code class="b">use plugins</code> statement, a new 
+<i class="f">:plugins</i> flag will be added to the 
+<code class="b">import</code> statement, which requests that namespace
+plugins be imported as well.
 </p>
 
 <p id="footer"> 

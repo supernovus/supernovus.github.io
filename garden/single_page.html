@@ -1163,9 +1163,9 @@ the alias symbol ( <u>=</u> ):
 <code class="block">
 <b>alias</b> "<u>@</u>"
 
-<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
-<u>[[</u><i class="v">vartotest</i><u>@</u><i class="v">obj.nested.member</i><u>]]</u>
-Hello <u>[[</u><i class="v">vartotest</i><u>]]</u>
+<i class="t">myTemplate</i> (<i class="v">obj</i>) <u>{{</u>
+<u>[[</u><i class="v">var</i><u>@</u><i class="v">obj.nested.member</i><u>]]</u>
+Hello <u>[[</u><i class="v">var</i><u>]]</u>
 <u>}}</u>
 </code>
 
@@ -1177,13 +1177,13 @@ This can be override using the <code class="b">positional</code> statement:
 <code class="block">
 <b>positional</b> "<u>&amp;</u>"
 
-<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
+<i class="t">myTemplate</i> (<i class="v">myarray</i>) <u>{{</u>
 List:
-<u>[[</u><i class="v">vartotest</i><u>:</u><i class="t">listItem</i>(<u>&amp;</u><i class="v">vartotest</i>)<u>]]</u>
+<u>[[</u><i class="v">myarray</i><u>:</u><i class="t">listItem</i>(<u>&amp;</u><i class="v">item</i>)<u>]]</u>
 <u>}}</u>
 
-<i class="t">listItem</i> (<i class="v">vartotest</i>) <u>{{</u>
-* <u>[[</u><i class="v">vartotest</i><u>]]</u>
+<i class="t">listItem</i> (<i class="v">item</i>) <u>{{</u>
+* <u>[[</u><i class="v">item</i><u>]]</u>
 <u>}}</u>
 </code>
 
@@ -1196,8 +1196,8 @@ statement:
 <code class="block">
 <b>negate</b> "<u>-</u>"
 
-<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
-<u>[[</u><u>?</u><u>-</u><i class="v">vartotest</i><u>:</u><i class="t">falseTemplate</i><u>;</u><i class="t">trueTemplate</i><u>]]</u>
+<i class="t">myTemplate</i> (<i class="v">mytest</i>) <u>{{</u>
+<u>[[</u><u>?</u><u>-</u><i class="v">mytest</i><u>:</u><i class="t">falseTemplate</i><u>;</u><i class="t">trueTemplate</i><u>]]</u>
 <u>}}</u>
 </code>
 
@@ -1212,27 +1212,250 @@ the extension.
 
 <h3 name="globals" id="globals">Global Variables</h3>
 <p>
-Describe global variables here.
+Sometimes you want to be able to access certain variables
+from any template, without having to pass them around. That's where
+the <em>Global Variables</em> extension comes into play.
+</p>
+<p>
+Global variables give you special variables that are accessible from any
+template, in any namespace that declares it requires them. The variables
+must be initialized in the Garden object prior to loading a template from
+a namespace that requires them.
+</p>
+<p>
+Enabling global variables is as simple as adding the 
+<code><b>use globals</b></code> statement to your namespace file.
+After that, you need to declare which global variables your namespace
+expects. Then any attempt to use templates from that namespace from a
+Garden instance that has not declared the required global variables, will fail.
+Declaring these is done with the <code class="b">global</code> statement:
+</p>
+<code class="block">
+<b>global</b> <i>var1</i>
+<b>global</b> <i>var2</i>
+</code>
+<p class="note">
+There is no fixed standard for how the programming API will populate the
+global variables, and that is left up to the implementations.
 </p>
 
 
 <h3 name="plugins" id="plugins">Plugins</h3>
 <p>
-Describe how plugins should work here.
+Inspired by the plugins functionality from Flower, which in turn was inspired
+by the Petal::Utils library from Perl 5, this extension offers the ability to
+add plugins to Garden.
+</p>
+<p>
+The exact nature of the plugins is not described, except that they should
+receive a reference to the Garden object itself, and a reference to the
+namespace object which they were loaded from.
+</p>
+<p>
+You can enable the plugins extension by declaring 
+<code class="b">use plugins</code> in your namespace file. Then after that
+statement, add <code class="b">plugin</code> statements for each of the plugins you want
+to load:
+</p>
+<code class="block">
+<b>plugin</b> "<i class="v">varname</i>" "<i class="v">pluginname</i>"
+</code>
+<p>
+You will be able to call methods on the plugin by referecing its variable name.
+</p>
+<code class="block">
+<u>[[</u><i class="v">varname</i>.<i>methodName</i>(<i class="v">param</i>)`<u>]]</u>
+</code>
+<h4>Addition to the import statement</h4>
+<p>
+By declaring the <code class="b">use plugins</code> statement, a new 
+<i class="f">:plugins</i> flag will be added to the 
+<code class="b">import</code> statement, which requests that namespace
+plugins be imported as well.
 </p>
 
 
 <h3 name="json" id="json">JSON Blocks</h3>
 <p>
-Describe the JSON extension here.
+Sometimes you need more than a flat Dictionary, and that's exactly what
+JSON can offer. The JSON extension allows for special blocks to be parsed
+as a JSON object, and referenced the same way as you would a dictionary or
+nested variable.
+</p>
+<p>
+In implementation supporting the JSON extension, you can enable it using the
+<code class="b">use json</code> statement. After that, you can define JSON
+blocks using the default delimiters <u>{<</u> and <u>>}</u> or redefine them using
+the <code class="b">json</code> statement.
+</p>
+<code class="block">
+<b>use json</b>
+
+<b>json</b> "<i>(((</i>", "<i>)))</i>"
+
+<i class="d">MyDict</i> <u>(((</u>
+  {
+    "hello" : "World",
+    "this"  : [ "is", "a "test " ],
+    "we"    : { "support" : "nested", "structures" : 1 }
+  }
+<u>)))</u>
+
+`tmpl(myTemplate) () <u>{{</u>
+Hello <u>[[</u><i class="d">MyDict</i>.<i class="v">hello</i><u>]]</u>.
+<u>}}</u>
+</code>
+<p>
+I'm not sure how useful this extension is in real use, and like any extension,
+it's up to individual implementations whether or not to support it.
 </p>
 
 
 <h3 name="ideas" id="ideas">Future ideas</h3>
 <p>
-Describe things that may show up later here, such as anonymous templates,
-and template blocks that ignore leading and trailing whitespace.
+There are several ideas I have planned for future versions of Garden.
+Some of them may show up sooner than others. Many require further research and
+planning before they are even ready to write a spec for, let alone implement.
+Implementations may choose to implement some of them as implementation specific
+extensions, just taking into account that a future Garden spec will probably
+make an <em>official</em> way of doing them.
 </p>
+
+<h4>Dynamic statements via Globals</h4>
+<p>
+Basically the idea behind this is, to make the <code class="b">import</code> and
+<code class="b">include</code> statements more flexible by allowing them to use global
+variables as their values. So a template could do something like:
+</p>
+<code class="block">
+<b>version 2</b>
+<b>use globals</b>
+<b>global</b> <i class="v">usersettings</i>
+<b>include</b> <i class="v">usersettings.langdir</i>
+<b>import</b> <i class="v">usersettings.language</i>
+</code>
+<p>
+As this depends on the Globals extension, it would only be enabled
+if you have enabled that extension (if that wasn't obvious.)
+</p>
+<p>
+This will definitely make it into Version 2.
+</p>
+
+<h4>Block Options</h4>
+<p>
+The ability to set options on blocks would allow several
+other abilities to be easier to implement. I'm not sure what form this would
+take, but (for the sake of a mockup) imagine:
+</p>
+<code class="block">
+`tmpl(myTemplate) (<i class="v">myvar</i>) <i class="f">:export</i>(<i class="v">def</i>) <i class="f">:oneline</i> <u>{{</u>
+Blah blah blah
+<u>]]</u>
+</code>
+<p>
+So in our example above, the <i class="f">:export</i> 
+flag (with a <i class="v">def</i> parameter) and the
+<i class="f">:oneline</i> flag, would be added to the block options.
+Block options would be able to be used by other core features and extensions
+for various purposes (see below for some examples.)
+</p>
+<p>This will definitely make it into Version 2</p>
+
+<h4>Whitespace rules for template blocks</h4>
+<p>
+Currently there are two forms of template blocks. One that preserves all
+whitespace, and one that cuts leading and following whitespace out. The only
+thing is, to use the latter one, you have to have the entire template 
+definition on a single line. Wouldn't it be nice if you could specify a longer
+template snippet, that you really want on one line in the finished results,
+on one line?
+</p>
+<p>
+Inspired by StringTemplate (one of the two major inspirations for Garden in the
+first place), an option to make this possible, as well as a few other options
+for whitespace handling, are planned to be implemented using the Block options.
+</p>
+<p>
+This will definitely make it into Version 2</p>
+</p>
+
+<h4>Referencing of external dictionaries</h4>
+<p>
+Currently you can reference external templates by using the namespace
+prefix. This does not work with dictionaries. This should be rectified.
+</p>
+<p>
+This is very likely to make it into Version 2.
+</p>
+
+<h4>Flexible export rules</h4>
+<p>
+Currently the Exportation is very much an all-or-nothing approach.
+Basically, the general idea of this would be to make it so that you could
+subscribe to certain exports.
+</p>
+<p>
+For backwards compatibility and simplicity, existing <code class="b">import</code>
+statements using the <i class="f">:export</i> flag would work the same as
+they do now (all templates and dictionaries would be exported, overriding
+versions that are the same.)
+</p>
+<p>
+In the new version though, you could specify an export group in the
+<code class="b">import</code> statement, and only templates and/or dictionaries with a
+<i class="f">:export</i> block option matching the export group would
+be exported to that namespace. The exact details aren't worked out yet,
+but it would add a great deal more flexibility to what gets exported.
+</p>
+<p>
+On the flip side, adding a <i class="f">:noreplace</i> block option to a
+block would make it so that it could not be overridden with an exported
+version (and any attempt to do so would result in a failure message.)
+</p>
+<p>
+Some form of this is likely to make it into Version 2.
+</p>
+
+<h4>In-template Array Creation</h4>
+<p>
+Another feature inspired by StringTemplate. The ability to create arrays
+within template definitions themselves. Not sure what form it will take yet.
+</p>
+<p>
+Some form of this is likely to make it into Version 2.
+</p>
+
+<h4>Parsed Blocks</h4>
+<p>
+Another feature using block options, these would look similar to dictionary
+blocks, except that their contents would be passed to a Plugin to be parsed.
+</p>
+<p>
+You would need to enable the plugins extension, load an appropriate plugin,
+and set the block option on the block to parse. The usefulness of this is
+still in question.
+</p>
+<p>
+Some form of this will likely make it into a future version.
+</p>
+
+<h4>Anonymous templates</h4>
+<p>
+Currently, in recusive template calls and conditional template calls, you
+need to specify a template name to call. StringTemplate offers the ability
+to create one-off anonymous templates that can be used instead.
+</p>
+<p>
+This may be useful, but personally I'm not sure how much so, and if it's worth
+the extra parsing power that would be required to do it.
+</p>
+<p>
+This may show up in a future version, as either a core feature or an
+extension. It may have to be a core feature, due to it requiring a grammar
+modification. This is definitely an undecided idea.
+</p>
+
 
 
 

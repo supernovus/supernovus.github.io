@@ -9,7 +9,37 @@
 <h2>VERSION 1-DRAFT1</h2>
 <h2>JSON Blocks</h2>
 <p>
-Describe the JSON extension here.
+Sometimes you need more than a flat Dictionary, and that's exactly what
+JSON can offer. The JSON extension allows for special blocks to be parsed
+as a JSON object, and referenced the same way as you would a dictionary or
+nested variable.
+</p>
+<p>
+In implementation supporting the JSON extension, you can enable it using the
+<code class="b">use json</code> statement. After that, you can define JSON
+blocks using the default delimiters <u>{<</u> and <u>>}</u> or redefine them using
+the <code class="b">json</code> statement.
+</p>
+<code class="block">
+<b>use json</b>
+
+<b>json</b> "<i>(((</i>", "<i>)))</i>"
+
+<i class="d">MyDict</i> <u>(((</u>
+  {
+    "hello" : "World",
+    "this"  : [ "is", "a "test " ],
+    "we"    : { "support" : "nested", "structures" : 1 }
+  }
+<u>)))</u>
+
+`tmpl(myTemplate) () <u>{{</u>
+Hello <u>[[</u><i class="d">MyDict</i>.<i class="v">hello</i><u>]]</u>.
+<u>}}</u>
+</code>
+<p>
+I'm not sure how useful this extension is in real use, and like any extension,
+it's up to individual implementations whether or not to support it.
 </p>
 
 <p id="footer"> 
