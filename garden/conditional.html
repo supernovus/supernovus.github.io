@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT5</h2>
+<h2>VERSION 1-DRAFT1</h2>
 <h2>Conditionals</h2>
 <p>
 Often there are portions of your template that show only show up under
@@ -83,11 +83,37 @@ variables as you want between the separator (<u>;</u>), as long as you have
 at least that many templates after the apply symbol (<u>:</u>). You can always
 supply one extra template to be used if none of the variables are true.
 </p>
+<h4>Negative Conditions</h4>
+<p>
+Sometimes instead of testing to see if something is true, you may want to
+see if it is false instead. This is possible by prefixing the condition
+variable with the negation symbol (<u>!</u>).
+</p>
+<code class="block">
+<u>[[</u><u>?</u><i class="v">var1</i><u>;</u><u>!</u><i class="v">var2</i><u>:</u><i class="t">templateOne()</i><u>;</u><i class="t">templateTwo()</i><u>;</u><i class="t">falseTemplate()</i><u>]]</u>
+</code>
+<p>
+This is similar to the elseif example, except that instead of testing to see
+if <i class="v">var2</i> is true, it tests to see if it is false. So the only way the
+<i class="t">falseTemplate()</i> template will ever be called is if <i class="v">var1</i> is false and <i class="v">var2</i> is
+true.
+</p>
+
+<h4>Chained Comparisions</h4>
+
 <p class="note">
-This version of Garden has no support for comparison operators. In a future
-version, I may add an extension to allow something that allows a limited
+This version of Garden has no support for comparison operators, or
+chained (complex) tests. So there's no way to do things like
+<code class="block">
+if ((var1 &gt; var2) and (var2 &lt; var3)) { show_this_template; }
+</code>
+without putting the comparison logic in the controller. I'm not really sure
+if this is something that belongs in the template language. At this point
+I've left it out, as something that is best handled in the controller.
+In a future version, I may add an extension to allow something 
+that allows a limited
 form of chained comparison operators into the template language itself.
-What form it will take is yet undecided.
+If I add it, and what form it will take is yet undecided.
 </p>
 
 <p id="footer"> 

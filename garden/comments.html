@@ -6,11 +6,56 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT5</h2>
+<h2>VERSION 1-DRAFT1</h2>
 <h2>Comments</h2>
 <p>
-Describe how comments and notes work here.
+The ability to make notes in your templates, either for documentation
+or to add a private TODO note for yourself, is very useful.
+Sometimes you even want to be able to comment out an entire section of your
+template while testing things. Both of these abilities are possible in
+Garden, with a configurable syntax too boot.
 </p>
+<p class="note">
+All of the comment related syntax below applies inside template and
+dictionary blocks.
+You can use them outside of blocks, but it's not really necessary, as
+any text outside a block that isn't a statement, or a block definition,
+is ignored.
+</p>
+<h4>Notes</h4>
+<p>
+A note is a quick comment, that ends with a newline character.
+In Garden, the note prefix must either be the first character of the
+line, or have white space in front of it to be recognized.
+</p>
+<code class="block">
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello World <u>##</u> <tt>Everything after the <u>##</u> marks is a note comment.</tt>
+<u>##</u> <tt>This line in its entirety is a note comment.</tt>
+This is not a comment.
+<u>}}</u>
+</code>
+<p class="note">
+The <i class="s">##</i> symbol is customizable. See the Overriding Syntax section for more details.
+</p>
+
+<h4>Comment Blocks</h4>
+<p>
+If you want to comment out an entire block, you can do so with special
+comment symbols:
+</p>
+<code class="block">
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello <u>/*</u> <tt>Everything past that symbol is a comment.
+Including this line.
+And this text.</tt> <u>*/</u> World. (This is not a comment.)
+<u>}}</u>
+</code>
+<p class="note">
+The <i class="s">/*</i> and <i class="s">*/</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
 
 <p id="footer"> 
 <a href="index.html">Table of Contents</a> |

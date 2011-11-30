@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT5</h2>
+<h2>VERSION 1-DRAFT1</h2>
 <h2>Table of Contents</h2>
 <ul>
 <li>Core Concepts
@@ -727,10 +727,33 @@ To do this, we specify the parameters in the template call signature.
 <p>
 Here our <i class="t">firstTemplate</i> is making a call to
 <i class="t">secondTemplate</i>, passing the <i class="v">company</i>
-variable through directly (as long as two templates have variables of
-the same name, this is possible) and passing the <i class="v">user.name</i>
+variable through directly and passing the <i class="v">user.name</i>
 variable through as <i class="v">name</i> which is what 
 <i class="t">secondTemplate</i> is looking for.
+</p>
+<p>
+Using named parameters when possible is recommended. If you don't use named
+parameters, then how what you pass is determined to be a parameter will
+depend on context. If you pass a variable with the same name as a parameter
+in the template you are calling, it will be assumed to be that parameter,
+regardless of order. If it isn't, it will be assumed to be a positional
+parameter. This can be used with literals to create easy template sections.
+For instance:
+</p>
+<code class="block">
+<i class="t">myTemplate</i> (<i class="v">name</i>) <u>{{</u>
+Yeah, so <u>[[</u>name<u>]]</u> said: <u>[[</u>b(Hello)<u>]]</u>
+<u>}}</u>
+
+<i class="t">text</i> (<i class="v">y</i>) <u>{{</u> &lt;strong&gt;<u>[[</u>text<u>]]</u>&lt;/strong&gt; <u>}}</u>
+
+<u>/*</u> <tt>Given a name of Bob, will result in:
+   Yeah, so Bob said: &lt;strong&gt;Hello&lt;/strong&gt;</tt> <u>*/</u>
+</code>
+<p class="note">
+Using literal text as parameters rather than variables, has several
+limitations, and does not handle text with spaces in it. 
+The use of dictionaries is recommended instead of literal text.
 </p>
 
 
@@ -933,26 +956,258 @@ variables as you want between the separator (<u>;</u>), as long as you have
 at least that many templates after the apply symbol (<u>:</u>). You can always
 supply one extra template to be used if none of the variables are true.
 </p>
+<h4>Negative Conditions</h4>
+<p>
+Sometimes instead of testing to see if something is true, you may want to
+see if it is false instead. This is possible by prefixing the condition
+variable with the negation symbol (<u>!</u>).
+</p>
+<code class="block">
+<u>[[</u><u>?</u><i class="v">var1</i><u>;</u><u>!</u><i class="v">var2</i><u>:</u><i class="t">templateOne()</i><u>;</u><i class="t">templateTwo()</i><u>;</u><i class="t">falseTemplate()</i><u>]]</u>
+</code>
+<p>
+This is similar to the elseif example, except that instead of testing to see
+if <i class="v">var2</i> is true, it tests to see if it is false. So the only way the
+<i class="t">falseTemplate()</i> template will ever be called is if <i class="v">var1</i> is false and <i class="v">var2</i> is
+true.
+</p>
+
+<h4>Chained Comparisions</h4>
+
 <p class="note">
-This version of Garden has no support for comparison operators. In a future
-version, I may add an extension to allow something that allows a limited
+This version of Garden has no support for comparison operators, or
+chained (complex) tests. So there's no way to do things like
+<code class="block">
+if ((var1 &gt; var2) and (var2 &lt; var3)) { show_this_template; }
+</code>
+without putting the comparison logic in the controller. I'm not really sure
+if this is something that belongs in the template language. At this point
+I've left it out, as something that is best handled in the controller.
+In a future version, I may add an extension to allow something 
+that allows a limited
 form of chained comparison operators into the template language itself.
-What form it will take is yet undecided.
+If I add it, and what form it will take is yet undecided.
 </p>
 
 
 <h3 name="comments" id="comments">Comments</h3>
 <p>
-Describe how comments and notes work here.
+The ability to make notes in your templates, either for documentation
+or to add a private TODO note for yourself, is very useful.
+Sometimes you even want to be able to comment out an entire section of your
+template while testing things. Both of these abilities are possible in
+Garden, with a configurable syntax too boot.
 </p>
+<p class="note">
+All of the comment related syntax below applies inside template and
+dictionary blocks.
+You can use them outside of blocks, but it's not really necessary, as
+any text outside a block that isn't a statement, or a block definition,
+is ignored.
+</p>
+<h4>Notes</h4>
+<p>
+A note is a quick comment, that ends with a newline character.
+In Garden, the note prefix must either be the first character of the
+line, or have white space in front of it to be recognized.
+</p>
+<code class="block">
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello World <u>##</u> <tt>Everything after the <u>##</u> marks is a note comment.</tt>
+<u>##</u> <tt>This line in its entirety is a note comment.</tt>
+This is not a comment.
+<u>}}</u>
+</code>
+<p class="note">
+The <i class="s">##</i> symbol is customizable. See the Overriding Syntax section for more details.
+</p>
+
+<h4>Comment Blocks</h4>
+<p>
+If you want to comment out an entire block, you can do so with special
+comment symbols:
+</p>
+<code class="block">
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello <u>/*</u> <tt>Everything past that symbol is a comment.
+Including this line.
+And this text.</tt> <u>*/</u> World. (This is not a comment.)
+<u>}}</u>
+</code>
+<p class="note">
+The <i class="s">/*</i> and <i class="s">*/</i> symbols are
+customizable. See the Overriding Syntax section for more details. 
+</p>
+
 
 
 
 <h2>Customization and Extensions</h2>
 <h3 name="syntax" id="syntax">Overriding Syntax</h3>
 <p>
-Describe how to customize the syntax here.
+So, in all of the documentation up to now, you've probably seen notes
+saying that certain symbols are overridable. This is to make it so that
+your templates can customize what characters are considered <em>syntax</em>
+versus <em>content</em>. The default have been designed to be fairly 
+non-conflicting with most markup languages, but I can't claim to forsee every
+possible use of Garden, so making it as flexible as possible was a primary
+design principle.
 </p>
+
+<h4>Template Block Markers</h4>
+<p>
+The <code class="b">block</code> statement is used to override
+the <u>{{</u> and <u>}}</u> symbols:
+</p>
+<code class="block">
+<b>block</b> "<u>&lt;&lt;&lt;</u>", "<u>&gt;&gt;&gt;</u>"
+
+<i class="t">myTemplate</i> (name) <u>&lt;&lt;&lt;</u>
+Hello <u>[[</u>name<u>]]</u>
+<u>&gt;&gt;&gt;</u>
+</code>
+
+<h4>Dictionary Block Markers</h4>
+<p>
+The <code class="b">dictblock</code> statement is used to override
+the <u>{[</u> and <u>]}</u> symbols:
+</p>
+<code class="block">
+<b>dictblock</b> "<u>[[[</u>", "<u>]]]</u>"
+
+<i class="d">myDict</i> <u>[[[</u>
+ "<i>name</i>" : "Tim"
+ "<i>job</i>"  : "Programmer"
+<u>]]]</u>
+</code>
+
+<h4>Template Statements Markers</h4>
+<p>
+The <code class="b">delimiters</code> statement is used to override 
+the <u>[[</u> and <u>]]</u> symbols:
+</p>
+<code class="block">
+<b>delimiters</b> "<u>$</u>", "<u>$</u>"
+
+<i class="t">myTemplate</i> (name) <u>{{</u>
+Hello <u>$</u>name<u>$</u>
+<u>}}</u>
+</code>
+
+<h4>Note Symbol</h4>
+<p>
+The <code class="b">note</code> statement is used to override
+the <u>##</u> symbol:
+</p>
+<code class="block">
+<b>note</b> "<u>//</u>"
+
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello World <u>//</u> This is a note-style comment.
+<u>}}</u>
+</code>
+
+<h4>Comment Block Markers</h4>
+<p>
+The <code class="b">comment</code> statement is used to override
+the <u>/*</u> and <u>*/</u> symbols:
+</p>
+<code class="block">
+<b>comment</b> "<u>&lt;--</u>", "<u>--&gt;</u>"
+
+<i class="t">myTemplate</i> () <u>{{</u>
+<u>&lt;--</u> <tt>This is a long
+multilined comment
+that goes on for a while.</tt> <u>--&gt;</u>
+Hello World
+<u>}}</u>
+</code>
+
+<h4>The Apply Symbol</h4>
+<p>
+The apply symbol ( <u>:</u> ) is used both in conditional statement, and in
+recursive template application. The <code class="b">apply</code> statement
+is used to override it:
+</p>
+<code class="block">
+<b>apply</b> "<u>-&gt;</u>"
+
+<i class="t">myTemplate</i> (alist) <u>{{</u>
+The list:
+<u>[[</u>alist<u>-&gt;</u>listTemplate(*item)<u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Conditional statement marker and separator</h4>
+<p>
+In conditional statements, there are three symbols used, the
+conditional marker: ( <u>?</u> ), the separator for conditions and templates: 
+( <u>;</u> ), and the apply symbol: ( <u>:</u> ). We've already seen how
+to override the apply symbol, so we're going to skip it in this example.
+The <code class="b">condition</code> statement allows you to override
+the first two:
+</p>
+<code class="block">
+<b>condition</b> "<u>if </u>" "<u>|</u>"
+
+<i class="t">myTemplate</i> (<i class="v">yes</i>, <i class="v">maybe</i>) <u>{{</u>
+Are we ready? <u>[[</u><u>if </u><i class="v">yes</i><u>|</u><i class="v">maybe</i><u>:</u><i class="t">yesTemplate()</i><u>|</u><i class="t">maybeTemplate()</i><u>|</u><i class="t">noTemplate()</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Alias Symbol</h4>
+<p>
+The <code class="b">alias</code> statement is used to override
+the alias symbol ( <u>=</u> ):
+</p>
+<code class="block">
+<b>alias</b> "<u>@</u>"
+
+<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
+<u>[[</u><i class="v">vartotest</i><u>@</u><i class="v">obj.nested.member</i><u>]]</u>
+Hello <u>[[</u><i class="v">vartotest</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Recursive Positional Parameters</h4>
+<p>
+The special recursive parameters all start with the ( <u>*</u> ) prefix.
+This can be override using the <code class="b">positional</code> statement:
+</p>
+<code class="block">
+<b>positional</b> "<u>&amp;</u>"
+
+<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
+List:
+<u>[[</u><i class="v">vartotest</i><u>:</u><i class="t">listItem</i>(<u>&amp;</u><i class="v">vartotest</i>)<u>]]</u>
+<u>}}</u>
+
+<i class="t">listItem</i> (<i class="v">vartotest</i>) <u>{{</u>
+* <u>[[</u><i class="v">vartotest</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Condition Negation Prefix</h4>
+<p>
+To negate a condition in a conditional statement, you use the negation
+prefix ( <u>!</u> ). This can be overriden using the <code class="b">negate</code>
+statement:
+</p>
+<code class="block">
+<b>negate</b> "<u>-</u>"
+
+<i class="t">myTemplate</i> (<i class="v">vartotest</i>) <u>{{</u>
+<u>[[</u><u>?</u><u>-</u><i class="v">vartotest</i><u>:</u><i class="t">falseTemplate</i><u>;</u><i class="t">trueTemplate</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Other Overrides</h4>
+<p>
+Extensions may add additional override statements. They will be listed
+in the description of the extension, and are only available if you use
+the extension.
+</p>
+
 
 
 <h3 name="globals" id="globals">Global Variables</h3>

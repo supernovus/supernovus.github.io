@@ -6,11 +6,172 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT5</h2>
+<h2>VERSION 1-DRAFT1</h2>
 <h2>Overriding Syntax</h2>
 <p>
-Describe how to customize the syntax here.
+So, in all of the documentation up to now, you've probably seen notes
+saying that certain symbols are overridable. This is to make it so that
+your templates can customize what characters are considered <em>syntax</em>
+versus <em>content</em>. The default have been designed to be fairly 
+non-conflicting with most markup languages, but I can't claim to forsee every
+possible use of Garden, so making it as flexible as possible was a primary
+design principle.
 </p>
+
+<h4>Template Block Markers</h4>
+<p>
+The <code class="b">block</code> statement is used to override
+the <u>{{</u> and <u>}}</u> symbols:
+</p>
+<code class="block">
+<b>block</b> "<u>&lt;&lt;&lt;</u>", "<u>&gt;&gt;&gt;</u>"
+
+<i class="t">myTemplate</i> (name) <u>&lt;&lt;&lt;</u>
+Hello <u>[[</u>name<u>]]</u>
+<u>&gt;&gt;&gt;</u>
+</code>
+
+<h4>Dictionary Block Markers</h4>
+<p>
+The <code class="b">dictblock</code> statement is used to override
+the <u>{[</u> and <u>]}</u> symbols:
+</p>
+<code class="block">
+<b>dictblock</b> "<u>[[[</u>", "<u>]]]</u>"
+
+<i class="d">myDict</i> <u>[[[</u>
+ "<i>name</i>" : "Tim"
+ "<i>job</i>"  : "Programmer"
+<u>]]]</u>
+</code>
+
+<h4>Template Statements Markers</h4>
+<p>
+The <code class="b">delimiters</code> statement is used to override 
+the <u>[[</u> and <u>]]</u> symbols:
+</p>
+<code class="block">
+<b>delimiters</b> "<u>$</u>", "<u>$</u>"
+
+<i class="t">myTemplate</i> (name) <u>{{</u>
+Hello <u>$</u>name<u>$</u>
+<u>}}</u>
+</code>
+
+<h4>Note Symbol</h4>
+<p>
+The <code class="b">note</code> statement is used to override
+the <u>##</u> symbol:
+</p>
+<code class="block">
+<b>note</b> "<u>//</u>"
+
+<i class="t">myTemplate</i> () <u>{{</u>
+Hello World <u>//</u> This is a note-style comment.
+<u>}}</u>
+</code>
+
+<h4>Comment Block Markers</h4>
+<p>
+The <code class="b">comment</code> statement is used to override
+the <u>/*</u> and <u>*/</u> symbols:
+</p>
+<code class="block">
+<b>comment</b> "<u>&lt;--</u>", "<u>--&gt;</u>"
+
+<i class="t">myTemplate</i> () <u>{{</u>
+<u>&lt;--</u> <tt>This is a long
+multilined comment
+that goes on for a while.</tt> <u>--&gt;</u>
+Hello World
+<u>}}</u>
+</code>
+
+<h4>The Apply Symbol</h4>
+<p>
+The apply symbol ( <u>:</u> ) is used both in conditional statement, and in
+recursive template application. The <code class="b">apply</code> statement
+is used to override it:
+</p>
+<code class="block">
+<b>apply</b> "<u>-&gt;</u>"
+
+<i class="t">myTemplate</i> (alist) <u>{{</u>
+The list:
+<u>[[</u>alist<u>-&gt;</u>listTemplate(*item)<u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Conditional statement marker and separator</h4>
+<p>
+In conditional statements, there are three symbols used, the
+conditional marker: ( <u>?</u> ), the separator for conditions and templates: 
+( <u>;</u> ), and the apply symbol: ( <u>:</u> ). We've already seen how
+to override the apply symbol, so we're going to skip it in this example.
+The <code class="b">condition</code> statement allows you to override
+the first two:
+</p>
+<code class="block">
+<b>condition</b> "<u>if </u>" "<u>|</u>"
+
+<i class="t">myTemplate</i> (<i class="v">yes</i>, <i class="v">maybe</i>) <u>{{</u>
+Are we ready? <u>[[</u><u>if </u><i class="v">yes</i><u>|</u><i class="v">maybe</i><u>:</u><i class="t">yesTemplate()</i><u>|</u><i class="t">maybeTemplate()</i><u>|</u><i class="t">noTemplate()</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Alias Symbol</h4>
+<p>
+The <code class="b">alias</code> statement is used to override
+the alias symbol ( <u>=</u> ):
+</p>
+<code class="block">
+<b>alias</b> "<u>@</u>"
+
+<i class="t">myTemplate</i> (<i class="v">obj</i>) <u>{{</u>
+<u>[[</u><i class="v">var</i><u>@</u><i class="v">obj.nested.member</i><u>]]</u>
+Hello <u>[[</u><i class="v">var</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Recursive Positional Parameters</h4>
+<p>
+The special recursive parameters all start with the ( <u>*</u> ) prefix.
+This can be override using the <code class="b">positional</code> statement:
+</p>
+<code class="block">
+<b>positional</b> "<u>&amp;</u>"
+
+<i class="t">myTemplate</i> (<i class="v">myarray</i>) <u>{{</u>
+List:
+<u>[[</u><i class="v">myarray</i><u>:</u><i class="t">listItem</i>(<u>&amp;</u><i class="v">item</i>)<u>]]</u>
+<u>}}</u>
+
+<i class="t">listItem</i> (<i class="v">item</i>) <u>{{</u>
+* <u>[[</u><i class="v">item</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Condition Negation Prefix</h4>
+<p>
+To negate a condition in a conditional statement, you use the negation
+prefix ( <u>!</u> ). This can be overriden using the <code class="b">negate</code>
+statement:
+</p>
+<code class="block">
+<b>negate</b> "<u>-</u>"
+
+<i class="t">myTemplate</i> (<i class="v">mytest</i>) <u>{{</u>
+<u>[[</u><u>?</u><u>-</u><i class="v">mytest</i><u>:</u><i class="t">falseTemplate</i><u>;</u><i class="t">trueTemplate</i><u>]]</u>
+<u>}}</u>
+</code>
+
+<h4>Other Overrides</h4>
+<p>
+Extensions may add additional override statements. They will be listed
+in the description of the extension, and are only available if you use
+the extension.
+</p>
+
 
 <p id="footer"> 
 <a href="index.html">Table of Contents</a> |

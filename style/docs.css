@@ -61,3 +61,8 @@ u {
   text-decoration: none;
 }
 
+tt {
+  color: gray;
+  font-style: italic;
+}
+

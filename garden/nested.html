@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-PREDRAFT5</h2>
+<h2>VERSION 1-DRAFT1</h2>
 <h2>Nested Templates</h2>
 <p>
 A core principle in Garden is to split up templates into modular sections.
@@ -42,10 +42,33 @@ To do this, we specify the parameters in the template call signature.
 <p>
 Here our <i class="t">firstTemplate</i> is making a call to
 <i class="t">secondTemplate</i>, passing the <i class="v">company</i>
-variable through directly (as long as two templates have variables of
-the same name, this is possible) and passing the <i class="v">user.name</i>
+variable through directly and passing the <i class="v">user.name</i>
 variable through as <i class="v">name</i> which is what 
 <i class="t">secondTemplate</i> is looking for.
+</p>
+<p>
+Using named parameters when possible is recommended. If you don't use named
+parameters, then how what you pass is determined to be a parameter will
+depend on context. If you pass a variable with the same name as a parameter
+in the template you are calling, it will be assumed to be that parameter,
+regardless of order. If it isn't, it will be assumed to be a positional
+parameter. This can be used with literals to create easy template sections.
+For instance:
+</p>
+<code class="block">
+<i class="t">myTemplate</i> (<i class="v">name</i>) <u>{{</u>
+Yeah, so <u>[[</u>name<u>]]</u> said: <u>[[</u>b(Hello)<u>]]</u>
+<u>}}</u>
+
+<i class="t">text</i> (<i class="v">y</i>) <u>{{</u> &lt;strong&gt;<u>[[</u>text<u>]]</u>&lt;/strong&gt; <u>}}</u>
+
+<u>/*</u> <tt>Given a name of Bob, will result in:
+   Yeah, so Bob said: &lt;strong&gt;Hello&lt;/strong&gt;</tt> <u>*/</u>
+</code>
+<p class="note">
+Using literal text as parameters rather than variables, has several
+limitations, and does not handle text with spaces in it. 
+The use of dictionaries is recommended instead of literal text.
 </p>
 
 <p id="footer"> 
