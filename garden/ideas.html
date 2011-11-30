@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Garden -- A Functional Template Language</h1>
-<h2>VERSION 1-DRAFT1</h2>
+<h2>VERSION 1-RC2</h2>
 <h2>Future ideas</h2>
 <p>
 There are several ideas I have planned for future versions of Garden.
@@ -113,6 +113,20 @@ version (and any attempt to do so would result in a failure message.)
 Some form of this is likely to make it into Version 2.
 </p>
 
+<h4>Conditional Test Helper Object</h4>
+<p>
+The conditions are intentionally kept simple, and there's no way to do
+things like chained tests (AND, OR, etc.) or comparisons (EQ, GT, LT, etc.)
+</p>
+<p>
+This is a rough idea to make an extension that when used, provides a global
+variable pointing to a helper object that would allow you to build more 
+powerful conditionals.
+</p>
+<p>
+Some form of this is likely to make it into Version 2.
+</p>
+
 <h4>In-template Array Creation</h4>
 <p>
 Another feature inspired by StringTemplate. The ability to create arrays
@@ -120,6 +134,15 @@ within template definitions themselves. Not sure what form it will take yet.
 </p>
 <p>
 Some form of this is likely to make it into Version 2.
+</p>
+
+<h4>String Literals</h4>
+<p>
+The ability to pass string literals as parameter values, and/or use
+them as conditional results instead of a full template, would be useful.
+</p>
+<p>
+Some form of this will definitely make it into a future version.
 </p>
 
 <h4>Parsed Blocks</h4>
