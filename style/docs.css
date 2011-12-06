@@ -66,3 +66,7 @@ tt {
   font-style: italic;
 }
 
+#version {
+  font-variant: small-caps;
+}
+

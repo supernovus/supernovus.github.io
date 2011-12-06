@@ -1,0 +1,13 @@
+table {
+  border-spacing: 1em;
+}
+
+th {
+  text-align: left;
+}
+
+td {
+  background: #b0b0b0;
+  padding: 2px;
+  border: 0;
+}

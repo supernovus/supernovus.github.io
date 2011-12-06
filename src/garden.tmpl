@@ -1,3 +1,4 @@
+garden (versions) {{
 <html>
 <head>
 <title>Garden: A Functional Template Language (Specification)</title>
@@ -14,13 +15,7 @@
 <th>Updated</th>
 <th>Formats</th>
 </tr>
-<tr>
-<td>v1</td>
-<td>Release</td>
-<td>2011-11-30T23:02:03</td>
-<td><a href="v1">HTML</a></td>
-</tr>
-
+[[versions:showVer(*api, *version)]]
 </table>
 
 <div id="bottom">
@@ -28,3 +23,18 @@
 </div>
 </body>
 </html>
+}}
+
+showVer (api, version) {{
+[[rev=version.rev]]
+<tr>
+<td>[[api]]</td>
+<td>[[?rev:revName(rev);revZero()]]</td>
+<td>[[version.date]]</td>
+<td><a href="[[api]]">HTML</a></td>
+</tr>
+}}
+
+revZero () {{ Release }}
+revName (rel) {{ [[rel]] }}
+
