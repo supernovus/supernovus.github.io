@@ -1,5 +1,5 @@
 {
-  "updated" : "2011-11-27",
+  "updated" : "2012-01-30",
   "statuses" : [
     {
       "id"   : "active",
@@ -32,7 +32,7 @@
       "name"  : "Garden",
       "desc"  : "A Functional Template Language.",
       "lang"  : "multi",
-      "is"    : "active",
+      "is"    : "maint",
       "links" : [
         {
           "name" : "Specification",

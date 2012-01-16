@@ -31,7 +31,13 @@ for my $status (@{$statuses}) {
   $status->{items} = []; ## Here we shall store our items.
   $stat->{$sid} = $status;
 }
-for my $pid (sort keys %{$projects}) {
+
+## we're case insensitive now, and sorted by name, rather than project id.
+my @pkeys = 
+  sort { lc $projects->{$a}->{name} cmp lc $projects->{$b}->{name} } 
+  keys %{$projects};
+
+for my $pid (@pkeys) {
   my $project = $projects->{$pid};
   if (!exists $project->{links}) {
     $project->{src} = $pid;
