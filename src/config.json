@@ -90,7 +90,7 @@
       "name" : "Flower",
       "desc" : "XML Application Languages, including TAL/METAL.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "moon" : {
       "name" : "Rakudo Moon",
