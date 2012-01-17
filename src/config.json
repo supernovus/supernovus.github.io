@@ -32,7 +32,7 @@
       "name"  : "Garden",
       "desc"  : "A Functional Template Language.",
       "lang"  : "multi",
-      "is"    : "maint",
+      "is"    : "old",
       "links" : [
         {
           "name" : "Specification",
