@@ -90,7 +90,7 @@
       "name" : "Flower",
       "desc" : "XML Application Languages, including TAL/METAL.",
       "lang" : "perl6",
-      "is"   : "maint"
+      "is"   : "old"
     },
     "moon" : {
       "name" : "Rakudo Moon",
@@ -122,12 +122,6 @@
       "lang" : "perl5",
       "is"   : "maint"
     },
-    "esquel" : {
-      "name" : "Esquel",
-      "desc" : "Build SQL queries using method calls, plus more.",
-      "lang" : "perl6",
-      "is"   : "incomp"
-    },
     "nodemoo" : {
       "name" : "NodeMOO",
       "desc" : "A MUD/MOO for Node.js",
@@ -151,6 +145,12 @@
       "desc" : "RSpec and Cucumber for Perl 6.",
       "lang" : "perl6",
       "is"   : "old"
+    },
+    "esquel" : {
+      "name" : "Esquel",
+      "desc" : "Build SQL queries using method calls, never finished.",
+      "lang" : "perl6",
+      "is"   : "dead"
     },
     "ww6" : {
       "name" : "ww6",
