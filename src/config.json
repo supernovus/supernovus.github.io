@@ -28,6 +28,18 @@
     }
   ],
   "projects" : {
+    "perl6-www-app-easy" : {
+      "name" : "WWW::App::Easy",
+      "desc" : "MVC Extensions for WWW::App",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
+    "template6" : {
+      "name" : "Template6",
+      "desc" : "A TT-like template engine for Perl 6",
+      "lang" : "perl6",
+      "is"   : "active"
+    },
     "garden" : {
       "name"  : "Garden",
       "desc"  : "A Functional Template Language.",
