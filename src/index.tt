@@ -8,7 +8,7 @@
 <h1>Projects by supernovus</h1>
 <h2>Last updated</h2>
 <h3>[%updated%]</h3>
-
+[% siteurl = "https://github.com/supernovus/" %]
 <h2>Project Status</h2>
 
 [% for statuses as status %]
@@ -22,7 +22,12 @@
 <td><code class="language [%item.lang%]">[%item.lang%]</code></td>
 <td>[%item.name%]</td>
 <td>[%item.desc%]</td>
-<td><a href="https://github.com/supernovus/[%item.src%]">Source</a></td>
+[% islocal = item.local %]
+[% if islocal %]
+<td><a href="[%item.src%]">More Info</a></td>
+[% else %]
+<td><a href="[%siteurl%][%item.src%]">Source</a></td>
+[% end %]
 </tr>
 [% end %]
 </table>
@@ -31,7 +36,7 @@
 <h2>More Info?</h2>
 <ul>
 <li><a href="http://about.me/supernovus/">About me</a></li>
-<li><a href="https://github.com/supernovus/">My Github Profile</a></li>
+<li><a href="[%siteurl%]">My Github Profile</a></li>
 <li><a href="http://twitter.com/supernovus/">My Twitter</a></li>
 </ul>
 </body>

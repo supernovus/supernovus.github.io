@@ -15,18 +15,26 @@ my $statuses = $config<statuses>;
 my $projects = $config<projects>;
 
 my $stat = {};
-for @($statuses) -> $status {
+for @($statuses) -> $status 
+{
   my $sid = $status<id>;
   $status<items> = [];
   $stat{$sid} = $status;
 }
 
-my @pkeys = $projects.keys.sort({ $projects{$^a}<name>.lc cmp $projects{$^b}<name>.lc });
+my @pkeys = 
+  $projects.keys.sort({ $projects{$^a}<name>.lc cmp $projects{$^b}<name>.lc });
 
-for @pkeys -> $pid {
+for @pkeys -> $pid 
+{
   my $project = $projects{$pid};
-  if (!$project.exists('src')) {
+  if (!$project.exists('src')) 
+  {
     $project<src> = $pid;
+  }
+  if (!$project.exists('local'))
+  {
+    $project<local> = False;
   }
   my $is = $project<is>;
   $stat{$is}<items>.push: $project;
@@ -44,3 +52,4 @@ $output.print: $tocpage;
 $output.close;
 
 say "done.";
+

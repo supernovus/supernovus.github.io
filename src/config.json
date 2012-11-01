@@ -71,17 +71,7 @@
       "desc"  : "A Functional Template Language.",
       "lang"  : "multi",
       "is"    : "dead",
-      "links" : 
-      [
-        {
-          "name" : "Specification",
-          "url"  : "garden/"
-        },
-        {
-          "name" : "Perl 5 Source",
-          "proj" : "garden-perl5"
-        }
-      ]
+      "local" : true
     },
     "exemel" : 
     {
