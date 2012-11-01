@@ -1,5 +1,9 @@
 This repository holds the files for http://supernovus.github.com/
 
-The index.html is built using bin/build.pl which is powered by the Perl 5
-implementation of Garden.
+The index.html is built using the Template6 template engine for Perl 6.
+
+The Garden docs (obsolete) are built using the Perl 5 implementation of
+the Garden template engine.
+
+See the scripts in "bin" for more details.
 
