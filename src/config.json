@@ -148,7 +148,7 @@
       "name" : "Flower",
       "desc" : "XML Application Languages, including TAL/METAL.",
       "lang" : "perl6",
-      "is"   : "old"
+      "is"   : "active"
     },
     "moon" : 
     {
@@ -208,8 +208,15 @@
     },
     "PSpec" : 
     {
-      "name" : "PSpec and Pickle",
-      "desc" : "RSpec and Cucumber for Perl 6.",
+      "name" : "PSpec",
+      "desc" : "RSpec-like BDD framework for Perl 6.",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "pickle" :
+    {
+      "name" : "Pickle",
+      "desc" : "Cucumber-like BDD story engine for Perl 6.",
       "lang" : "perl6",
       "is"   : "old"
     },
@@ -233,6 +240,13 @@
       "desc" : "Configuration data in Hash objects, but with more magic.",
       "lang" : "perl6",
       "is"   : "dead"
+    },
+    "perl6-method-modifiers" :
+    {
+      "name" : "Method::Modifiers",
+      "desc" : "Wrapper to wrap(). Just for kicks.",
+      "lang" : "perl6",
+      "is"   : "maint"
     }
   }
 }
