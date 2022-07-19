@@ -1,43 +1,45 @@
-td {
-  padding-left: 1em;
-}
 
-.projects a {
+#projects tbody .link a 
+{
   border-bottom: 1px dotted blue;
   font-size: 0.8em;
   color: #444444;
   text-decoration: none;
 }
 
-.projects a:hover {
+#projects tbody .link a:hover 
+{
   text-decoration: none;
   background: blue;
   color: white;
 }
 
-code.language {
+.lang code 
+{
   border: 1px solid gray;
   font-variant: small-caps;
   padding: 1px;
 }
 
-code.perl6 {
-  background: #509ff0;
-}
-
-code.multi {
+.lang code.multi 
+{
   background: white;
 }
 
-code.perl5 {
-  background: #00ffff;
-}
-
-code.javascript {
+.lang code.js 
+{
   background: yellow;
 }
 
-code.bash {
+.lang code.php 
+{
+  background: #509ff0;
+}
+
+.lang code.bash 
+{
   background: #f0005f;
 }
+
+/* Do we want to support perl 5 and raku? */
 

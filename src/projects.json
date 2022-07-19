@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "updated": "2022-07-18T192500-0700",
+  "title": "supernovus/Lum API documentation",
+  "srcurl": "https://github.com/supernovus/",
+  "docurl": "/docs/",
+  "projects":
+  [
+    {
+      "lang": "js",
+      "name": "@lumjs/core",
+      "desc": "Core library",
+      "src": "lum.core.js",
+      "docs": "lumjs-core"
+    },
+    {
+      "lang": "php",
+      "name": "lum/lum-core",
+      "desc": "Core library",
+      "src": "lum.core.php",
+      "docs": "lumphp-core"
+    }
+  ]
+}

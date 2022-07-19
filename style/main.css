@@ -1,43 +1,66 @@
-html {
+html 
+{
   background: silver;
 }
-body {
+
+body 
+{
   color: black;
   font-family: sans-serif;
 }
-p {
+
+p 
+{
   margin-left: 5%;
   margin-right: 10%;
 }
-a {
+
+a 
+{
   color: blue;
   text-decoration: none;
 }
-a:hover {
+
+a:hover 
+{
   text-decoration: underline;
 }
-h1 {
+
+h1 
+{
   color: green;
 }
-h2 {
+
+h2 
+{
   color: #119933;
 }
-h3 {
+
+h3 
+{
   color: purple;
 }
-h4 {
+
+h4 
+{
   color: gray;
   font-size: 0.75em;
 }
-#footer {
+
+footer 
+{
   font-size: 0.75em;
   text-align: center;
   color: #aaaaaa;
 }
-#footer a {
+
+footer a 
+{
   color: gray;
 }
-.note {
+
+.note 
+{
   margin-left: 10%;
   margin-right: 15%;
   border: 1px solid gray;
@@ -45,11 +68,12 @@ h4 {
   padding: 2px;
 }
 
-#bottom {
-  width: 80%;
-  text-align: center;
-  border-top: dashed 1px gray;
-  padding-top: 1em;
-  font-size: 0.8em;
+noscript
+{
+  margin-left: 20%;
+  margin-right: 20%;
+  border: 1px solid gray;
+  background: #ffe0e0;
+  font-size: 1.1em;
 }
 
