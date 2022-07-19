@@ -1,3 +1,7 @@
+#projects tbody .name
+{
+  font-family: monospace;
+}
 
 #projects tbody .link a 
 {
@@ -14,10 +18,22 @@
   color: white;
 }
 
+#projects tbody .link.none a,
+#projects tbody .link.none a:hover
+{
+  background: transparent;
+  color: #553333;
+  border-bottom: 1px dotted #662222;
+}
+
 .lang code 
 {
+  display: inline-block;
+  text-align: center;
+  width: 3.5em;
   border: 1px solid gray;
   font-variant: small-caps;
+  font-weight: bold;
   padding: 1px;
 }
 

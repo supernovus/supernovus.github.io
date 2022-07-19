@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "rsync": "^0.6.1"
+  }
+}

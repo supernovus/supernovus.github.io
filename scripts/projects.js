@@ -15,8 +15,14 @@
     item.querySelector('.desc').textContent = proj.desc;
     const srcLink = item.querySelector('.src a');
     const docsLink = item.querySelector('.docs a');
-    srcLink.setAttribute('href', data.srcurl+proj.src);
-    docsLink.setAttribute('href', data.docurl+proj.docs);
+    if ('src' in proj)
+      srcLink.setAttribute('href', data.srcurl+proj.src);
+    else
+      srcLink.classList.add('none');
+    if ('docs' in proj)
+      docsLink.setAttribute('href', data.docurl+proj.docs);
+    else
+      docsLink.classList.add('none');
     list.appendChild(item);
   }
 

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: obj/copyprops.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: obj/copyprops.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+// Get some constants
+const {B,isObj,isComplex,isArray,def: defProp} = require('../types');
+
+/**
+ * Copy properties from one object to another.
+ *
+ * @param {(object|function)} source - The object to copy properties from.
+ * @param {(object|function)} target - The target to copy properties to.
+ *
+ * @param {object} [propOpts] Options for how to copy properties.
+ * @param {boolean} [propOpts.default=true] Copy only enumerable properties.
+ * @param {boolean} [propOpts.all=false] Copy ALL object properties.
+ * @param {Array} [propOpts.props] A list of specific properties to copy.
+ * @param {object} [propOpts.overrides] Descriptor overrides for properties.
+ * @param {Array} [propOpts.exclude] A list of properties NOT to copy.
+ * @param {*} [propOpts.overwrite=false] Overwrite existing properties.
+ *   If this is a `boolean` value, it will allow or disallow overwriting
+ *   of any and all properties in the target object.
+ *
+ *   If this is an object, it can be an Array of property names to allow
+ *   to be overwritten, or a map of property name to a boolean indicating
+ *   if that property can be overwritten or not.
+ *
+ * @returns {object} The `target` object.
+ * @alias module:@lumjs/core/obj.copyProps
+ */
+function copyProps(source, target, propOpts)
+{
+  if (!isComplex(source) || !isComplex(target))
+  {
+    throw new TypeError("source and target both need to be objects");
+  }
+
+  if (!isObj(propOpts))
+    propOpts = {default: true};
+
+  const defOverrides = propOpts.overrides ?? {};
+  const defOverwrite = propOpts.overwrite ?? false;
+
+  const exclude = isArray(propOpts.exclude) ? propOpts.exclude : null;
+
+  let propDefs;
+
+  if (propOpts.props &amp;&amp; isArray(propOpts.props))
+  {
+    propDefs = propOpts.props;
+  }
+  else if (propOpts.all)
+  {
+    propDefs = Object.getOwnPropertyNames(source); 
+  }
+  else if (propOpts.default)
+  {
+    propDefs = Object.keys(source);
+  }
+  else if (propOpts.overrides)
+  {
+    propDefs = Object.keys(propOpts.overrides);
+  }
+
+  if (!propDefs)
+  {
+    console.error("Could not determine properties to copy", propOpts);
+    return;
+  }
+
+  // For each propDef found, add it to the target.
+  for (let p = 0; p &lt; propDefs.length; p++)
+  {
+    const prop = propDefs[p];
+    if (exclude &amp;&amp; exclude.indexOf(prop) !== -1)
+      continue; // Excluded property.
+
+    let overwrite = false;  
+    if (typeof defOverwrite === B)
+    {
+      overwrite = defOverwrite;
+    }
+    else if (isObj(defOverwrite) &amp;&amp; typeof defOverwrite[prop] === B)
+    {
+      overwrite = defOverwrite[prop];
+    }
+
+    const def = Object.getOwnPropertyDescriptor(source, prop)
+    if (def === undefined) continue; // Invalid property.
+
+    if (isObj(defOverrides[prop]))
+    {
+      for (const key in defOverrides[prop])
+      {
+        const val = defOverrides[prop][key];
+        def[key] = val;
+      }
+    }
+    if (overwrite || target[prop] === undefined)
+    { // Property doesn't already exist, let's add it.
+      defProp(target, prop, def);
+    }
+  }
+
+  return target;
+} // copyProps()
+
+module.exports = copyProps;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Jul 18 2022 18:27:35 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

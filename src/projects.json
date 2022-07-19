@@ -8,6 +8,7 @@
   [
     {
       "lang": "js",
+      "dir": "lumjs/core",
       "name": "@lumjs/core",
       "desc": "Core library",
       "src": "lum.core.js",
@@ -15,10 +16,11 @@
     },
     {
       "lang": "php",
+      "dir": "lum-core",
       "name": "lum/lum-core",
       "desc": "Core library",
       "src": "lum.core.php",
-      "docs": "lumphp-core"
+      "#docs": "lumphp-core"
     }
   ]
 }

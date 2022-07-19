@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: observable.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: observable.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+const {B,F,S,def,isObj,isComplex,TYPES} = require('./types');;
+
+/**
+ * Make an object support the *Observable* API.
+ *
+ * Adds `on()`, `off()`, `one()`, and `trigger()` methods.
+ * 
+ * @param {object} el - The object we are making observable.
+ * @param {object} [opts] Options that define behaviours.
+ * @param {string} [opts.wildcard='*'] The event name used as a wildcard. 
+ * @param {boolean} [opts.wrapthis=false] If `true`, `this` will be a wrapper.
+ * 
+ * If 'wrapthis' is true, the function will be called with a wrapper object as 
+ * the 'this' variable instead of the target object. The wrapper will be:
+ *
+ * ```js
+ * {
+ *   self: el,        // The target object.
+ *   name: event,     // The event name that was triggered.
+ *   wildcard: bool,  // Will be true if this was a wildcard event handler.
+ *   func: function,  // The function being called.
+ * }
+ * ```
+ * 
+ * @param {boolean} [opts.addname=!opts.wrapthis] If `true` callbacks with 
+ *   multiple events will have the name of the triggered event added as
+ *   the first parameter.
+ * 
+ * @param {boolean} [opts.addis=opts.wrapthis] If `true` add immutable
+ *   property named `isObservable` which will have a value of `true`.
+ * @param {string} [opts.addme] If set, add a method with this name
+ *   to the object, which is a version of `observable()` with the
+ *   default options being the same as the current `opts`.
+ *   If `opts.wrapthis` is `true`, then this defaults to `'makeObservable'`.
+ *   In any other case it defaults to `null`.
+ *
+ * @returns {object} el
+ * 
+ * @exports module:@lumjs/core/observable
+ */
+function observable (el={}, opts={}) 
+{
+  //console.debug("observable", el, opts);
+
+  if (!isComplex(el))
+  { // Don't know how to handle this, sorry.
+    throw new Error("non-object sent to observable()");
+  }
+
+  if (observable.is(el))
+  { // It's already observable.
+    return el;
+  }
+
+  if (typeof opts === B)
+  { // Assume it's the wrapthis option.
+    opts = {wrapthis: opts};
+  }
+  else if (!isObj(opts))
+  {
+    opts = {};
+  }
+
+  const noSpace = /^\S+$/;
+
+  const wildcard = (typeof opts.wildcard === S 
+    &amp;&amp; noSpace.test(opts.wildcard))
+    ? opts.wildcard
+    : '*';
+
+  const wrapthis = (typeof opts.wrapthis === 'boolean') 
+    ? opts.wrapthis 
+    : false;
+
+  const addname = (typeof opts.addname === 'boolean') 
+    ? opts.addname 
+    : !wrapthis;
+
+  const addis = (typeof opts.addis === 'boolean')
+    ? opts.addis
+    : wrapthis;
+
+  const validIdent = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/;
+
+  const addme = (typeof opts.addme === 'string'
+    &amp;&amp; validIdent.test(opts.addme))
+    ? opts.addme
+    : (wrapthis ? 'makeObservable' : null);
+
+  const slice = Array.prototype.slice;
+
+  function onEachEvent (e, fn) 
+  { 
+    e.replace(/\S+/g, fn);
+  }
+
+  const add = def(el);
+
+  function runCallback (name, fn, args)
+  {
+    if (fn.busy) return;
+    fn.busy = 1;
+
+    let fthis;
+
+    if (wrapthis)
+    {
+      const isWild = (name === wildcard);
+      const fname = isWild ? (addname ? args[0] : args.shift()) : name;
+      fthis = 
+      {
+        self: el,
+        name: fname,
+        func: fn,
+        wildcard: isWild,
+      };
+    }
+    else
+    {
+      fthis = el;
+    }
+
+    let fargs = (fn.typed &amp;&amp; addname) ? [name].concat(args) : args;
+
+    fn.apply(fthis, fargs);
+
+    fn.busy = 0;
+  }
+
+  let callbacks = {};
+
+  /**
+  * Assign an event handler
+  * 
+  * Listen to the given space separated list of `events` and execute
+  * the `callback` each time an event is triggered.
+  * @param  {string} events - events ids
+  * @param  {function} fn - callback function
+  * @returns {object} el
+  */
+  add('on', function(events, fn) 
+  {
+    if (typeof fn !== F)
+    {
+      console.error("non-function passed to on()");
+      return el;
+    }
+
+    onEachEvent(events, function(name, pos) 
+    {
+      (callbacks[name] = callbacks[name] || []).push(fn);
+      fn.typed = pos > 0;
+    });
+
+    return el;
+  });
+
+  /**
+  * Removes the given space separated list of `events` listeners
+  * 
+  * @param   {string} events - events ids
+  * @param   {function} fn - callback function
+  * @returns {object} el
+  */
+  add('off', function(events, fn) 
+  {
+    if (events === wildcard &amp;&amp; !fn) 
+    { // Clear all callbacks.
+      callbacks = {};
+    }
+    else 
+    {
+      onEachEvent(events, function(name) 
+      {
+        if (fn) 
+        { // Find a specific callback to remove.
+          var arr = callbacks[name]
+          for (var i = 0, cb; cb = arr &amp;&amp; arr[i]; ++i) 
+          {
+            if (cb == fn) arr.splice(i--, 1);
+          }
+        } 
+        else 
+        { // Remove all callbacks for this event.
+          delete callbacks[name];
+        }
+      });
+    }
+    return el
+  });
+
+  /**
+  * Add a one-shot event handler.
+  * 
+  * Listen to the given space separated list of `events` and execute 
+  * the `callback` at most once.
+  * 
+  * @param   {string} events - events ids
+  * @param   {function} fn - callback function
+  * @returns {object} el
+  */
+  add('one', function(events, fn) 
+  {
+    function on() 
+    {
+      el.off(events, on)
+      fn.apply(el, arguments)
+    }
+    return el.on(events, on);
+  });
+
+  /**
+  * Execute all callback functions that listen to the given space 
+  * separated list of `events`
+  * @param   {string} events - events ids
+  * @returns {object} el
+  */
+  add('trigger', function(events) 
+  {
+    // getting the arguments
+    // skipping the first one
+    const args = slice.call(arguments, 1);
+
+    onEachEvent(events, function(name) 
+    {
+      const fns = slice.call(callbacks[name] || [], 0);
+
+      for (var i = 0, fn; fn = fns[i]; ++i) 
+      {
+        runCallback(name, fn, args);
+        if (fns[i] !== fn) { i-- }
+      }
+
+      if (callbacks[wildcard] &amp;&amp; name != wildcard)
+      { // Trigger the wildcard.
+        el.trigger.apply(el, ['*', name].concat(args));
+      }
+
+    });
+
+    return el
+  });
+
+  if (addis)
+  {
+    add('isObservable', true);
+  }
+
+  if (addme)
+  { // Add a wrapper for observable() that sets new default options.
+    const ourProps = Object.keys(opts);
+    add(addme, function (obj=null, mopts={})
+    {
+      if (ourProps.length > 0)
+      {
+        for (const prop of ourProps)
+        {
+          if (mopts[prop] === undefined)
+          {
+            mopts[prop] = opts[prop];
+          }
+        }
+      }
+      return observable(obj, mopts);
+    });
+  }
+
+  return el
+
+} // observable()
+
+module.exports = observable;
+
+/**
+ * See if a value implements the *Observable* interface.
+ * 
+ * @function module:@lumjs/core/observable.is
+ * @param {*} obj - The expected object/function to test.
+ * @returns {boolean}
+ */
+function isObservable(obj)
+{
+  return (isObj(obj)
+    &amp;&amp; typeof obj.trigger === F
+    &amp;&amp; typeof obj.on === F);
+}
+
+// Add an 'is()' method to `observable` itself.
+def(observable, 'is', isObservable);
+
+/**
+ * Does a value implement the Observable interface?
+ * @name module:@lumjs/core/types.doesObservable
+ * @function
+ * @param {*} v - The expected object/function to test.
+ * @returns {boolean}
+ * @see module:@lumjs/core/observable.is
+ */
+
+/**
+ * Extension type for the {@link module:@lumjs/core/observable} interface.
+ * @memberof module:@lumjs/core/types.TYPES
+ * @member {string} OBSERV - Implements the *Observable* interface.
+ */
+
+TYPES.add('OBSERV', 'observable', isObservable, 'doesObservable');
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Jul 18 2022 18:27:35 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

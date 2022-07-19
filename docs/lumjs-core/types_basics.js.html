@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: types/basics.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: types/basics.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {O, F, S, SY} = require('./js');
+
+/**
+ * See if a value is a non-null `object`.
+ * @param {*} v - The value we're testing.
+ * @returns {boolean}
+ * @alias module:@lumjs/core/types.isObj
+ */
+ function isObj(v) { return (typeof v === O &amp;&amp; v !== null); }
+
+ /**
+  * See if a value is *complex* (i.e. either `object` or `function`).
+  * Like `isObj()`, `null` does not count as an `object`.
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isComplex
+  */
+ function isComplex(v) { return (typeof v === F || isObj(v)); }
+ 
+ /**
+  * See if a value is *nil* (i.e. either `null` or `undefined`).
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isNil
+  */
+ function isNil(v) { return (v === undefined || v === null); }
+ 
+ /**
+  * See if a value is not *nil* (i.e. neither `null` nor `undefined`).
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.notNil
+  */
+ function notNil(v) { return (v !== undefined &amp;&amp; v !== null); }
+ 
+ /**
+  * See if a value is a scalar.
+  * For the purposes of this, a scalar is any value which
+  * is neither *nil* nor *complex*.
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isScalar
+  */
+ function isScalar(v) { return (notNil(v) &amp;&amp; !isComplex(v)); }
+ 
+ /**
+  * See if a value is an `Array` object.
+  * This is literally just a copy of `Array.isArray`.
+  * @function
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isArray
+  */
+ const isArray = Array.isArray;
+ 
+ /**
+  * See if a value is a `TypedArray` object.
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isTypedArray
+  */
+ function isTypedArray(v)
+ {
+   return (ArrayBuffer.isView(v) &amp;&amp; !(v instanceof DataView));
+ }
+ 
+ /**
+  * See if a value is a non-empty Array.
+  * @param {*} v - The value we're testing.
+  * @param {boolean} [typed=false] If `true` we want a `TypedArray`.
+  *   If `false` (default) we want a regular `Array`.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.nonEmptyArray
+  */
+ function nonEmptyArray(v, typed=false)
+ {
+   if (typed)
+     return (isTypedArray(v) &amp;&amp; v.length > 0);
+   else
+     return (isArray(v) &amp;&amp; v.length > 0);
+ }
+ 
+ /**
+  * See if a value is an `arguments` object.
+  * @param {*} v - The value we're testing.
+  * @returns {boolean}
+  * @alias module:@lumjs/core/types.isArguments
+  */
+ function isArguments(v) 
+ {
+   return Object.prototype.toString.call(v) === '[object Arguments]';
+ }
+
+ /**
+ * See if a value is a Property name.
+ * @param {*} v - The value we're testing.
+ * @returns {boolean}
+ * @alias module:@lumjs/core/types.isProperty
+ */
+function isProperty(v)
+{
+  const t = typeof v;
+  return (t === S || t === SY);
+}
+
+/**
+ * See if an object can be used as a valid descriptor.
+ * 
+ * Basically in order to be considered a valid descriptor, 
+ * one of the the following sets of rules must be true:
+ * 
+ *  - A Data Descriptor:
+ *      - Has a `value` property.
+ *      - Does not have a `get` property.
+ *      - Does not have a `set` property.
+ *  - An Accessor Descriptor:
+ *      - Has a `get` and/or `set` property.
+ *      - Does not have a `value` property.
+ *      - Does not have a `writable` property.
+ * 
+ * @param {object} obj - The object we are testing. 
+ * @returns {boolean} - Is the object a valid descriptor?
+ * @alias module:@lumjs/core/types.doesDescriptor
+ */
+ function doesDescriptor(obj)
+ {
+   if (isObj(obj))
+   {
+     const hasValue    = (obj.value !== undefined);
+     const hasGetter   = (typeof obj.get === F);
+     const hasSetter   = (typeof obj.set === F);
+     const hasWritable = (obj.writable !== undefined);
+ 
+     if (hasValue &amp;&amp; !hasGetter &amp;&amp; !hasSetter)
+     { // We have a value, and no getter or setter.
+       return true;
+     }
+     else if ((hasGetter || hasSetter) &amp;&amp; !hasValue &amp;&amp; !hasWritable)
+     { // We have a getter or setter, and no value or writable properties.
+       return true;
+     }
+   }
+ 
+   // Nothing matched, not a valid descriptor rule.
+   return false;
+ }
+
+ // Now export those.
+ module.exports =
+ {
+  isObj, isComplex, isNil, notNil, isScalar, isArray, isTypedArray,
+  nonEmptyArray, isArguments, isProperty, doesDescriptor,
+ }
+ </code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Jul 18 2022 18:27:35 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
