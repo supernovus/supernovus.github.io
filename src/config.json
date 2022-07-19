@@ -1,5 +1,5 @@
 {
-  "updated" : "2012-11-01",
+  "updated" : "2013-06-05",
   "statuses" : 
   [
     {
@@ -30,12 +30,26 @@
   ],
   "projects" : 
   {
+    "webtoo" :
+    {
+      "name" : "Webtoo",
+      "desc" : "Yet another web application framework",
+      "lang" : "perl5",
+      "is"   : "active"
+    },
+    "perl6-psgi" :
+    {
+      "name" : "PSGI",
+      "desc" : "Parse an PSGI response and output an HTTP Response header",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
     "perl6-xml-query" : 
     {
       "name" : "XML::Query",
       "desc" : "jQuery like selection and traversal.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "perl6-xml-xpath" : 
     {
@@ -51,19 +65,47 @@
       "lang" : "perl6",
       "is"   : "incomp"
     },
-    "perl6-www-app-easy" : 
+    "perl6-text-table-list" :
     {
-      "name" : "WWW::App::Easy",
-      "desc" : "MVC Extensions for WWW::App",
+      "name" : "Text::Table::List",
+      "desc" : "Generate ASCII/ANSI formatted tables",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "perl6-web-app-mvc" : 
+    {
+      "name" : "Web::App::MVC",
+      "desc" : "MVC Extensions for Web::App",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "perl6-web-app-ballet" :
+    {
+      "name" : "Web::App::Ballet",
+      "desc" : "A Dancer-like extension of Web::App",
       "lang" : "perl6",
       "is"   : "active"
+    },
+    "perl6-web-template" :
+    {
+      "name" : "Web::Template",
+      "desc" : "Template engine abstraction layer",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "perl6-db-model-easy" :
+    {
+      "name" : "DB::Model::Easy",
+      "desc" : "Build database models easily",
+      "lang" : "perl6",
+      "is"   : "maint"
     },
     "template6" : 
     {
       "name" : "Template6",
       "desc" : "A TT-like template engine for Perl 6",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "garden" : 
     {
@@ -78,11 +120,11 @@
       "name" : "XML (formerly Exemel)",
       "desc" : "An object-oriented XML library",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
-    "perl6-www-app" : 
+    "perl6-web" : 
     {
-      "name" : "WWW::App",
+      "name" : "Web",
       "desc" : "A Web Application Framework",
       "lang" : "perl6",
       "is"   : "active"
@@ -92,21 +134,21 @@
       "name" : "Netstring",
       "desc" : "Netstring library",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "SCGI" : 
     {
       "name" : "SCGI",
       "desc" : "A library for building SCGI applications.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "perl6-fastcgi" :
     {
       "name" : "FastCGI",
       "desc" : "A library for building FastCGI applications.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "perl6-libcurl" :
     {
@@ -120,35 +162,35 @@
       "name" : "HTTP::Easy",
       "desc" : "Build HTTP servers (with PSGI support) easily.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "perl6-http-client" : 
     {
       "name" : "HTTP::Client",
       "desc" : "Build HTTP clients easily.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "old"
     },
     "perl6-http-status" : 
     {
       "name" : "HTTP::Status",
       "desc" : "HTTP status messages library.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "perl6-mime-types" : 
     {
       "name" : "MIME::Types",
       "desc" : "Parse and query mime.types files.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "flower" : 
     {
       "name" : "Flower",
       "desc" : "XML Application Languages, including TAL/METAL.",
       "lang" : "perl6",
-      "is"   : "active"
+      "is"   : "maint"
     },
     "moon" : 
     {
@@ -171,10 +213,24 @@
       "lang" : "perl5",
       "is"   : "maint"
     },
-    "temporal-utils" : 
+    "perl6-timezone" :
     {
-      "name" : "DateTime::Utils",
-      "desc" : "Utilities for Perl 6's DateTime object.",
+      "name" : "DateTime::TimeZone",
+      "desc" : "Timezone extensions for DateTime",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "perl6-datetime-math" :
+    {
+      "name" : "DateTime::Math",
+      "desc" : "Perform common math and comparison operations with DateTime",
+      "lang" : "perl6",
+      "is"   : "maint"
+    },
+    "perl6-datetime-format" :
+    {
+      "name" : "DateTime::Format",
+      "desc" : "strftime, strptime, and other formatting utils for DateTime",
       "lang" : "perl6",
       "is"   : "maint"
     },
@@ -204,7 +260,7 @@
       "name" : "WhiteNoise",
       "desc" : "Build static websites using Perl 6",
       "lang" : "perl6",
-      "is"   : "old"
+      "is"   : "dead"
     },
     "PSpec" : 
     {
