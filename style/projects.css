@@ -18,8 +18,8 @@
   color: white;
 }
 
-#projects tbody .link.none a,
-#projects tbody .link.none a:hover
+#projects tbody .link a.none,
+#projects tbody .link a.none:hover
 {
   background: transparent;
   color: #553333;
