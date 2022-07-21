@@ -3,24 +3,30 @@
   "updated": "2022-07-18T192500-0700",
   "title": "supernovus/Lum API documentation",
   "srcurl": "https://github.com/supernovus/",
-  "docurl": "/docs/",
+  "docurl": "docs/",
   "projects":
   [
     {
       "lang": "js",
-      "dir": "lumjs/core",
       "name": "@lumjs/core",
       "desc": "Core library",
       "src": "lum.core.js",
-      "docs": "lumjs-core"
+      "ver": "1.0.0-beta.5"
     },
     {
       "lang": "php",
-      "dir": "lum-core",
+      "name": "lum/lum-compat",
+      "desc": "Compatibility core",
+      "src": "lum.compat.php",
+      "ver": "2.6.1"
+    },
+    {
+      "lang": "php",
       "name": "lum/lum-core",
       "desc": "Core library",
       "src": "lum.core.php",
-      "#docs": "lumphp-core"
+      "ver": "3.0.0",
+      "skip": true
     }
   ]
 }

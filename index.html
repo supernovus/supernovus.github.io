@@ -1,16 +1,25 @@
 <html>
   <head>
     <title>loading...</title>
-    <link rel="stylesheet" href="/style/main.css" />
-    <link rel="stylesheet" href="/style/projects.css" />
+    <link rel="stylesheet" href="style/main.css" />
+    <link rel="stylesheet" href="style/projects.css" />
   </head>
   <body>
+
     <noscript>
       If you are reading this, you have Javascript disabled.
       The table of contents on this page is loaded via Javascript.
       So it'll be a pretty empty table for you. Turn on JS if you actually
       want a list of API documentation and such. Cheers!
     </noscript>
+
+    <p id="old-javascript" class="note">
+      If you are reading this, and it hasn't gone away in a few seconds after
+      loading the page, either you have Javascript disabled (in which case
+      you'd also see another warning before this one),
+      or your browser is so old it doesn't support modern (ES2015+) Javascript.
+      Either way, this page isn't going to work in your current browser.
+    </p>
 
     <h1>loading...</h1>
     <h2>last updated <span id="updated">...</span></h2>
@@ -20,6 +29,7 @@
         <tr>
           <th>language</th>
           <th>name</th>
+          <th>version</th>
           <th>description</th>
           <th colspan="2">links</th>
         </tr>
@@ -27,11 +37,17 @@
       <tbody></tbody>
     </table>
 
+    <p class="note">
+      The <em>version</em> shown above was the version when the documentation
+      was last updated.
+    </p>
+
     <!-- A template for each project row. -->
     <template id="project">
       <tr class="project">
         <td class="lang"><code>lang</code></td>
         <td class="name">name</td>
+        <td class="ver">ver</td>
         <td class="desc">desc</td>
         <td class="src link"><a>source</a></td>
         <td class="docs link"><a>API docs</a></td>
@@ -42,6 +58,6 @@
       more at my <a href="https://github.com/supernovus/">github profile</a>
     </footer>
 
-    <script src="/scripts/projects.js"></script>
+    <script src="scripts/projects.js"></script>
   </body>
 </html>

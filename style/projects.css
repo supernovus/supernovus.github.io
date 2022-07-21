@@ -1,4 +1,10 @@
-#projects tbody .name
+#projects td
+{
+  padding: 0.25em;
+}
+
+#projects tbody .name,
+#projects tbody .ver
 {
   font-family: monospace;
 }
