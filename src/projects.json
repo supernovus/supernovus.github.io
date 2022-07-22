@@ -9,24 +9,23 @@
     {
       "lang": "js",
       "name": "@lumjs/core",
-      "desc": "Core library",
+      "desc": "Foundational core library",
       "src": "lum.core.js",
       "ver": "1.0.0-beta.5"
     },
     {
       "lang": "php",
       "name": "lum/lum-compat",
-      "desc": "Compatibility core",
+      "desc": "Compatibility framework and foundational core library",
       "src": "lum.compat.php",
       "ver": "2.6.1"
     },
     {
       "lang": "php",
       "name": "lum/lum-core",
-      "desc": "Core library",
+      "desc": "Core singleton App Director object",
       "src": "lum.core.php",
-      "ver": "3.0.0",
-      "skip": true
+      "ver": "3.0.0"
     },
     {
       "lang": "php",
@@ -37,9 +36,30 @@
     },
     {
       "lang": "php",
+      "name": "lum/lum-data",
+      "desc": "Multi-format Data Objects",
+      "src": "lum.data.php",
+      "ver": "1.0.0"
+    },
+    {
+      "lang": "php",
       "name": "lum/lum-cli",
       "desc": "Command Line Interface helpers",
       "src": "lum.cli.php",
+      "ver": "1.0.0"
+    },
+    {
+      "lang": "php",
+      "name": "lum/lum-web",
+      "desc": "Simple web app libraries",
+      "src": "lum.web.php",
+      "ver": "1.0.0"
+    },
+    {
+      "lang": "php",
+      "name": "lum/lum-router",
+      "desc": "Web app router library",
+      "src": "lum.router.php",
       "ver": "1.0.0"
     }
   ]
