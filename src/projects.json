@@ -27,6 +27,20 @@
       "src": "lum.core.php",
       "ver": "3.0.0",
       "skip": true
+    },
+    {
+      "lang": "php",
+      "name": "lum/lum-meta",
+      "desc": "Metadata helpers",
+      "src": "lum.meta.php",
+      "ver": "1.0.2"
+    },
+    {
+      "lang": "php",
+      "name": "lum/lum-cli",
+      "desc": "Command Line Interface helpers",
+      "src": "lum.cli.php",
+      "ver": "1.0.0"
     }
   ]
 }
