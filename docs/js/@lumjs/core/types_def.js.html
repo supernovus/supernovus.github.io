@@ -28,20 +28,12 @@
         <article>
             <pre class="prettyprint source linenums"><code>// Thanks to CJS `require()` rules, recursive dependencies are possible.
 const unbound = require('./root').unbound;
-const {F, B, S} = require('./js');
+const {F, B} = require('./js');
 const {isObj, isNil, isProperty, doesDescriptor} = require('./basics');
 const copy = require('../obj/copyall');
 
-// Shortcut string options.
-const SHORTCUTS =
-{
-  e: {enumerable: true},
-  c: {configurable: true},
-  w: {writable: true},
-  E: {enumerable: false},
-  C: {configurable: false},
-  W: {writable: false},
-}
+// A really really cheap version of clone().
+const clone = obj => copy({}, obj);
 
 /**
  * A wrapper around `Object.defineProperty()`.
@@ -51,15 +43,21 @@ const SHORTCUTS =
  * 
  * @param {(object|function)} obj - The object to add a property to.
  * @param {?(string|boolean|object)} name - If a `string`, the property name.
+ *   Property names may also be `symbol` values.
  * 
  *   If this is `null` or `undefined` then the `value` is ignored entirely,
  *   and instead a bound version of this function is created with the
- *   `obj` already passed as the first parameter. Can be useful if you
- *   need to add a lot of properties to the same object.
+ *   `obj` already passed as the first parameter, and any of the options from
+ *   `opts` added to a new default set of options bound to the function.
+ *   Can be useful if you need to add a lot of properties to the same object.
  * 
  *   If this is a `boolean`, then the same logic as if it was `null` or 
  *   `undefined` will apply, except that an `enumerable` property with this 
  *   value will also be added to the descriptors.
+ * 
+ *   If this is an `object`, we also ignore `value` entirely, as each of 
+ *   the keys of this object will be used as the name of a property, 
+ *   and the value associated with the key will be the value to assign it.
  * 
  * @param {*} value - Used to determine the value of the property.
  * 
@@ -68,8 +66,8 @@ const SHORTCUTS =
  *   property defined, one will be added, and will be set to `true`.
  *   This behaviour may be overridden by the `opts` parameter.
  * 
- *   If this is a `function` and `opts` is a `boolean` or `function`,
- *   then this will be used as a getter or setter (see `opts` for details.)
+ *   If this and `opts` are both `function` values, then this will
+ *   be used as a *getter*, and `opts` will be used a *setter*.
  * 
  *   Any other value passed here will be used as the `value` in a
  *   pre-canned descriptor, also with `configurable` set to `true`.
@@ -81,26 +79,15 @@ const SHORTCUTS =
  *   can be used to define default values to the descriptor properties
  *   of the same name.
  * 
- *   If this is a `string` then it is considered a list of single-character
- *   options where the character is the first letter of one of the descriptor
- *   property options. If the character is lowercase then the option value
- *   will be `true`, if it is uppercase then the option value will be `false`.
- *   So for example: `eCW` is the same as:
- *   `{enumerable: true, configurable: false, writable: false}`;
- * 
  *   If `value` and this are both `function` values, then `value` will
  *   be used as a *getter* and this will be used as a *setter*.
- * 
- *   If `value` is a `function` and this is `true`, then `value` will
- *   be used as a *getter* and no *setter* will be assigned.
- * 
- *   If `value` is a `function` and this is `false`, then `value` will
- *   be used as a *setter* and no *getter* will be assigned.
  * 
  *   If `value` is a valid descriptor object, then setting this to `false`
  *   will disable the assumption that it is the descriptor to set.
  *   Setting this to `true` on will instruct the function to make a clone 
  *   of the descriptor object before modifying any properties in it.
+ * 
+ *   This defaults to `undefined`, except if 
  * 
  * @returns {*} Normally the `obj` argument with new property added.
  * 
@@ -132,19 +119,6 @@ function def(obj, name, value, opts)
     else 
     { // Not bound, or doesn't have a reference to itself.
       return obj;
-    }
-  }
-
-  if (typeof opts === S)
-  { // A string of shortcut options.
-    const strOpts = opts;
-    opts = {};
-    for (const tag in SHORTCUTS)
-    {
-      if (strOpts.includes(tag))
-      { // Tag was found, add the rules associated with it.
-        copy(opts, SHORTCUTS[tag]);
-      }
     }
   }
 
@@ -194,16 +168,11 @@ function def(obj, name, value, opts)
 
   if (opts !== false &amp;&amp; doesDescriptor(value))
   { // The value is a descriptor, let's use it.
-    desc = (opts === true) ? copy(value) : value;
+    desc = (opts === true) ? clone(value) : value;
   }
   else if (typeof value === F &amp;&amp; typeof opts === F)
   { // A getter and setter were both specified.
     desc = {get: value, set: opts};
-  }
-  else if (typeof value === F &amp;&amp; typeof opts === B)
-  { // A function value with a boolean opts is a getter or setter.
-    const prop = opts ? 'get' : 'set';
-    desc = {[prop]: value};
   }
   else 
   { // The value is just a value, so let's assign it.
@@ -255,7 +224,7 @@ module.exports = def;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Jul 18 2022 18:27:35 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

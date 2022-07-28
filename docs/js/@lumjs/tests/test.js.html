@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: test.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: test.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Module defining the Test class.
+ * @module @lumjs/tests/test
+ */
+
+const core = require('@lumjs/core');
+const types = core.types;
+const {F,S,N,isObj,isArray,def} = types;
+
+// We use a separate class to represent test logs.
+const Log = require('./log');
+
+// A list of Test methods that return Log objects.
+const TEST_METHODS =
+[
+  'ok', 'call', 'fail', 'pass', 'dies', 'diesWith', 'lives', 'cmp', 
+  'is', 'isnt', 'isa', 'nota', 'isJSON', 'isntJSON', 'skip',
+];
+
+// A list of other methods to export that are not standard tests.
+const META_METHODS = 
+[
+  'plan', 'diag', 'run', 'tap', 'output',
+];
+
+// The function that powers `Test.call()` and friends.
+function $call (testfunc, args)
+{
+  const ret = {};
+  try
+  {
+    ret.val = testfunc(...args);
+  }
+  catch (e)
+  {
+    ret.err = e;
+  }
+  return ret;
+}
+
+/**
+ * A simple testing library with TAP support.
+ * 
+ * Based on Lum.php's Test library.
+ * Which itself was based on Perl 5's Test::More, and
+ * Raku's Test libraries.
+ */
+class Test
+{
+  /**
+   * Build a new Test instance.
+   * 
+   * @param {object} [opts] Named options.
+   * @param {string} [opts.id] A unique test id, used by Harness.
+   * @param {number} [opts.plan] Passed to `plan()` method.
+   * @param {object} [opts.moduleName] Options for `core.modules.name()`.
+   * @param {object} [opts.module] The node module to export this test to.
+   *
+   *   If you use this option, `opts.module.exports` will be assigned
+   *   to the test instance, overriding anything that may have been 
+   *   assigned to it previously.
+   *
+   *   Also, if this is passed, and `opts.id` was not specified, and id
+   *   will be auto-generated based on the filename of the module.
+   *
+   */
+  constructor (opts={})
+  {
+    if (typeof opts === N)
+    {
+      opts = {plan: opts};
+    }
+    else if (typeof opts === S)
+    {
+      opts = {id: opts};
+    }
+
+    const hasModule = isObj(opts.module);
+
+    if (typeof opts.id === S)
+    { // A specific id was specified.
+      this.id = opts.id;
+    }
+    else if (hasModule)
+    { // We're going to generate a simple name.
+      this.id = core.modules.name(opts.module, opts.moduleName);
+    }
+    else 
+    { // An anonymous test.
+      this.id = null;
+    }
+
+    this.failed = 0;
+    this.skipped = 0;
+    this.planned = 0;
+    this.log = [];
+
+    if (typeof opts.plan === N)
+    {
+      this.plan(opts.plan);
+    }
+
+    if (hasModule)
+    { // Finally, if a module was passed, its going to export this test.
+      opts.module.exports = this;
+    }
+  }
+
+  /**
+   * Indicate how many tests are planned to be run in this set.
+   * 
+   * @param {number} num - The number of tests that should run. 
+   */
+  plan (num)
+  {
+    if (typeof num === N)
+    {
+      this.planned = num;
+    }
+    else if (num === false)
+    {
+      this.planned = 0;
+    }
+    else
+    {
+      throw new Error("Invalid value passed to plan()");
+    }
+  }
+
+  /**
+   * Check if a value is truthy, and add a log indicating the result.
+   * 
+   * This is the absolute most basic method that every other testing method
+   * uses to log the results.
+   * 
+   * I won't document the `desc` and `directive` parameters on any of the
+   * other methods as they are exactly the same as here.
+   * 
+   * @param {*} test - Any value, usually the output of a test function.
+   *   If the value evaluates as `true` (aka a truthy value), the test passes.
+   *   If it evaluates as `false` (a falsey value), the test fails.
+   * 
+   * @param {string} [desc] A short description of the test.
+   * @param {(string|Error)} [directive] Further information for the log.
+   * @param {object} [details] Extra details to add to the log.
+   * @returns {Log} The test log with the results.
+   */
+  ok (test, desc, directive, details)
+  {
+    const log = new Log();
+
+    if (test)
+    {
+      log.ok = true;
+    }
+    else
+    {
+      this.failed++;
+    }
+
+    if (typeof desc === S)
+    {
+      log.desc = desc;
+    }
+
+    if (directive)
+    {
+      log.directive = directive;
+    }
+
+    if (isObj(details))
+    {
+      log.details = details;
+    }
+
+    this.log.push(log);
+
+    return log;
+  }
+
+  /**
+   * Run a function and pass its return value to `ok()`.
+   *
+   * @param {function} testfunc - The function to run.
+   *   If the function returns, the return value will be passed to `ok()`.
+   *   If it throws an Error, the test will be marked as failed, and the
+   *   Error will be passed as the `directive` to the `ok()` method.
+   *
+   * @param {string} [desc] A description for `ok()`.
+   * @param {...any} [args] Arguments to pass to the test function.
+   * @returns {Log}
+   */
+  call(testfunc, desc, ...args)
+  {
+    const ret = $call(testfunc, args);
+    return this.ok(ret.val, desc, ret.err);
+  }
+
+  /**
+   * Mark a test as failed.
+   * 
+   * @param {string} desc 
+   * @param {*} [directive] 
+   * @returns {Log}
+   */
+  fail (desc, directive)
+  {
+    return this.ok(false, desc, directive);
+  }
+
+  /**
+   * Mark a test as passed.
+   * 
+   * @param {string} desc 
+   * @param {*} [directive] 
+   * @returns {Log}
+   */
+  pass (desc, directive)
+  {
+    return this.ok(true, desc, directive);
+  }
+
+  /**
+   * See if a function throws an Error.
+   * 
+   * The function will be called in a `try { } catch (err) { }` block.
+   * 
+   * If an error is caught, the test will be considered to have passed,
+   * and the `Error` object will be used as the `directive` in the `ok()`
+   * call. If no error is caught the test will be considered to have failed.
+   * 
+   * @param {function} testfunc 
+   * @param {string} [desc] 
+   * @param {...any} [args]
+   * @returns {Log}
+   */
+  dies (testfunc, desc, ...args)
+  {
+    const ret = $call(testfunc, args);
+    return this.ok(('err' in ret), desc, ret.err);
+  }
+
+  /**
+   * See if a function throws an Error, and if the Error passes a second test.
+   * 
+   * All the notes that apply to `dies()` apply here as well.
+   *
+   * @param {function} testfunc - Same as `dies()` and `call()`
+   *   We don't care about the return value of this function.
+   *   We only care that it *should* throw an Error.
+   *
+   * @param {(function|string)} testerr - A test to validate the Error.
+   *
+   * If this is a `function` it will be passed the thrown `Error` as the first
+   * parameter, and an `Array` of `args` as the second parameter. The return
+   * value from this will be passed to `ok()`.
+   *
+   * If this is a `string` then the test will pass only if the either the
+   * `Error.name` or `Error.message` is exactly equal to this value.
+   *
+   * @param {string} [desc] 
+   * @param {...any} [args]
+   * @returns {Log}
+   */
+  diesWith(testfunc, testerr, desc, ...args)
+  {
+    let ok = false, details = {}, err = null;
+
+    const r1 = $call(testfunc, args);
+
+    if ('err' in r1)
+    {
+      err = r1.err;
+
+      if (typeof testerr === F)
+      { // A secondary function to test the error with.
+        const r2 = $call(testerr, [err, args]);
+        if ('err' in r2)
+        { // Second function threw an error, add it as diagnostic info.
+          details.info = r2.err;
+        }
+        else
+        { // No error, use the function output as the test value.
+          ok = r2.val;
+        }
+      }
+      else if (typeof testerr === S)
+      { // A simple name/message test.
+        if (err.name === testerr || err.message === testerr)
+        { // Either the name or the message matched the string.
+          ok = true;
+        }
+      }
+      
+    } // if r1.err
+
+    return this.ok(ok, desc, err, details);
+  }
+
+  /**
+   * See if a function runs without throwing an Error.
+   * 
+   * The function will be called in a `try { } catch (err) { }` block.
+   * 
+   * If an error is caught, the test will be considered to have failed,
+   * and the `Error` object will be used as the `directive` in the `ok()`
+   * call. If no error is caught the test will be considered to have passed.
+   * 
+   * @param {function} testfunc 
+   * @param {string} [desc] 
+   * @param {...any} [args]
+   * @returns {Log}
+   */
+  lives (testfunc, desc, ...args)
+  {
+    const ret = $call(testfunc, args);
+    return this.ok(!('err' in ret), desc, ret.err);
+  }
+
+  /**
+   * See if a value is what we expect it to be.
+   * 
+   * @param {*} got - The result value from the test function.
+   * @param {*} want - The value we expected from the test function.
+   * @param {string} comp - A comparitor to test with.
+   * 
+   * - `===`, `is`          (See also: `is()`)
+   * - `!==`, `isnt`        (See also: `isnt()`)
+   * - `==`,  `eq`
+   * - `!=`,  `ne`
+   * - `>`,   `gt`
+   * - `&lt;`,   `lt`
+   * - `>=`,  `ge`, `gte`
+   * - `&lt;=`,  `le`, `lte`
+   * 
+   * @param {string} desc 
+   * @param {boolean} [stringify=true] Stringify values in TAP output?
+   * @returns {Log}
+   */
+  cmp (got, want, comp, desc, stringify=true)
+  {
+    let test;
+    switch(comp)
+    {
+      case 'is':
+      case '===':
+        test = (got === want);
+        break;
+      case 'isnt':
+      case '!==':
+        test = (got !== want);
+        break;
+      case 'eq':
+      case '==':
+        test = (got == want);
+        break;
+      case 'ne':
+      case '!=':
+        test = (got != want);
+        break;
+      case 'lt':
+      case '&lt;':
+        test = (got &lt; want);
+        break;
+      case '>':
+      case 'gt':
+        test = (got > want);
+        break;
+      case 'le':
+      case 'lte':
+      case '&lt;=':
+        test = (got &lt;= want);
+        break;
+      case 'ge':
+      case 'gte':
+      case '>=':
+        test = (got >= want);
+        break;
+      default:
+        test = false; 
+    }
+
+    let details = null;
+    if (!test)
+    { // The test failed, add the deets.
+      details = 
+      {
+        got, 
+        wanted: want,
+        stringify,
+        comparitor: comp,
+      };
+    }
+
+    return this.ok(test, desc, null, details);
+  }
+
+  /**
+   * See if two values are equal.
+   * 
+   * The same as using `cmp()` with the `===` comparitor.
+   * 
+   * @param {*} got 
+   * @param {*} want 
+   * @param {string} [desc] 
+   * @param {boolean} [stringify=true]
+   * @returns {Log}
+   */
+  is (got, want, desc, stringify=true)
+  {
+    return this.cmp(got, want, '===', desc, stringify);
+  }
+
+  /**
+   * See if two values are NOT equal.
+   * 
+   * The same as using `cmp()` with the `!==` comparitor.
+   * 
+   * @param {*} got - The result value from the test function.
+   * @param {*} want - The value we expected from the test function.
+   * @param {string} [desc] 
+   * @param {boolean} [stringify=true]
+   * @returns {Log}
+   */
+  isnt (got, want, desc, stringify=true)
+  {
+    return this.cmp(got, want, '!==', desc, stringify);
+  }
+
+  /**
+   * See if a value is of a certain type.
+   * 
+   * @param {*} got 
+   * @param {Array} wants - Type names or constructor functions.
+   * 
+   * Uses `@lumjs/core/types.isa()` to perform the test.
+   *  
+   * @param {string} [desc]
+   * @param {boolean} [stringify=true]
+   * @returns {Log}
+   */
+  isa (got, wants, desc, stringify=true, not=false)
+  {
+    if (!isArray(wants))
+    {
+      wants = [wants];
+    }
+    let res = types.isa(got, ...wants);
+    if (not)
+    { // Inverse the result.
+      res = !res;
+    }
+
+    let details = null;
+    if (!res)
+    { // The test failed, add the deets.
+      details = 
+      {
+        got, 
+        wanted: wants,
+        stringify,
+        comparitor: not ? 'nota()' : 'isa()',
+      };
+    }
+
+    return this.ok(res, desc, null, details);
+  }
+
+  /**
+   * See if a value is NOT of a certain type.
+   *
+   * Just inverses the results of `isa()`.
+   *
+   * @param {*} got
+   * @param {Array} wants - Type names of constructor functions.
+   * @param {string} [desc]
+   * @param {boolean} [stringify=true]
+   * @returns {Log}
+   */
+  nota (got, wants, desc, stringify=true)
+  {
+    return this.isa(got, wants, desc, stringify, true);
+  }
+
+  /**
+   * An `is()` test, but encode both values as JSON first.
+   * 
+   * Actually uses `core.types.stringify()` so it supports more
+   * data types than standard JSON, and can stringify functions,
+   * symbols, and several extended object types.
+   * 
+   * @param {*} got 
+   * @param {*} want 
+   * @param {string} [desc] 
+   * @returns {Log}
+   */
+  isJSON (got, want, desc)
+  {
+    got = types.stringify(got);
+    want = types.stringify(want);
+    return this.is(got, want, desc, false);
+  }
+
+  /**
+   * An `isnt()` test, but encode both values as JSON first.
+   * 
+   * Like `isJSON()` this uses `core.types.stringify()`.
+   * 
+   * @param {*} got 
+   * @param {*} want 
+   * @param {string} [desc] 
+   * @returns {Log}
+   */
+  isntJSON (got, want, desc)
+  {
+    got = types.stringify(got);
+    want = types.stringify(want);
+    return this.isnt(got, want, desc, false);
+  }
+
+  /**
+   * Skip a test.
+   * 
+   * @param {?string} reason - Why the test was skipped.
+   * @param {string} desc 
+   * @returns {Log}
+   */
+  skip (reason, desc)
+  {
+    var log = this.ok(true, desc);
+    log.skipped = true;
+    if (typeof reason === S)
+      log.skippedReason = reason;
+    this.skipped++;
+    return log;
+  }
+
+  /**
+   * Add diagnostics info directly to our test logs.
+   * 
+   * @param {*} msg - The info to add. 
+   *   If this is a `string` it will be displayed as a comment as is.
+   *   If it is anything else, it will be encoded as JSON first.
+   * 
+   */
+  diag (msg)
+  {
+    this.log.push(msg);
+  }
+
+  /**
+   * Run an assortment of tests using a map.
+   *
+   * The *current* test method defaults to `ok`.
+   *
+   * @param {...any} tests - The tests we're running.
+   *
+   * If this is a `string`, and is the name of one of the standard testing
+   * methods in this class, it will be set as the *current* test method.
+   *
+   * If this is a `function`, it will be set as the *current* test method.
+   * Function test methods are passed to `call()` with the test parameters.
+   *
+   * If this is an `Array` then it's the parameters for the *current* test
+   * method. If a custom `function` is in use, remember that the *first*
+   * parameter is **always** the `desc`, and any subsequent parameters will be
+   * passed to the custom `function` call.
+   *
+   * Any value other than one of those will throw a `TypeError`.
+   *
+   * @returns {Log[]} A `Log` item for each test that was ran.
+   */
+  run(...tests)
+  {
+    const logs = [];
+    let current = 'ok';
+    
+    for (const test of tests)
+    {
+      const tt = typeof test;
+      if (tt === F || (tt === S &amp;&amp; TEST_METHODS.includes(test)))
+      { // Set the current test.
+        current = test;
+      }
+      else if (isArray(test))
+      { // A set of test parameters.
+        let log;
+        if (typeof current === F)
+        { // A custom test function is in use.
+          log = this.call(current, ...test);
+        }
+        else
+        { // A standard test is in use.
+          log = this[current](...test);
+        }
+        logs.push(log);
+      }
+    }
+
+    return logs;
+  }
+
+  /**
+   * Return TAP formatted output for all the tests.
+   * 
+   * @returns {string} The test logs, in TAP format.
+   */
+  tap ()
+  {
+    var out = '';
+    if (this.planned > 0)
+    {
+      out += '1..'+this.planned+"\n";
+    }
+    var t = 1;
+    for (var i = 0; i &lt; this.log.length; i++)
+    {
+      var log = this.log[i];
+      if (log instanceof Log)
+      {
+        out += log.tap(t++);
+      }
+      else
+      { // A comment.
+        out += '# ' + (typeof log === S ? log : types.stringify(log)) + "\n";
+      }
+    }
+    if (this.skipped)
+    {
+      out += '# Skipped '+this.skipped+" tests\n";
+    }
+    if (this.failed)
+    {
+      out += '# Failed '+this.failed+(this.failed>1?' tests':' test');
+      if (this.planned)
+        out += ' out of '+this.planned;
+      out += "\n";
+    }
+    var ran = t-1;
+    if (this.planned > 0 &amp;&amp; this.planned != ran)
+    {
+      out += '# Looks like you planned '+this.planned+' but ran '+ran+" tests\n";
+    }
+    return out;
+  }
+
+  /**
+   * Send the TAP output to the `console`.
+   */
+  output ()
+  {
+    console.log(this.tap());
+    return this;
+  }
+
+} // class Test
+
+// Should never need this, but...
+def(Test, 'Log', Log);
+
+// Probably don't need this either, but...
+def(Test, '$call', $call);
+
+// Methods we're exporting for the 'functional' API.
+def(Test, '$METHODS',
+{
+  test: TEST_METHODS,
+  meta: META_METHODS,
+  get all()
+  {
+    const list = [];
+    for (const name in this)
+    {
+      if (name === 'all') continue;
+      const prop = this[name];
+      if (isArray(prop))
+      {
+        list.push(...prop);
+      }
+    }
+    return list;
+  },
+});
+
+// Export the class
+module.exports = Test;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_functional.html">@lumjs/tests/functional</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="Log.html">Log</a></li><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Test.html">Test</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:13:38 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -547,14 +547,19 @@ It replaces the <code>prop()</code> method from the old Lum.js v4.</p>
 
             
 
-            <td class="description last"><p>If a <code>string</code>, the property name.</p>
+            <td class="description last"><p>If a <code>string</code>, the property name.
+Property names may also be <code>symbol</code> values.</p>
 <p>If this is <code>null</code> or <code>undefined</code> then the <code>value</code> is ignored entirely,
 and instead a bound version of this function is created with the
-<code>obj</code> already passed as the first parameter. Can be useful if you
-need to add a lot of properties to the same object.</p>
+<code>obj</code> already passed as the first parameter, and any of the options from
+<code>opts</code> added to a new default set of options bound to the function.
+Can be useful if you need to add a lot of properties to the same object.</p>
 <p>If this is a <code>boolean</code>, then the same logic as if it was <code>null</code> or
 <code>undefined</code> will apply, except that an <code>enumerable</code> property with this
-value will also be added to the descriptors.</p></td>
+value will also be added to the descriptors.</p>
+<p>If this is an <code>object</code>, we also ignore <code>value</code> entirely, as each of
+the keys of this object will be used as the name of a property,
+and the value associated with the key will be the value to assign it.</p></td>
         </tr>
 
     
@@ -590,8 +595,8 @@ value will also be added to the descriptors.</p></td>
 it will be used as the descriptor. If it has no <code>configurable</code>
 property defined, one will be added, and will be set to <code>true</code>.
 This behaviour may be overridden by the <code>opts</code> parameter.</p>
-<p>If this is a <code>function</code> and <code>opts</code> is a <code>boolean</code> or <code>function</code>,
-then this will be used as a getter or setter (see <code>opts</code> for details.)</p>
+<p>If this and <code>opts</code> are both <code>function</code> values, then this will
+be used as a <em>getter</em>, and <code>opts</code> will be used a <em>setter</em>.</p>
 <p>Any other value passed here will be used as the <code>value</code> in a
 pre-canned descriptor, also with <code>configurable</code> set to <code>true</code>.</p></td>
         </tr>
@@ -631,22 +636,13 @@ pre-canned descriptor, also with <code>configurable</code> set to <code>true</co
 The named options <code>configurable</code>, <code>enumerable</code>, and <code>writable</code>
 can be used to define default values to the descriptor properties
 of the same name.</p>
-<p>If this is a <code>string</code> then it is considered a list of single-character
-options where the character is the first letter of one of the descriptor
-property options. If the character is lowercase then the option value
-will be <code>true</code>, if it is uppercase then the option value will be <code>false</code>.
-So for example: <code>eCW</code> is the same as:
-<code>{enumerable: true, configurable: false, writable: false}</code>;</p>
 <p>If <code>value</code> and this are both <code>function</code> values, then <code>value</code> will
 be used as a <em>getter</em> and this will be used as a <em>setter</em>.</p>
-<p>If <code>value</code> is a <code>function</code> and this is <code>true</code>, then <code>value</code> will
-be used as a <em>getter</em> and no <em>setter</em> will be assigned.</p>
-<p>If <code>value</code> is a <code>function</code> and this is <code>false</code>, then <code>value</code> will
-be used as a <em>setter</em> and no <em>getter</em> will be assigned.</p>
 <p>If <code>value</code> is a valid descriptor object, then setting this to <code>false</code>
 will disable the assumption that it is the descriptor to set.
 Setting this to <code>true</code> on will instruct the function to make a clone
-of the descriptor object before modifying any properties in it.</p></td>
+of the descriptor object before modifying any properties in it.</p>
+<p>This defaults to <code>undefined</code>, except if</p></td>
         </tr>
 
     
@@ -687,7 +683,7 @@ of the descriptor object before modifying any properties in it.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_def.js.html">types/def.js</a>, <a href="types_def.js.html#line91">line 91</a>
+        <a href="types_def.js.html">types/def.js</a>, <a href="types_def.js.html#line78">line 78</a>
     </li></ul></dd>
     
 
@@ -4268,7 +4264,8 @@ some types. So this function adds string formats for:</p>
 <li><code>symbol</code></li>
 <li><code>TypedArray</code></li>
 <li><code>Map</code></li>
-<li><code>Set</code>
+<li><code>Set</code></li>
+<li><code>Error</code>
 I may add even more extended types in the future, but that's enough
 for now.</li>
 </ul>
@@ -4789,7 +4786,7 @@ internal objects. Otherwise an <code>Array</code> of unbound objects may be used
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Jul 18 2022 18:27:35 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>
