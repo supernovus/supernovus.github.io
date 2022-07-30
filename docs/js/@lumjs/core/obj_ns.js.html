@@ -29,7 +29,8 @@
             <pre class="prettyprint source linenums"><code>// Import required bits here.
 const 
 {
-  B, root, isObj, needObj, def, nonEmptyArray, notNil
+  B, root, isObj, needObj, def, nonEmptyArray, notNil,
+  doesDescriptorTemplate,
 } = require('../types');
 
 /**
@@ -103,16 +104,20 @@ exports.nsArray = nsArray;
 /**
  * Get a (nested) property from an object with a given path.
  *
- * @param {object} obj - Object we're looking in.
+ * @param {(object|function)} obj - Object we're looking in.
  * @param {(string|Array)} proppath - Property path we're looking for.
  *   Generally a string of dot (`.`) separated nested property names.
- * @param {object} [opts] TBD.
+ * @param {(object|boolean)} [opts] Options changing the behaviours.
+ *   If this is a `boolean` it's assumed to be the `opts.log` option.
+ * @param {boolean} [opts.log=false] Log errors for missing namespaces?
+ * @param {*} [opts.default] A default value if the namespace is not found.
+ * 
  * @return {*} The property if found, or `opts.default` if not.
  * @alias module:@lumjs/core/obj.getObjectPath
  */
 function getObjectPath(obj, proppath, opts={})
 {
-  needObj(obj);
+  needObj(obj, true);
 
   if (typeof opts === B)
     opts = {log: opts};
@@ -144,20 +149,32 @@ exports.getObjectPath = getObjectPath;
 /**
  * Create a nested property path if it does not exist.
  * 
- * @param {object} obj - Object the property path is for.
+ * @param {(object|function)} obj - Object the property path is for.
  * @param {(string|Array)} proppath - Property path to create.
- * @param {object} [opts] TBD.
- * @return {*} Generally the last object in the nested path.
- *   However the output may vary depending on the options.
+ * @param {object} [opts] Options changing the behaviours.
+ * @param {*} [opts.value] A value to assign to the last property path.
+ * @param {boolean} [opts.overwrite=false] Allow overwriting property paths.
+ *   Only applicable if `opts.value` was also specified.
+ * @param {object} [opts.desc] Descriptor rules for defining the properties.
+ *   Must NOT contain `value`, `get`, or `set` properties.
+ *   Only, `configurable`, `enumerable`, and `writable` are supported.
+ *   Will be ignored if `opts.assign` is `true`.
+ * @param {boolean} [opts.assign=false] Use direct assignment instead of `def()`.
+ * @param {boolean} [opts.returnThis=false] Return `this` variable.
+ * @param {boolean} [opts.returnObj=false] Return the `obj` parameter.
+ * @return {*} Generally the last object in the nested property paths.
+ *   Unless one of `opts.returnThis` or `opts.returnObj` was `true`.
  * @alias module:@lumjs/core/obj.setObjectPath
  */
 function setObjectPath(obj, proppath, opts={})
 {
-  needObj(obj); needObj(opts);
+  needObj(obj, true, 'obj parameter must be an object or function');
+  needObj(opts, 'opts parameter must be an object');
+
   proppath = nsArray(proppath);
 
   let assign;
-  if (isObj(opts.desc))
+  if (doesDescriptorTemplate(opts.desc))
   { // An explicit descriptor.
     assign = (o,p,v={}) => 
     {
@@ -246,8 +263,7 @@ exports.getNamespace = getNamespace;
  * 
  * @param {(string|Array)} proppath - Property path to create.
  * @param {object} [opts] See `setObjectPath()` for details.
- * @return {*} Generally the last object in the nested path.
- *   However the output may vary depending on the options.
+ * @return {*} See `setObjectPath()` for details.
  * @alias module:@lumjs/core/obj.setNamespace
  * @see module:@lumjs/core/obj.setObjectPath
  */
@@ -267,13 +283,13 @@ exports.setNamespace = setNamespace;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getProperty">getProperty</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:38 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

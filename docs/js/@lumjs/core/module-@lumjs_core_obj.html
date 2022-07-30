@@ -2176,7 +2176,7 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line207">line 207</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line224">line 224</a>
     </li></ul></dd>
     
 
@@ -2294,6 +2294,9 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">function</span>
 
 
             
@@ -2360,6 +2363,9 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">boolean</span>
 
 
             
@@ -2379,7 +2385,114 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
 
             
 
-            <td class="description last"><p>TBD.</p></td>
+            <td class="description last"><p>Options changing the behaviours.
+If this is a <code>boolean</code> it's assumed to be the <code>opts.log</code> option.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>log</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Log errors for missing namespaces?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>default</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A default value if the namespace is not found.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2420,7 +2533,7 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line85">line 85</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line90">line 90</a>
     </li></ul></dd>
     
 
@@ -3222,7 +3335,7 @@ If it's a string, split it into an array, with the <code>.</code> delimiter.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line60">line 60</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -3417,7 +3530,7 @@ If it's an array of strings, join the elements with a <code>.</code> character.<
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line34">line 34</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line35">line 35</a>
     </li></ul></dd>
     
 
@@ -3619,7 +3732,7 @@ If it's an array of strings, join the elements with a <code>.</code> character.<
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line226">line 226</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -3655,8 +3768,7 @@ If it's an array of strings, join the elements with a <code>.</code> character.<
 
         
 <div class="param-desc">
-    <p>Generally the last object in the nested path.
-However the output may vary depending on the options.</p>
+    <p>See <code>setObjectPath()</code> for details.</p>
 </div>
 
 
@@ -3738,6 +3850,9 @@ However the output may vary depending on the options.</p>
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">function</span>
 
 
             
@@ -3822,7 +3937,271 @@ However the output may vary depending on the options.</p>
 
             
 
-            <td class="description last"><p>TBD.</p></td>
+            <td class="description last"><p>Options changing the behaviours.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A value to assign to the last property path.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overwrite</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Allow overwriting property paths.
+Only applicable if <code>opts.value</code> was also specified.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>desc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Descriptor rules for defining the properties.
+Must NOT contain <code>value</code>, <code>get</code>, or <code>set</code> properties.
+Only, <code>configurable</code>, <code>enumerable</code>, and <code>writable</code> are supported.
+Will be ignored if <code>opts.assign</code> is <code>true</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assign</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Use direct assignment instead of <code>def()</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>returnThis</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Return <code>this</code> variable.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>returnObj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Return the <code>obj</code> parameter.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -3863,7 +4242,7 @@ However the output may vary depending on the options.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line126">line 126</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -3892,8 +4271,8 @@ However the output may vary depending on the options.</p>
 
         
 <div class="param-desc">
-    <p>Generally the last object in the nested path.
-However the output may vary depending on the options.</p>
+    <p>Generally the last object in the nested property paths.
+Unless one of <code>opts.returnThis</code> or <code>opts.returnObj</code> was <code>true</code>.</p>
 </div>
 
 
@@ -3974,7 +4353,7 @@ However the output may vary depending on the options.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line11">line 11</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -4292,13 +4671,13 @@ If this is not specified, <code>opts2</code> will be the same as <code>opts1</co
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getProperty">getProperty</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:38 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

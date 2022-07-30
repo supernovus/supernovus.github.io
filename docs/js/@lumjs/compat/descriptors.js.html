@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: descriptors.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: descriptors.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
+const {InternalObjectId,Enum,types} = core;
+const {doesDescriptor,isObj,isComplex,def,B,F,N} = types;
+
+// We moved getProperty() to the `@lumjs/core/obj` module.
+const getProperty = core.obj.getProperty;
+exports.getProperty = getProperty;
+
+const DESC_ID = new InternalObjectId({name: '$LumDescriptor'});
+const DESC_ADD = Enum(['ONE', 'SHORT', 'SET'], {flags: true});
+
+/**
+ * Create a magic Descriptor object.
+ * @param {object} desc - Descriptor template.
+ * @param {object} [opts] - Options (to be documented.)
+ * @returns {object} `desc`
+ */
+function descriptor(desc, opts={})
+{
+  if (!isObj(opts)) throw new TypeError("Options must be an object");
+
+  if (typeof desc === B)
+  { // This is a special case.
+    opts.accessorSafe = desc;
+    opts.add = DESC_ADD.ONE;
+    desc = {};
+  }
+
+  if (!isObj(desc)) 
+    throw new TypeError("First parameter (desc) must be a descriptor template object");
+
+  if (!Object.isExtensible(desc))
+    throw new RangeError("First parameter (desc) must not be locked, sealed, frozen, etc.");
+
+  const accessorSafe = (typeof opts.accessorSafe === B) 
+    ? opts.accessorSafe
+    : (desc.writable === undefined);
+  
+  DESC_ID.tag(desc);
+
+  // Add a function or other property.
+  const add = def(desc);
+
+  // Add a getter.
+  function accessor(name, getter, setter)
+  {
+    const adef = {configurable: true};
+    if (typeof getter === F) adef.get = getter;
+    if (typeof setter === F) adef.set = setter;
+    def(desc, name, adef);
+  }
+
+  add('accessorSafe', accessorSafe);
+
+  add('whenDone', function(func)
+  {
+    if (typeof func === F)
+    {
+      add('done', func);
+    }
+    return this;
+  });
+
+  if (typeof opts.done === F)
+  {
+    desc.whenDone(opts.done);
+  }
+
+  add('setValue', function (val, noClean)
+  {
+    if (this.get !== undefined || this.set !== undefined)
+    {
+      console.error("Accessor properties already defined", this);
+    }
+    else
+    {
+      this.value = val;
+    }
+    
+    return this;
+  });
+
+  if (accessorSafe)
+  {
+    function validate ()
+    {
+      if (this.value !== undefined)
+      { 
+        console.error("Data 'value' property defined", this);
+        return false;
+      }
+
+      for (const arg of arguments)
+      { // All accessor arguments must be functions.
+        if (typeof arg !== F) throw new TypeError("Parameter must be a function");
+      }
+
+      return true;
+    }
+
+    add('setGetter', function(func)
+    {
+      if (validate.call(this, func))
+        this.get = func;
+      return this;
+    });
+
+    add('setSetter', function(func)
+    {
+      if (validate.call(this, func))
+        this.set = func;
+      return this;    
+    });
+
+    add('setAccessor', function(getter, setter)
+    {
+      if (validate.call(this, getter, setter))
+      {
+        this.get = getter;
+        this.set = setter;
+      }
+      return this;
+    });
+
+  } // accessorSafe
+
+  if (opts.add)
+  {
+    const addTypes 
+      = (typeof opts.add === N) 
+      ? opts.add 
+      : DESC_ADD.SET;
+
+    function addBool(propname)
+    {
+      const setBool = function() 
+      { 
+        this[propname] = true; 
+        return this; 
+      }
+
+      if (addTypes &amp; DESC_ADD.ONE)
+      {
+        const aname = propname[0];
+        accessor(aname, setBool);
+      }
+      if (addTypes &amp; DESC_ADD.SHORT)
+      {
+        const aname = propname.substring(0,4);
+        accessor(aname, setBool);
+      }
+      if (addTypes &amp; DESC_ADD.SET)
+      {
+        const aname = 'set'+ucfirst(propname);
+        accessor(aname, setBool);
+      }
+    }
+
+    addBool('configurable');
+    addBool('enumerable');
+    addBool('writable');
+
+  } // addBools
+
+  // Is the descriptor ready to be used?
+  accessor('isReady', function()
+  {
+    return doesDescriptor(this);
+  });
+
+  return desc;
+} // descriptor()
+
+exports.descriptor = descriptor;
+
+/**
+ * Get a Descriptor object.
+ * @param {object} desc - Either a Descriptor, or a descriptor template. 
+ * @returns {object}
+ */
+function getDescriptor(desc)
+{
+  return DESC_ID.is(desc) ? desc : descriptor(desc);
+}
+
+exports.getDescriptor = getDescriptor;
+
+/**
+ * A factory for building magic Descriptor objects.
+ */
+const DESC =
+{
+  get RO()    { return descriptor(true)  },
+  get CONF()  { return descriptor(true).c  },
+  get ENUM()  { return descriptor(true).e  },
+  get WRITE() { return descriptor(false).w },
+  get RW()    { return descriptor(false).c.w },
+  get DEF()   { return descriptor(true).c.e  },
+  get OPEN()  { return descriptor(false).c.e.w },
+}
+
+def(DESC)
+  ('make', descriptor)
+  ('is',   DESC_ID.isFunction())
+  ('get',  getDescriptor)
+  ('does', doesDescriptor)
+  ('ADD',  DESC_ADD);
+
+exports.DESC = DESC;
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_compat_v4-meta.html">@lumjs/compat/v4-meta</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DESC">DESC</a></li><li><a href="global.html#descriptor">descriptor</a></li><li><a href="global.html#getDescriptor">getDescriptor</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:10 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

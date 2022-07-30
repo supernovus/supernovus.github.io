@@ -132,16 +132,16 @@ function isProperty(v)
 }
 
 /**
- * See if an object can be used as a valid descriptor.
+ * See if an object can be used as a valid *descriptor*.
  * 
- * Basically in order to be considered a valid descriptor, 
+ * Basically in order to be considered a valid *descriptor*, 
  * one of the the following sets of rules must be true:
  * 
- *  - A Data Descriptor:
+ *  - A *Data descriptor*:
  *      - Has a `value` property.
  *      - Does not have a `get` property.
  *      - Does not have a `set` property.
- *  - An Accessor Descriptor:
+ *  - An *Accessor descriptor*:
  *      - Has a `get` and/or `set` property.
  *      - Does not have a `value` property.
  *      - Does not have a `writable` property.
@@ -173,13 +173,60 @@ function isProperty(v)
    return false;
  }
 
- // Now export those.
- module.exports =
- {
-  isObj, isComplex, isNil, notNil, isScalar, isArray, isTypedArray,
-  nonEmptyArray, isArguments, isProperty, doesDescriptor,
- }
- </code></pre>
+/**
+ * See if an object can be used as a valid *descriptor template*.
+ * 
+ * This is similar to `doesDescriptor`, except that a *template*
+ * **must not** contain `value`, `get` or `set` properties.
+ * 
+ * @param {object} obj - The object we are testing.
+ * @param {boolean} [accessor=false] Template is for an Accessor.
+ *   If this is `true` then the `writable` property will also be forbidden.
+ * @param {boolean} [strict=true] Only allow valid descriptor properties.
+ *   If this is `true` then **only** allow `configurable`, `enumerable`, and
+ *   conditionally `writable` (only if `accessor` is `false`.)
+ *   If this is `false` then any unknown properties will be ignored.
+ * 
+ * @returns {boolean} Is the object a valid descriptor template?
+ * @alias module:@lumjs/core/types.doesDescriptorTemplate
+ */
+function doesDescriptorTemplate(obj, accessor=false, strict=true)
+{
+  if (!isObj(obj)) return false;
+
+  // Get a list of enumerable properties in the object.
+  const props = Object.keys(obj);
+
+  if (strict)
+  { // Strict enforcement, only valid descriptor properties allowed.
+    const valid = ['configurable', 'enumerable'];
+    if (!accessor) valid.push('writable');
+    for (const prop of props)
+    {
+      if (!valid.includes(prop)) return false;
+    }
+  }
+  else
+  { // Loose enforcement mode, reject on forbidden properties only.
+    const forbidden = ['value','get','set'];
+    if (accessor) forbidden.push('writable');
+    for (const prop of props)
+    {
+      if (forbidden.includes(prop)) return false;
+    }
+  }
+
+  // No tests failed, this can be used as a template.
+  return true;
+}
+
+// Now export those.
+module.exports =
+{
+isObj, isComplex, isNil, notNil, isScalar, isArray, isTypedArray,
+nonEmptyArray, isArguments, isProperty, doesDescriptor, doesDescriptorTemplate,
+}
+</code></pre>
         </article>
     </section>
 
@@ -189,13 +236,13 @@ function isProperty(v)
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getProperty">getProperty</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:38 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

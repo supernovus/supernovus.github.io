@@ -33,7 +33,7 @@
 
 const core = require('@lumjs/core');
 const types = core.types;
-const {F,S,N,isObj,isArray,def} = types;
+const {F,S,N,isObj,isArray,needs,def} = types;
 
 // We use a separate class to represent test logs.
 const Log = require('./log');
@@ -48,7 +48,7 @@ const TEST_METHODS =
 // A list of other methods to export that are not standard tests.
 const META_METHODS = 
 [
-  'plan', 'diag', 'run', 'tap', 'output',
+  'plan', 'diag', 'run', 'tap', 'output', 'done',
 ];
 
 // The function that powers `Test.call()` and friends.
@@ -72,6 +72,14 @@ function $call (testfunc, args)
  * Based on Lum.php's Test library.
  * Which itself was based on Perl 5's Test::More, and
  * Raku's Test libraries.
+ *
+ * @property {number}  planned - Number of tests planned, `0` if unplanned.
+ * @property {number}  failed  - Number of tests that failed.
+ * @property {number}  skipped - Number of tests that were skipped.
+ * @property {number}  ran     - Number of tests ran (*calculated*). 
+ * @property {string}  id      - Unique test id used by `Harness` libary.
+ * @property {boolean} isTop   - Test module was loaded from the command line.
+ * @property {?object} harness - The top-level `Harness` if one was found.
  */
 class Test
 {
@@ -90,6 +98,9 @@ class Test
    *
    *   Also, if this is passed, and `opts.id` was not specified, and id
    *   will be auto-generated based on the filename of the module.
+   *
+   * @param {number} [opts.stringify=1] The depth `stringify()` should recurse
+   *   objects and Arrays before switching to plain JSON stringification.
    *
    */
   constructor (opts={})
@@ -118,10 +129,16 @@ class Test
       this.id = null;
     }
 
+    this.stringifyDepth = opts.stringify ?? 1;
+
     this.failed = 0;
     this.skipped = 0;
     this.planned = 0;
     this.log = [];
+
+    // These three will be updated below if possible.
+    this.isTop   = false;
+    this.harness = null;
 
     if (typeof opts.plan === N)
     {
@@ -129,9 +146,29 @@ class Test
     }
 
     if (hasModule)
-    { // Finally, if a module was passed, its going to export this test.
+    { // If a module was passed, its going to export this test.
       opts.module.exports = this;
+      // We'll also use the module to determine if we're Harnessed or not.
+      if (require.main === opts.module)
+      { // Was called directly.
+        this.isTop = true;
+      }
     }
+
+    if (!this.isTop)
+    { // Try to find a Harness instance.
+      if (isObj(require.main) &amp;&amp; require.main.exports instanceof Harness)
+      { // We found the Harness instance.
+        this.harness = require.main.exports;
+      }
+    }
+
+  }
+
+  // A wrapper around types.stringify()
+  stringify(what)
+  {
+    return types.stringify(what, this.stringifyDepth);
   }
 
   /**
@@ -175,7 +212,7 @@ class Test
    */
   ok (test, desc, directive, details)
   {
-    const log = new Log();
+    const log = new Log(this);
 
     if (test)
     {
@@ -218,7 +255,7 @@ class Test
    * @param {...any} [args] Arguments to pass to the test function.
    * @returns {Log}
    */
-  call(testfunc, desc, ...args)
+  call (testfunc, desc, ...args)
   {
     const ret = $call(testfunc, args);
     return this.ok(ret.val, desc, ret.err);
@@ -290,7 +327,7 @@ class Test
    * @param {...any} [args]
    * @returns {Log}
    */
-  diesWith(testfunc, testerr, desc, ...args)
+  diesWith (testfunc, testerr, desc, ...args)
   {
     let ok = false, details = {}, err = null;
 
@@ -353,15 +390,22 @@ class Test
    * @param {string} comp - A comparitor to test with.
    * 
    * - `===`, `is`          (See also: `is()`)
-   * - `!==`, `isnt`        (See also: `isnt()`)
+   * - `!==`, `isnt`, `not` (See also: `isnt()`)
    * - `==`,  `eq`
    * - `!=`,  `ne`
    * - `>`,   `gt`
    * - `&lt;`,   `lt`
    * - `>=`,  `ge`, `gte`
    * - `&lt;=`,  `le`, `lte`
+   *
+   * A few special comparitors for *binary flag* testing:
+   *
+   * - `=&amp;` → `((got &amp; want) === want)`
+   * - `!&amp;` → `((got &amp; want) !== want)`
+   * - `+&amp;` → `((got &amp; want) !== 0)`
+   * - `-&amp;` → `((got &amp; want) === 0)`
    * 
-   * @param {string} desc 
+   * @param {string} [desc] 
    * @param {boolean} [stringify=true] Stringify values in TAP output?
    * @returns {Log}
    */
@@ -376,6 +420,7 @@ class Test
         break;
       case 'isnt':
       case '!==':
+      case 'not':
         test = (got !== want);
         break;
       case 'eq':
@@ -404,6 +449,16 @@ class Test
       case '>=':
         test = (got >= want);
         break;
+      case '=&amp;':
+        test = ((got&amp;want)===want);
+        break;
+      case '!&amp;':
+        test = ((got&amp;want)!==want)
+      case '+&amp;':
+        test = ((got&amp;want)!==0);
+        break;
+      case '-&amp;':
+        test = ((got&amp;want)===0);
       default:
         test = false; 
     }
@@ -417,6 +472,39 @@ class Test
         wanted: want,
         stringify,
         comparitor: comp,
+      };
+    }
+
+    return this.ok(test, desc, null, details);
+  }
+
+  /**
+   * See if a string matches a value.
+   * 
+   * @param {string} got
+   * @param {RegExp} want
+   * @param {string} [desc] 
+   * @param {boolean} [stringify=true]
+   * @returns {Log}
+   */
+  matches(got, want, desc, stringify=true)
+  {
+    const no = {error: "matches 'got' value must be a string"};
+    needs(got, no, S);
+    no.error = "matches 'want' value must be a RegExp";
+    needs(want, no, RegExp);
+
+    const test = want.test(got);
+
+    let details = null;
+    if (!test)
+    { // The test failed, add the deets.
+      details = 
+      {
+        got, 
+        wanted: want,
+        stringify,
+        comparitor: 'matches',
       };
     }
 
@@ -524,8 +612,8 @@ class Test
    */
   isJSON (got, want, desc)
   {
-    got = types.stringify(got);
-    want = types.stringify(want);
+    got = this.stringify(got);
+    want = this.stringify(want);
     return this.is(got, want, desc, false);
   }
 
@@ -541,9 +629,92 @@ class Test
    */
   isntJSON (got, want, desc)
   {
-    got = types.stringify(got);
-    want = types.stringify(want);
+    got = this.stringify(got);
+    want = this.stringify(want);
     return this.isnt(got, want, desc, false);
+  }
+
+  /**
+   * Run a function and see if it's return value is what we wanted.
+   *
+   * @param {function} testfunc - The function to run.
+   *   The return value will be passed to `cmp()` or another appropriate
+   *   testing method as determined by the options.
+   *   How this handles error handling is determined by options as well.
+   *
+   * @param {*} want - The value we want.
+   * @param {(object|string)} [opts] Named options for further behaviour.
+   *   If it is a string it's considered the `opts.desc` option.
+   * @param {string} [opts.desc] A description for `ok()`.
+   * @param {boolean} [opts.stringify=true]
+   * @param {Array} [opts.args] Arguments to pass to the test function.
+   * @param {string} [opts.comp="is"] - The comparitor to test with.
+   *   In addition to all of the comparitors from `cmp()`, there are a few
+   *   extra comparitors that will pass through to other methods:
+   *   - `isa` → Use `isa()` to test return value.
+   *   - `nota` → Use `nota()` to test return value.
+   *   - `=json`, `isJSON` → Use `isJSON()` to test return value.
+   *   - `!json`, `isntJSON` → Use `isntJSON()` to test return value.
+   *   - `matches` → Use `matches()` to test return value.
+   *
+   * @param {boolean} [opts.thrown=false] How to handle thrown errors.
+   *   
+   *   If this is `true`, then anything thrown will be passed as if it was
+   *   the return value from the function.
+   *
+   *   If this is `false`, then any errors thrown will result in an immediate
+   *   failure of the test without any further processing, and the error will
+   *   be passed as the `directive` to the `ok()` method.
+   *
+   * @returns {Log}
+   */
+  callIs (testfunc, want, opts={})
+  {
+    const args = opts.args ?? [];
+    const ret = $call(testfunc, args);
+    const desc = opts.desc;
+
+    let got;
+
+    if (ret.err)
+    { // How to handle errors.
+      if (opts.thrown)
+      { // We're going to test the error.
+        got = ret.err;
+      }
+      else
+      { // This is an automatic failure.
+        return this.ok(false, desc, ret.err);
+      }
+    }
+    else
+    { // No errors, good, testing against the return value.
+      got = ret.val;
+    }
+
+    const CFUN = 
+    {
+      'matches':  'matches',
+      'isa':      'isa',
+      'nota':     'nota',
+      'isJSON':   'isJSON',
+      '=json':    'isJSON',
+      'isntJSON': 'isntJSON',
+      '!json':    'isntJSON',
+     };
+
+    const comp = opts.comp ?? 'is';
+    const stringify = opts.stringify ?? true;
+
+    if (typeof CFUN[comp] === S)
+    { // A function with a custom return value.
+      const meth = CFUN[comp];
+      return this[meth](got, want, desc, stringify);
+    }
+    else
+    { // We're going to use the cmp() method.
+      return this.cmp(got, want, comp, desc, stringify);
+    }
   }
 
   /**
@@ -555,7 +726,7 @@ class Test
    */
   skip (reason, desc)
   {
-    var log = this.ok(true, desc);
+    const log = this.ok(true, desc);
     log.skipped = true;
     if (typeof reason === S)
       log.skippedReason = reason;
@@ -587,35 +758,55 @@ class Test
    * methods in this class, it will be set as the *current* test method.
    *
    * If this is a `function`, it will be set as the *current* test method.
-   * Function test methods are passed to `call()` with the test parameters.
+   * By default function test methods are passed to `call()` with the test 
+   * parameters. However, if the *previous* test method was `callIs` then
+   * the `callIs()` method will be used as long as the custom function is
+   * the *current* test method. Likewise to switch back to `call()` simply
+   * set the *current* test method to `call` before setting it to a new custom
+   * test `function`.
    *
    * If this is an `Array` then it's the parameters for the *current* test
-   * method. If a custom `function` is in use, remember that the *first*
-   * parameter is **always** the `desc`, and any subsequent parameters will be
-   * passed to the custom `function` call.
+   * method. If a custom `function` is in use, remember that it's the
+   * `call()` or `callIs()` methods that will be being called, with their
+   * first parameter always being the custom function.
    *
    * Any value other than one of those will throw a `TypeError`.
    *
    * @returns {Log[]} A `Log` item for each test that was ran.
    */
-  run(...tests)
+  run (...tests)
   {
+    const CF = 'call';
+    const CI = 'callIs';
+
     const logs = [];
+    let funcall = CF;
     let current = 'ok';
     
     for (const test of tests)
     {
       const tt = typeof test;
-      if (tt === F || (tt === S &amp;&amp; TEST_METHODS.includes(test)))
-      { // Set the current test.
+      if (tt === S &amp;&amp; TEST_METHODS.includes(test))
+      { // Set the current test to a built-in.
         current = test;
+      }
+      else if (tt === F)
+      { // A custom test function for further tests.
+        if (current === CI)
+        { // Last test was `callIs` using that for the custom function.
+          funcall = CI;
+        }
+        else if (current === CF)
+        { // Last test was `call`, using that for the custom function.
+          funcall = CF;
+        }
       }
       else if (isArray(test))
       { // A set of test parameters.
         let log;
         if (typeof current === F)
         { // A custom test function is in use.
-          log = this.call(current, ...test);
+          log = this[funcall](current, ...test);
         }
         else
         { // A standard test is in use.
@@ -635,15 +826,14 @@ class Test
    */
   tap ()
   {
-    var out = '';
+    let out = '';
     if (this.planned > 0)
     {
       out += '1..'+this.planned+"\n";
     }
-    var t = 1;
-    for (var i = 0; i &lt; this.log.length; i++)
+    let t = 1;
+    for (const log of this.log)
     {
-      var log = this.log[i];
       if (log instanceof Log)
       {
         out += log.tap(t++);
@@ -664,7 +854,7 @@ class Test
         out += ' out of '+this.planned;
       out += "\n";
     }
-    var ran = t-1;
+    const ran = t-1;
     if (this.planned > 0 &amp;&amp; this.planned != ran)
     {
       out += '# Looks like you planned '+this.planned+' but ran '+ran+" tests\n";
@@ -673,12 +863,51 @@ class Test
   }
 
   /**
+   * A calculated property of the number of tests that were ran.
+   * @type {int}
+   */
+  get ran ()
+  {
+    let ran = 0;
+    for (const log of this.log)
+    {
+      if (log instanceof Log)
+      {
+        ran++;
+      }
+    }
+    return ran;
+  }
+
+  /**
    * Send the TAP output to the `console`.
+   *
+   * This is a low-level method and is no longer recommended for use.
+   * Instead call the `done()` method, which will *do the right thing*.
    */
   output ()
   {
     console.log(this.tap());
     return this;
+  }
+
+  /**
+   * We're done testing.
+   *
+   * This will mark the test-set as finished, so attempting to run further
+   * tests after will result in a `RangeError` being thrown.
+   *
+   * If no `Harness` is in use, this will also run `this.output()`.
+   */
+  done ()
+  {
+    if (this.$done)
+    {
+      throw new RangeError('Test set is already done');
+    }
+    this.$done = true;
+
+    return (this.harness ? this : this.output());
   }
 
 } // class Test
@@ -712,6 +941,11 @@ def(Test, '$METHODS',
 
 // Export the class
 module.exports = Test;
+
+// Finally at the bottom after `module.exports` has been set, we will load
+// the Harness class to avoid circular references failing.
+const Harness = require('./harness');
+
 </code></pre>
         </article>
     </section>
@@ -728,7 +962,7 @@ module.exports = Test;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:13:38 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:28 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

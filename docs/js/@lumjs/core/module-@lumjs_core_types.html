@@ -756,18 +756,18 @@ that otherwise would not be possible, take this example:</p>
 
 
 <div class="description">
-    <p>See if an object can be used as a valid descriptor.</p>
-<p>Basically in order to be considered a valid descriptor,
+    <p>See if an object can be used as a valid <em>descriptor</em>.</p>
+<p>Basically in order to be considered a valid <em>descriptor</em>,
 one of the the following sets of rules must be true:</p>
 <ul>
-<li>A Data Descriptor:
+<li>A <em>Data descriptor</em>:
 <ul>
 <li>Has a <code>value</code> property.</li>
 <li>Does not have a <code>get</code> property.</li>
 <li>Does not have a <code>set</code> property.</li>
 </ul>
 </li>
-<li>An Accessor Descriptor:
+<li>An <em>Accessor descriptor</em>:
 <ul>
 <li>Has a <code>get</code> and/or <code>set</code> property.</li>
 <li>Does not have a <code>value</code> property.</li>
@@ -899,6 +899,265 @@ one of the the following sets of rules must be true:</p>
     <ul>
 <li>Is the object a valid descriptor?</li>
 </ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".doesDescriptorTemplate"><span class="type-signature">(static) </span>doesDescriptorTemplate<span class="signature">(obj, accessor<span class="signature-attributes">opt</span>, strict<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>See if an object can be used as a valid <em>descriptor template</em>.</p>
+<p>This is similar to <code>doesDescriptor</code>, except that a <em>template</em>
+<strong>must not</strong> contain <code>value</code>, <code>get</code> or <code>set</code> properties.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The object we are testing.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>accessor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Template is for an Accessor.
+If this is <code>true</code> then the <code>writable</code> property will also be forbidden.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strict</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Only allow valid descriptor properties.
+If this is <code>true</code> then <strong>only</strong> allow <code>configurable</code>, <code>enumerable</code>, and
+conditionally <code>writable</code> (only if <code>accessor</code> is <code>false</code>.)
+If this is <code>false</code> then any unknown properties will be ignored.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_basics.js.html">types/basics.js</a>, <a href="types_basics.js.html#line165">line 165</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Is the object a valid descriptor template?</p>
 </div>
 
 
@@ -4457,7 +4716,7 @@ output format. I'm writing a different library for that.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_stringify.js.html">types/stringify.js</a>, <a href="types_stringify.js.html#line30">line 30</a>
+        <a href="types_stringify.js.html">types/stringify.js</a>, <a href="types_stringify.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -4780,13 +5039,13 @@ internal objects. Otherwise an <code>Array</code> of unbound objects may be used
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getProperty">getProperty</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:23:47 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:38 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>
