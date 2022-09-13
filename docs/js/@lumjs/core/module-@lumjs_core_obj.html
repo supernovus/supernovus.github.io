@@ -144,11 +144,13 @@
 
 
 <div class="description">
-    <p>An enum of supported modes for the <code>clone</code> method.</p>
+    <p>An <code>enum</code> of supported <em>modes</em> for the <code>clone()</code> method.</p>
 <ul>
-<li><strong>P</strong> = All properties. If unchecked, enumerable properties only.</li>
-<li><strong>A</strong> = Uses <code>Array.slice()</code> shortcut for shallow Array cloning.</li>
-<li><strong>R</strong> = Recursive (deep) cloning of nested objects.</li>
+<li><strong>P</strong> → All properties. If unchecked, <em>enumerable</em> properties only.</li>
+<li><strong>A</strong> → Uses <code>Array.slice()</code> shortcut for shallow <code>Array</code> cloning.</li>
+<li><strong>R</strong> → Recursive (deep) cloning of nested objects.</li>
+<li><strong>D</strong> → Uses <em>descriptor</em> cloning instead of direct assignment.</li>
+<li><strong>T</strong> → Sets the <code>prototype</code> of the clone as well.</li>
 </ul>
 <table>
 <thead>
@@ -157,14 +159,27 @@
 <th>P</th>
 <th>A</th>
 <th>R</th>
+<th>D</th>
+<th>T</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>CLONE.N</code></td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>Can be used to manually specify options.</td>
+</tr>
+<tr>
 <td><code>CLONE.DEF</code></td>
 <td>×</td>
 <td>✓</td>
+<td>×</td>
+<td>×</td>
 <td>×</td>
 <td>Default mode for cloning functions.</td>
 </tr>
@@ -173,11 +188,15 @@
 <td>×</td>
 <td>×</td>
 <td>✓</td>
+<td>✓</td>
+<td>×</td>
 <td></td>
 </tr>
 <tr>
 <td><code>CLONE.FULL</code></td>
 <td>✓</td>
+<td>✓</td>
+<td>×</td>
 <td>✓</td>
 <td>×</td>
 <td></td>
@@ -187,6 +206,8 @@
 <td>✓</td>
 <td>×</td>
 <td>×</td>
+<td>✓</td>
+<td>×</td>
 <td></td>
 </tr>
 <tr>
@@ -194,17 +215,26 @@
 <td>✓</td>
 <td>×</td>
 <td>✓</td>
+<td>✓</td>
+<td>✓</td>
 <td></td>
 </tr>
 <tr>
 <td><code>CLONE.JSON</code></td>
-<td>×</td>
-<td>×</td>
+<td>-</td>
+<td>-</td>
 <td>✓</td>
+<td>-</td>
+<td>×</td>
 <td>Uses JSON, so no <code>function</code> or <code>symbol</code> support.</td>
 </tr>
 </tbody>
 </table>
+<p>The <code>✓</code> and <code>×</code> marks signify the <em>default settings</em> in the mode.
+In <em>most</em> cases there are options that can override the
+defaults.</p>
+<p>Any feature in the <code>CLONE.JSON</code> row marked with <code>-</code> are
+incompatible with that mode and cannot be enabled at all.</p>
 </div>
 
 
@@ -242,7 +272,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line24">line 24</a>
+        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line35">line 35</a>
     </li></ul></dd>
     
 
@@ -431,7 +461,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line163">line 163</a>
+        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line316">line 316</a>
     </li></ul></dd>
     
 
@@ -872,9 +902,6 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             
                 
 <span class="param-type">object</span>
-|
-
-<span class="param-type">function</span>
 
 
             
@@ -910,6 +937,9 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">number</span>
 
 
             
@@ -936,6 +966,7 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             
 
             <td class="description last"><p>Options for the cloning process.</p>
+<p>If this is a <code>number</code> then it's assumed to be the <code>opts.mode</code> parameter.</p>
                 <h6>Properties</h6>
                 
 
@@ -998,7 +1029,225 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             
 
             <td class="description last"><p>One of the <code>CLONE.*</code> enum values.</p>
-<p>Note: The <code>CLONE</code> enum is also aliased as <code>clone.MODE</code> as an alternative.</p></td>
+<p>When the <code>clone()</code> method was written to replace some similar methods
+from earlier libraries, I for some reason decided to simply have a bunch
+of different cloning modes. I have since added a full set of options that
+allows overriding the options of any mode (except <code>CLONE.JSON</code>).</p>
+<p>The <code>CLONE</code> enum is also aliased as <code>clone.MODE</code> as an alternative.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>all</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Clone <strong>all</strong> of the object's properties?</p>
+<p>If <code>false</code> only <em>enumerable</em> properties will be cloned.</p>
+<p>The default value depends on the <code>opts.mode</code> used.</p>
+<p>This is not used if <code>opts.mode</code> was <code>CLONE.JSON</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>slice</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Use the <code>Array.slice()</code> shortcut?</p>
+<p>If <code>true</code> then when cloning <code>Array</code> objects, a shallow clone will be
+created using the <code>Array.slice()</code> method.</p>
+<p>The default value depends on the <code>opts.mode</code> used.</p>
+<p>This is not used if <code>opts.mode</code> was <code>CLONE.JSON</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recursive</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Clone nested objects recursively?</p>
+<p>The default value depends on the <code>opts.mode</code> used.
+If <code>opts.slice</code> is also <code>true</code> then <code>Array</code> objects will
+be <em>shallow clones</em> while any other kind of object will be recursive.</p>
+<p>This is not used if <code>opts.mode</code> was <code>CLONE.JSON</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>descriptors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Clone using the property descriptors?</p>
+<p>If <code>true</code> we will get the property descriptors from the original object,
+and assign them to the clone.
+This is the only way to clone <em>accessor</em> type properties properly.</p>
+<p>If <code>false</code> we will directly assign the <em>property value</em> from the original
+object into the clone. This means the <em>current value</em> returned from an
+<em>accessor</em> type property will be assigned statically to the clone.</p>
+<p>The default value will be <code>true</code> if <code>opts.all</code> <strong>OR</strong> <code>opts.recursive</code>
+are <code>true</code>. It will be <code>false</code> otherwise.</p>
+<p>This is not used if <code>opts.mode</code> was <code>CLONE.JSON</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>prototype</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Set the clone's <code>prototype</code>?</p>
+<p>If <code>true</code>, once the cloning is complete, we will call
+<code>Object.getPrototypeOf()</code> on the original <code>obj</code>, and then call
+<code>Object.setProrotypeOf()</code> on the clone.</p>
+<p>If <code>false</code> then the clone with have a prototype of <code>Object</code> or
+<code>Array</code> depending on whether the original object was an <code>Array</code>
+or not. No further prototype handling will be done.</p>
+<p>The default value will be <code>true</code> if <code>opts.all</code> <strong>AND</strong> <code>opts.recursive</code>
+are <em>both</em> <code>true</code>. Otherwise the default value is <code>false</code>.
+So for <em>modes</em>, only <code>CLONE.ENTIRE</code> uses this by default.</p></td>
         </tr>
 
     
@@ -1011,6 +1260,9 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             <td class="type">
             
                 
+<span class="param-type">object</span>
+|
+
 <span class="param-type">boolean</span>
 
 
@@ -1038,8 +1290,9 @@ supported by <code>addClone()</code> may be specified here as well.</p>
             
 
             <td class="description last"><p>Call <code>addClone()</code> on the cloned object.</p>
-<p>The options sent to this function will be used as the defaults in
-the <code>clone()</code> method added to the object.</p></td>
+<p>If <code>opts.addClone</code> is an <code>object</code> then it will be used as the options
+passed to the <code>addClone()</code> method. If it is <code>true</code> then the <code>opts</code>
+will be passed as is.</p></td>
         </tr>
 
     
@@ -1052,6 +1305,9 @@ the <code>clone()</code> method added to the object.</p></td>
             <td class="type">
             
                 
+<span class="param-type">object</span>
+|
+
 <span class="param-type">boolean</span>
 
 
@@ -1079,7 +1335,9 @@ the <code>clone()</code> method added to the object.</p></td>
             
 
             <td class="description last"><p>Call <code>addLock()</code> on the cloned object.</p>
-<p>No further options for this, just add a <code>lock()</code> method to the clone.</p></td>
+<p>If <code>opts.addLock</code> is an <code>object</code> then it will be used as the options
+passed to the <code>addLock()</code> method. If it is <code>true</code> then the <code>opts</code>
+will be passed as is.</p></td>
         </tr>
 
     
@@ -1093,6 +1351,9 @@ the <code>clone()</code> method added to the object.</p></td>
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">boolean</span>
 
 
             
@@ -1105,8 +1366,6 @@ the <code>clone()</code> method added to the object.</p></td>
                 
 
                 
-                    &lt;nullable><br>
-                
 
                 
                 </td>
@@ -1115,12 +1374,19 @@ the <code>clone()</code> method added to the object.</p></td>
             
                 <td class="default">
                 
+                    false
+                
                 </td>
             
 
             <td class="description last"><p>Call <code>copyProps()</code> on the cloned object.</p>
-<p>Will pass the original <code>obj</code> as the source to copy from.
-Will pass <code>opts.copy</code> as the options.</p></td>
+<p>This is called <em>after</em> the normal cloning process, so only properties
+that weren't copied during the cloning process will be copied here.
+This is a leftover from when <code>CLONE.JSON</code> was the default cloning mode,
+and this was the only way to restore <code>function</code> properties.</p>
+<p>If <code>opts.copy</code> is an <code>object</code> then it will be used as the options
+passed to the <code>copyProps()</code> method. If it is <code>true</code> then the <code>opts</code>
+will be passed as is.</p></td>
         </tr>
 
     
@@ -1168,7 +1434,7 @@ Will pass <code>opts.copy</code> as the options.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line64">line 64</a>
+        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -1197,9 +1463,7 @@ Will pass <code>opts.copy</code> as the options.</p></td>
 
         
 <div class="param-desc">
-    <ul>
-<li>The clone of the object.</li>
-</ul>
+    <p>The clone of the object.</p>
 </div>
 
 
@@ -1375,7 +1639,7 @@ Otherwise use our <code>clone()</code> function.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line199">line 199</a>
+        <a href="obj_clone.js.html">obj/clone.js</a>, <a href="obj_clone.js.html#line352">line 352</a>
     </li></ul></dd>
     
 
@@ -2176,7 +2440,7 @@ Generally a string of dot (<code>.</code>) separated nested property names.</p><
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line224">line 224</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line225">line 225</a>
     </li></ul></dd>
     
 
@@ -2533,7 +2797,7 @@ If this is a <code>boolean</code> it's assumed to be the <code>opts.log</code> o
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line90">line 90</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line91">line 91</a>
     </li></ul></dd>
     
 
@@ -2574,6 +2838,245 @@ If this is a <code>boolean</code> it's assumed to be the <code>opts.log</code> o
     <dd>
         
 <span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".getProperty"><span class="type-signature">(static) </span>getProperty<span class="signature">(obj, prop, defval<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {mixed}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Get a property descriptor.</p>
+<p>This is like <code>Object.getOwnPropertyDescriptor</code>, except unlike
+that method, this will travel through the entire prototype chain
+until it finds the descriptor.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object to find a property in.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>prop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name of the property we want the descriptor of.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>defval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">mixed</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The fallback value if no descriptor is found.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="obj_getproperty.js.html">obj/getproperty.js</a>, <a href="obj_getproperty.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The descriptor if found, <code>defval</code> if not.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">mixed</span>
 
 
     </dd>
@@ -3335,7 +3838,7 @@ If it's a string, split it into an array, with the <code>.</code> delimiter.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line61">line 61</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -3530,7 +4033,7 @@ If it's an array of strings, join the elements with a <code>.</code> character.<
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line35">line 35</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line36">line 36</a>
     </li></ul></dd>
     
 
@@ -3732,7 +4235,7 @@ If it's an array of strings, join the elements with a <code>.</code> character.<
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line242">line 242</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -4242,7 +4745,7 @@ Will be ignored if <code>opts.assign</code> is <code>true</code>.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line141">line 141</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line142">line 142</a>
     </li></ul></dd>
     
 
@@ -4353,7 +4856,7 @@ Unless one of <code>opts.returnThis</code> or <code>opts.returnObj</code> was <c
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line12">line 12</a>
+        <a href="obj_ns.js.html">obj/ns.js</a>, <a href="obj_ns.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -4671,13 +5174,13 @@ If this is not specified, <code>opts2</code> will be the same as <code>opts1</co
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getProperty">getProperty</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:38 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:24:28 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

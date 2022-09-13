@@ -26,13 +26,8 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Module defining the Test class.
- * @module @lumjs/tests/test
- */
-
-const core = require('@lumjs/core');
-const types = core.types;
+            <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
+const {types,obj} = core;
 const {F,S,N,isObj,isArray,needs,def} = types;
 
 // We use a separate class to represent test logs.
@@ -41,8 +36,8 @@ const Log = require('./log');
 // A list of Test methods that return Log objects.
 const TEST_METHODS =
 [
-  'ok', 'call', 'fail', 'pass', 'dies', 'diesWith', 'lives', 'cmp', 
-  'is', 'isnt', 'isa', 'nota', 'isJSON', 'isntJSON', 'skip',
+  'ok', 'call', 'callIs', 'fail', 'pass', 'dies', 'diesWith', 'lives', 'cmp',
+  'is', 'isnt', 'isa', 'nota', 'isJSON', 'isntJSON', 'matches', 'skip',
 ];
 
 // A list of other methods to export that are not standard tests.
@@ -73,6 +68,8 @@ function $call (testfunc, args)
  * Which itself was based on Perl 5's Test::More, and
  * Raku's Test libraries.
  *
+ * @exports module:@lumjs/tests/test
+ * 
  * @property {number}  planned - Number of tests planned, `0` if unplanned.
  * @property {number}  failed  - Number of tests that failed.
  * @property {number}  skipped - Number of tests that were skipped.
@@ -140,6 +137,9 @@ class Test
     this.isTop   = false;
     this.harness = null;
 
+    // Methods that can be ran via run().
+    this.$testMethods = TEST_METHODS.slice();
+
     if (typeof opts.plan === N)
     {
       this.plan(opts.plan);
@@ -163,6 +163,29 @@ class Test
       }
     }
 
+  }
+
+  /**
+   * A static shortcut for creating a new instance.
+   * 
+   * @param {object} [opts] Options to pass to constructor.
+   * @returns {module:@lumjs/tests/test}
+   */
+  static new(opts={})
+  {
+    return new this(opts);
+  }
+
+  /**
+   * A static shortcut for creating a `Functional` API object.
+   * 
+   * @param {object} [opts] Options to pass to constructor.
+   * @returns {module:@lumjs/tests/functional.Functional}
+   */
+  static functional(opts={})
+  {
+    //console.debug('functional this', this);
+    return require('./functional')(opts, this);
   }
 
   // A wrapper around types.stringify()
@@ -786,7 +809,7 @@ class Test
     for (const test of tests)
     {
       const tt = typeof test;
-      if (tt === S &amp;&amp; TEST_METHODS.includes(test))
+      if (tt === S &amp;&amp; this.$testMethods.includes(test))
       { // Set the current test to a built-in.
         current = test;
       }
@@ -863,6 +886,16 @@ class Test
   }
 
   /**
+   * A read-only *accessor* property alias for `tap()`.
+   * @returns {string}
+   * @see {@link module:@lumjs/tests/test#tap}
+   */
+  get TAP()
+  {
+    return this.tap();
+  }
+
+  /**
    * A calculated property of the number of tests that were ran.
    * @type {int}
    */
@@ -923,12 +956,17 @@ def(Test, '$METHODS',
 {
   test: TEST_METHODS,
   meta: META_METHODS,
+  $meta: 
+  [ // A list of properties to skip in `all`.
+    '$meta', 'all', 'extend',
+  ],
   get all()
   {
     const list = [];
+    const skip = this.$meta;
     for (const name in this)
     {
-      if (name === 'all') continue;
+      if (skip.includes(name)) continue;
       const prop = this[name];
       if (isArray(prop))
       {
@@ -937,7 +975,36 @@ def(Test, '$METHODS',
     }
     return list;
   },
-});
+  extend(newClass, opts={})
+  {
+    const mode  = obj.CLONE.DEEP;
+    const clone = obj.clone(this, {mode});
+
+    //console.debug("extend:clone&lt;pre>", clone);
+
+    if (isObj(opts.add))
+    { // Add in the extra properties.
+      //console.debug("opts.add", opts.add);
+      obj.copyProps(opts.add, clone, opts.addOpts);
+    }
+
+    if (isArray(opts.meta))
+    { // Added properties to skip in 'all'.
+      for (const val of opts.meta)
+      {
+        if (!clone.$meta.includes(val))
+        {
+          clone.$meta.push(val);
+        }
+      }
+    }
+
+    //console.debug("extend:clone&lt;post>", clone);
+
+    // Add a new cloned and extended `$METHODS` property. 
+    def(newClass, '$METHODS', {value: clone});
+  }, // extend()
+}); // Test.$METHODS
 
 // Export the class
 module.exports = Test;
@@ -956,13 +1023,13 @@ const Harness = require('./harness');
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_functional.html">@lumjs/tests/functional</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="Log.html">Log</a></li><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Test.html">Test</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_functional.html">@lumjs/tests/functional</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Log.html">Log</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:28 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:24:18 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

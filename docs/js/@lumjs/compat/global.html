@@ -170,6 +170,247 @@
     
 
     
+    <h4 class="name" id="clone"><span class="type-signature"></span>clone<span class="signature">(object, copyProperties<span class="signature-attributes">opt</span>, cloneOpts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Clone a simple object, using the Lum._.clone function.</p>
+<p>By default it uses <code>Lum._.CLONE.JSON</code> mode for cloning, but this can
+be adjusted as desired by passing a <code>cloneOpts.mode</code> option.</p>
+<p>Can also clone extended properties that aren't serialized in JSON.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The object or function to clone.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>copyProperties</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Use Lum.copyProperties as well.</p>
+<p>If copyProperties is defined, and is a non-false value, then we'll
+call Lum.obj.copy after cloning to copy 'special' properties.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cloneOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options to send to Lum._clone</p>
+<p>This can be any options supported by the Lum._.clone function.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="object-helpers.js.html">object-helpers.js</a>, <a href="object-helpers.js.html#line175">line 175</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A clone of the object.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="descriptor"><span class="type-signature"></span>descriptor<span class="signature">(desc, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
@@ -522,6 +763,263 @@
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="module:@lumjs/compat/v4/deprecated"><span class="type-signature"></span>module:@lumjs/compat/v4/deprecated<span class="signature">(name, replace<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {mixed}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Mark a function/method/property as deprecated.</p>
+<p>Adds a warning to the Console that the method is deprecated.</p>
+<p>It can also optionally give example replacement code, and run a function
+that will call the replacement code automatically.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The name of the deprecated method/property/etc.</p>
+<p>This should actually be the full method signature, or at least the
+signature matching what a call to the deprecated method made.</p>
+<p>So rather than 'someOldMethod', use 'MyClass.someOldMethod(foo, bar)'
+as a more detailed name. This is only used in the Console warning.</p>
+<p>This is the only mandatory parameter.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>replace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">mixed</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"><p>Replacement options.</p>
+<p>If this is a {string}, it is the same as passing an {object} with
+the following options specified:</p>
+<pre><code>```{msg: replace}```
+</code></pre>
+<p>If it is a {function}, it is the same as passing an {object} with
+the following options specified:</p>
+<pre><code>```{exec: replace, msg: true, strip: true}```
+</code></pre>
+<p>If it is an {object}, then it will be a set of options:</p>
+<pre><code>&quot;exec&quot; {function}
+
+  If specified, this function will be called and the value returned.
+  No paramters are passed to the function, so it should be a simple 
+  anonymous closure which simply calls the actual replacement code.
+
+&quot;msg&quot; {string|boolean}
+
+  If this is a {string} it will be added to the warning output.
+
+  If this is `true` and `exec` is set, we will extract the function
+  text using `exec.toString()` and add it to the warning output.
+
+  In any other cases, no replacement message will be appended.
+
+&quot;strip&quot; {boolean}
+
+  If this is `true`, then we will strip `'function() { return '`
+  from the start of the function text (whitespace ignored), as well
+  as stripping '}' from the very end of the function text.
+
+  This is only applicable if `exec` is set, and `msg` is `true`.
+</code></pre>
+<p>If the <code>replace</code> value is none of the above, it will be ignored.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="deprecated.js.html">deprecated.js</a>, <a href="deprecated.js.html#line66">line 66</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The output is dependent on the parameters passed.</p>
+<p>If <code>replace</code> is a function or an object with</p>
+<p>In any other case the return value will be undefined.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">mixed</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -537,13 +1035,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_compat_v4-meta.html">@lumjs/compat/v4-meta</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DESC">DESC</a></li><li><a href="global.html#descriptor">descriptor</a></li><li><a href="global.html#getDescriptor">getDescriptor</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_compat_v4-meta.html">@lumjs/compat/v4-meta</a></li></ul><h3>Classes</h3><ul><li><a href="LoadTracker.html">LoadTracker</a></li><li><a href="Lum.LoadTracker.html">LoadTracker</a></li><li><a href="LumPromise.html">LumPromise</a></li></ul><h3>Global</h3><ul><li><a href="global.html#clone">clone</a></li><li><a href="global.html#DESC">DESC</a></li><li><a href="global.html#descriptor">descriptor</a></li><li><a href="global.html#getDescriptor">getDescriptor</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Jul 29 2022 17:09:10 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:27:28 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

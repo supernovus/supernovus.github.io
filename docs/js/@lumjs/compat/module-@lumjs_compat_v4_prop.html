@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: @lumjs/compat/v4/prop</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: @lumjs/compat/v4/prop</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>A magic wrapper for Object.defineProperty()</p>
+<p>Rather than documenting the arguments in the usual manner, I'm
+going to simply show all of the ways this method can be called.</p>
+<p>Anywhere the <code>target</code> parameter is shown, this parameter can be an <code>object</code> or <code>function</code>.
+It's the target to which we're adding new properties.</p>
+<p>Anywhere the <code>property</code> parameter is shown, this parameter can be specified in two different
+forms. The first and simplest is as a <code>string</code> in which case it's simply the name of the property we're adding.
+The second more advanced form is as an <code>object</code>. If it is specified as an object, then it is a set of special options.
+In this case, a property of that <code>property</code> object called <code>name</code> will be used as the name of the property.
+If the <code>name</code> property is absent or <code>undefined</code>, it's the same as not passing the <code>property</code> parameter at all,
+and a <em>bound</em> function will be returned, using the custom options as its bound defaults.</p>
+<p>See below the usage</p>
+<p><code>Lum.prop(object)</code></p>
+<p>Return a function that is a bound copy of this function with
+the object as it's first parameter.</p>
+<p><code>Lum.prop(object, property)</code></p>
+<p>Add a property to the object which is mapped to a bound copy of
+this function with the object as it's first parameter.</p>
+<p><code>Lum.prop(object, property, function, function)</code></p>
+<p>Add a getter and setter property with the default descriptor.</p>
+<p><code>Lum.prop(object, property, function, function, object)</code></p>
+<p>Add a getter and setter property with specified Descriptor options.
+Do not use <code>get</code>, <code>set</code>, or <code>value</code> in the descriptor options.</p>
+<p><code>Lum.prop(object, property, function, null, object)</code></p>
+<p>Add a getter only with specified descriptor options.
+Same restrictions to the descriptor options as above.
+You can specify <code>{}</code> as the descriptor options to use the defaults.</p>
+<p><code>Lum.prop(object, property, null, function, object)</code></p>
+<p>Add a setter only with specified descriptor options.
+Same restrictions as above, and again you can use <code>{}</code> for defaults.</p>
+<p><code>Lum.prop(object, property, !null)</code></p>
+<p>Add a property with the specified non-null value.
+This uses the default descriptor.</p>
+<p><code>Lum.prop(object, property, !null, object)</code></p>
+<p>Add a property value with the specified descriptor options.
+Has the same restrictions to the descriptor options as above.</p>
+<p><code>Lum.prop(object, property, null, object)</code></p>
+<p>Add a property using the descriptor object alone.
+Use the newer and shorter <code>def()</code> function instead.</p>
+<p><code>Lum.prop(object, property, Descriptor)</code></p>
+<p>If you use <code>DESC.make()</code> or <code>descriptor()</code> to build a magic
+descriptor object, you can pass it and it'll be used with
+a few bonus features I need to document that aren't supported by
+the otherwise equivalent <code>def(object,property,descriptor)</code> call.</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>Replaced by `@lumjs/core.def` method.</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="prop.js.html">prop.js</a>, <a href="prop.js.html#line80">line 80</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_compat_v4.html">@lumjs/compat/v4</a></li><li><a href="module-@lumjs_compat_v4_descriptors.html">@lumjs/compat/v4/descriptors</a></li><li><a href="module-@lumjs_compat_v4_loadtracker.html">@lumjs/compat/v4/loadtracker</a></li><li><a href="module-@lumjs_compat_v4_object-helpers.html">@lumjs/compat/v4/object-helpers</a></li><li><a href="module-@lumjs_compat_v4_promise.html">@lumjs/compat/v4/promise</a></li><li><a href="module-@lumjs_compat_v4_prop.html">@lumjs/compat/v4/prop</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 16:57:43 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -96,190 +96,6 @@
     
 
     
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="functional"><span class="type-signature"></span>functional<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="global.html#Functional">Functional</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Create a function that will export a bunch of wrapper
-functions that can be imported via object destructuring.</p>
-<p>Usage is like:</p>
-<pre class="prettyprint source lang-js"><code>const {plan,ok,isa} = require('@lumjs/tests').functional({module});
-
-plan(2);
-ok(true, 'ok() works');
-isa(isa, 'function', 'isa is a function');
-
-</code></pre>
-<p>Because each time this function is run it creates a new test instance,
-and a new set of wrapper functions for the test instance, you could
-create multiple sets of functional tests in their own private scopes.
-Not sure why you'd want to do that, but in case you do, there ya go.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>opts</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Options to pass to the <code>Test</code> constructor.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="functional.js.html">functional.js</a>, <a href="functional.js.html#line42">line 42</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="global.html#Functional">Functional</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Type Definitions</h3>
@@ -356,7 +172,9 @@ Not sure why you'd want to do that, but in case you do, there ya go.</p>
             <td class="description last"><p>The new test instance.</p>
 <p>All of the rest of the properties are functions that
 can be imported into a JS scope using destructuring, and
-which wrap the corresponding test instance method.</p></td>
+which wrap the corresponding test instance method.</p>
+<p>Basically anything that is a method of the <code>Test</code> instance
+will become a wrapped <code>function</code> available in this structure.</p></td>
         </tr>
 
     
@@ -395,7 +213,7 @@ which wrap the corresponding test instance method.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="functional.js.html">functional.js</a>, <a href="functional.js.html#line7">line 7</a>
+        <a href="functional.js.html">functional.js</a>, <a href="functional.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -425,13 +243,13 @@ which wrap the corresponding test instance method.</p></td>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="Log.html">Log</a></li><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Test.html">Test</a></li></ul><h3>Global</h3><ul><li><a href="global.html#functional">functional</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_functional.html">@lumjs/tests/functional</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Log.html">Log</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jul 27 2022 17:12:29 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 08 2022 17:02:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

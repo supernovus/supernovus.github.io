@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2022-07-29T171000-0700",
+  "updated": "2022-09-12T171000-0700",
   "title": "supernovus/Lum API documentation",
   "srcurl": "https://github.com/supernovus/",
   "docurl": "docs/",
@@ -11,21 +11,21 @@
       "name": "@lumjs/core",
       "desc": "Foundational core library",
       "src": "lum.core.js",
-      "ver": "1.1.0"
+      "ver": "1.3.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/tests",
       "desc": "Simple Testing libraries",
       "src": "lum.tests.js",
-      "ver": "1.4.0"
+      "ver": "1.6.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/compat",
       "desc": "Compatibility libraries",
       "src": "lum.compat.js",
-      "ver": "1.0.0"
+      "ver": "1.2.0"
     },
     {
       "lang": "js",

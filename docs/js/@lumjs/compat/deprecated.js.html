@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: deprecated.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: deprecated.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Mark a function/method/property as deprecated.
+ *
+ * Adds a warning to the Console that the method is deprecated.
+ *
+ * It can also optionally give example replacement code, and run a function 
+ * that will call the replacement code automatically.
+ *
+ * @param {string} name  The name of the deprecated method/property/etc.
+ *
+ *   This should actually be the full method signature, or at least the
+ *   signature matching what a call to the deprecated method made.
+ *
+ *   So rather than 'someOldMethod', use 'MyClass.someOldMethod(foo, bar)'
+ *   as a more detailed name. This is only used in the Console warning.
+ *
+ *   This is the only mandatory parameter.
+ *
+ * @param {mixed} [replace={}]  Replacement options.
+ * 
+ *   If this is a {string}, it is the same as passing an {object} with
+ *   the following options specified:
+ *
+ *     ```{msg: replace}```
+ *
+ *   If it is a {function}, it is the same as passing an {object} with
+ *   the following options specified:
+ *
+ *     ```{exec: replace, msg: true, strip: true}```
+ *
+ *   If it is an {object}, then it will be a set of options:
+ *
+ *     "exec" {function}
+ *
+ *       If specified, this function will be called and the value returned.
+ *       No paramters are passed to the function, so it should be a simple 
+ *       anonymous closure which simply calls the actual replacement code.
+ *
+ *     "msg" {string|boolean}
+ *
+ *       If this is a {string} it will be added to the warning output.
+ *
+ *       If this is `true` and `exec` is set, we will extract the function
+ *       text using `exec.toString()` and add it to the warning output.
+ *
+ *       In any other cases, no replacement message will be appended.
+ *
+ *     "strip" {boolean}
+ *
+ *       If this is `true`, then we will strip `'function() { return '`
+ *       from the start of the function text (whitespace ignored), as well
+ *       as stripping '}' from the very end of the function text.
+ *
+ *       This is only applicable if `exec` is set, and `msg` is `true`.
+ *
+ *   If the `replace` value is none of the above, it will be ignored.
+ *
+ * @return {mixed}  The output is dependent on the parameters passed.
+ *
+ * If `replace` is a function or an object with 
+ *
+ * In any other case the return value will be undefined.
+ *
+ * @alias module:@lumjs/compat/v4/deprecated
+ */
+module.exports = function (name, replace={})
+{
+  const DEP_MSG = ':Deprecated =>';
+  const REP_MSG = ':replaceWith =>';
+
+  if (typeof replace === S)
+  { // A string replacement example only.
+    replace = {msg: replace};
+  }
+  else if (typeof replace === F)
+  { // A function replacement.
+    replace = {exec: replace, msg: true, strip: true};
+  }
+  else if (!is_obj(replace))
+  { // Not an object, that's not valid.
+    replace = {};
+  }
+
+  const msgs = [DEP_MSG, name];
+  const exec = (typeof replace.exec === F) 
+    ? replace.exec
+    : null;
+
+  if (exec &amp;&amp; replace.msg === true)
+  { // Extract the function text.
+    const strip = (typeof replace.strip === B)
+      ? replace.strip
+      : false;
+
+    let methtext = replace.exec.toString();
+
+    if (strip)
+    { // Remove wrapping anonymous closure function.
+      methtext = methtext.replace(/^function\(\)\s*\{\s*(return\s*)?/, '');
+      methtext = methtext.replace(/\s*\}$/, '');
+      // Also support arrow function version.
+      methtext = methtext.replace(/^\(\)\s*\=\>\s*/, '');
+    }
+
+    // Set the replacement msg to the method text.
+    replace.msg = methtext;
+  }
+
+  if (typeof replace.msg === 'string')
+  { // A replacement message.
+    msgs.push(REP_MSG, replace.msg);
+  }
+
+  // Show the messages.
+  console.warn(...msgs);
+
+  // Finally, call the replacement function if it was defined.
+  if (exec)
+  {
+    return exec();
+  }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_compat_v4.html">@lumjs/compat/v4</a></li><li><a href="module-@lumjs_compat_v4_descriptors.html">@lumjs/compat/v4/descriptors</a></li><li><a href="module-@lumjs_compat_v4_loadtracker.html">@lumjs/compat/v4/loadtracker</a></li><li><a href="module-@lumjs_compat_v4_object-helpers.html">@lumjs/compat/v4/object-helpers</a></li><li><a href="module-@lumjs_compat_v4_promise.html">@lumjs/compat/v4/promise</a></li><li><a href="module-@lumjs_compat_v4_prop.html">@lumjs/compat/v4/prop</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 16:57:43 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
