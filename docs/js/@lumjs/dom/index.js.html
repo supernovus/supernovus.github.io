@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
+const {N,F,S,isObj} = core.types;
+const 
+{
+  NODE_TYPE: NT,
+  PARSE_TYPE: PT, 
+  VALID_ROOTS
+} = require('./util');
+
+/**
+ * Try to determine if an object is a `Window` using *duck-typing*.
+ * 
+ * Like any *duck-typing* based test, it's not *guaranteed* to be
+ * 100% accurate, but I feel it's good enough for this specific case.
+ * 
+ * Basically, a real `window` object should have a property called
+ * `Window` and the `window` object should be an instance of 
+ * its own `Window` property. Very *meta*, welcome to the **DOM**. 
+ * 
+ * There is also the [instance.isWindow()]{@link module:@lumjs/dom#isWindow}
+ * method which is separate from this and much more straightforward, as it's
+ * a simple `instanceof` check.
+ * 
+ * @param {object} obj - The object to test.
+ * @returns {boolean} Whether the object seems to be a `Window` instance.
+ * 
+ * @alias module:@lumjs/dom.isWindow
+ */
+function isWindow(obj)
+{
+  return (isObj(obj) 
+    &amp;&amp; typeof obj.Window === F 
+    &amp;&amp; obj instanceof obj.Window);
+}
+
+/**
+ * A DOM container object (holds a collection of node objects.)
+ * @typedef {(NodeList|HTMLCollection)} module:@lumjs/dom.Container
+ */
+
+/**
+ * A `Node` or DOM container a method is targetting.
+ * @typedef {(Node|module:@lumjs/dom.Container)} module:@lumjs/dom.Target
+ */
+
+/**
+ * A `Node` subclass capable of using `querySelector` 
+ * @typedef {(NodeList|HTMLCollection)} module:@lumjs/dom.QueryNode
+ */
+
+/**
+ * A `Node` or node container for use with queries.
+ * @typedef {(module:@lumjs/dom.QueryNode|module:@lumjs/dom.Container)} module:@lumjs/dom.QueryTarget
+ */
+
+/**
+ * The core DOM helper library.
+ * 
+ * Given a reference to a `Window` object (either from a browser or `jsdom`),
+ * this instance provides a bunch of convenience methods.
+ * 
+ * @property {Window} window - A reference to the top-level Window instance.
+ * @property {object} options - Options passed to the constructor.
+ * @property {boolean} [options.extendQueries=false]
+ *   If `true` the results from `find()` and `get()` will be passed through
+ *   `this.extender.extend()` before being returned.
+ * @exports module:@lumjs/dom
+ */
+class LumDOM
+{
+  /**
+   * Build a DOM helper instance.
+   * @param {Window} window - The top-level window object.
+   * @param {object} [options] Options to customize behaviours.
+   * @throws {TypeError} 
+   * If the `window` fails the 
+   * [isWindow()]{@link module:@lumjs/dom.isWindow} test.
+   */
+  constructor(window, options={})
+  {
+    if (!isWindow(window))
+    {
+      throw new TypeError("Invalid `window` object");
+    }
+    this.window = window;
+    this.options = options;
+  }
+
+  /**
+   * A static shortcut method for building a new instance.
+   * 
+   * @param {Window} window - The `window` object.
+   * @returns {module:@lumjs/dom}
+   * @throws {TypeError} 
+   * If the `window` fails the 
+   * [isWindow()]{@link module:@lumjs/dom.isWindow} test.
+   */
+  static new(window, options)
+  {
+    return new LumDOM(window, options);
+  }
+
+  /**
+   * Get the top-level `Document` node.
+   * @type {Document}
+   */
+  get document()
+  {
+    return this.window.document;
+  }
+
+  /**
+   * Is the passed object a `Window` instance?
+   * 
+   * This is **not** the same method as the
+   * [static isWindow()]{@link module:@lumjs/dom.isWindow},
+   * as that method uses *duck-typing*, whereas this method
+   * assumes that `this.window` is a valid `Window` instance,
+   * and uses a basic `instanceof` check.
+   * 
+   * @param {object} win - The object we want to test.
+   * @returns {boolean}
+   */
+  isWindow(win)
+  {
+    return (win instanceof this.window.Window);
+  }
+
+  /**
+   * Is the passed object a `Node` instance?
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isNode(node)
+  {
+    return (node instanceof this.window.Node);
+  }
+
+  /**
+   * Is the passed object an `Element`, `Document`, or `DocumentFragment`.
+   * 
+   * Uses the `nodeType` property to determine the node type rather than
+   * the class name.
+   * 
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isQueryNode(node)
+  {
+    return (this.isNode(node) &amp;&amp; VALID_ROOTS.includes(node.nodeType));
+  }
+
+  /**
+   * Is a node a specific `nodeType`?
+   * 
+   * The order of the parameters may be reversed.
+   * 
+   * @param {number} type - The `nodeType` integer value.
+   * @param {object} node - The `Node` we are testing.
+   * @returns {boolean}
+   * @alias module:@lumjs/dquery/util.isNodeType
+   */
+  isNodeType(type, node)
+  {
+    if (typeof node === N &amp;&amp; isObj(type))
+    { // The parameters were in reversed order.
+      const temp = node;
+      node = type;
+      type = temp;
+    }
+    return (this.isNode(node) &amp;&amp; node.nodeType === type);
+  }
+
+  /**
+   * Is it an `Element` node?
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isElement(node) { return this.isNodeType(NT.ELEM, node); }
+  
+  /**
+   * Is it a `Document` node?
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isDocument(node) { return this.isNodeType(NT.DOC, node); }
+
+  /**
+   * Is it an `Attribute` node?
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isAttribute(node) { return this.isNodeType(NT.ATTR, node); }
+
+  /**
+   * Is it a `Text` node?
+   * @param {object} node 
+   * @returns {boolean}
+   */
+  isTextNode(node) { return this.isNodeType(NT.TEXT, node); }
+
+  /**
+   * Is it a `NodeList` object?
+   * @param {object} list 
+   * @returns {boolean}
+   */
+  isNodeList(list) { return (list instanceof this.window.NodeList); }
+
+  /**
+   * Is it an `HTMLCollection` object?
+   * @param {object} list 
+   * @returns {boolean}
+   */
+  isHTMLCollection(list) { return (list instanceof this.window.HTMLCollection); }
+
+  /**
+   * Is it a `NodeList` or `HTMLCollection` object?
+   * Including the various sub-classes, or our custom lists.
+   * 
+   * @param {object} list
+   * @returns {boolean}
+   */
+  isContainer(list) 
+  { 
+    return (this.isNodeList(list) || this.isHTMLCollection(list)); 
+  }
+
+  /**
+   * Is it an event listener?
+   * 
+   * May be either a `function` or an `object` with a `handleEvent()` method.
+   * 
+   * @param {*} what 
+   * @returns {boolean}
+   */
+  isListener(what) { return (typeof what === F || (isObj(what) &amp;&amp; typeof what.handleEvent === F)); }
+
+  /**
+   * Given a string, parse it as HTML or XML using `DOMParser()`.
+   * @param {string} string - The string to parse.
+   * @param {(string|boolean)} [mimeType='text/html'] - The MIME type.
+   *   See the `PARSE_TYPE` enum for a full list of valid values.
+   * 
+   *   If this is `true` we will use `text/xml`.
+   *   If this is `false`, `null`, or `undefined` we will use `text/html`.
+   * @returns {Document} - Either an `HTMLDocument` or an `XMLDocument`.
+   */
+  parse(string, mimeType=PT.HTML)
+  {
+    if (typeof mimeType !== S)
+      mimeType = mimeType ? PT.XML : PT.HTML;
+    const parser = new this.window.DOMParser();
+    return parser.parseFromString(string, mimeType);
+  }
+
+  /**
+   * Parse a string as HTML, then return the main content elements.
+   * 
+   * @param {string} string - The HTML to parse.
+   * @returns {Element} Parsed element.
+   * 
+   *   What element is returned depends on the parsed content: 
+   * 
+   * - If there are *any* child elements in the `&lt;head/>`, or there
+   *   are **no** child elements in the `&lt;body/>`, then the top-level 
+   *   `&lt;html/>` element will be returned.
+   * - If the `&lt;body/>` has *only one* child element, then the single 
+   *   *child element* will be returned. 
+   * - If there is *more than one*, then the `&lt;body/>` itself will be returned.
+   * 
+   *   If `this.options.extendQueries` is `true` then the return value
+   *   will be extended using `this.extend()` automatically.
+   * 
+   */
+  html(string)
+  {
+    let res;
+    const doc = this.parse(string);
+
+    const hasBody = doc.body &amp;&amp; doc.body.childElementCount > 0;
+    const hasHead = doc.head &amp;&amp; doc.head.childElementCount > 0;
+
+    if (!hasBody || hasHead)
+    { // If there's no body, or the head has elements, return the whole document.
+      res = doc.documentElement;
+    }
+    else if (doc.body.childElementCount === 1)
+    { // A single element.
+      res = doc.body.children[0];
+    }
+    else 
+    { // All of the children of the body.
+      res = doc.body.children;
+    }
+
+    if (this.options.extendQueries)
+    {
+      this.extend(res);
+    }
+
+    return res;
+  }
+
+  /**
+   * Parse a string as XML, then return the document element.
+   * 
+   * @param {string} string - The XML to parse.
+   * @returns {Element} Parsed element.
+   * 
+   *   If `this.options.extendQueries` is `true` then the return value
+   *   will be extended using `this.extend()` automatically.
+   * 
+   *   NOTE: if there are XML parser errors, there will be a `&lt;parsererror/>`
+   *   element in the returned element, as per the `DOMParser` specification.
+   * 
+   */
+  xml(string)
+  {
+    const doc = this.parse(string, PT.XML);
+
+    if (this.options.extendQueries)
+    {
+      this.extend(doc.documentElement);
+    }
+
+    return doc.documentElement;
+  }
+
+  /**
+   * A shortcut to `document.createElement()`
+   * 
+   * @param {string} tagName 
+   * @param {object} [options] 
+   * @returns {Element}
+   */
+  elem(tagName, options)
+  {
+    return this.document.createElement(tagName, options);
+  }
+
+  /**
+   * A shortcut to `document.createDocumentFragment()`
+   * @returns {DocumentFragment}
+   */
+  frag()
+  {
+    return this.document.createDocumentFragment();
+  }
+
+  /**
+   * A default `Query` instance.
+   * @type {module:@lumjs/dom/query}
+   */
+  get query()
+  {
+    if (this.$query === undefined)
+    {
+      const Query = require('./query');
+      this.$query = new Query(this);
+    }
+    return this.$query;
+  }
+
+  /**
+   * A default `Events` instance.
+   * @type {module:@lumjs/dom/events}
+   */
+  get events()
+  {
+    if (this.$events === undefined)
+    {
+      const Events = require('./events');
+      this.$events = new Events(this);
+    }
+    return this.$events;
+  }
+
+  /**
+   * A default `Extender` instance.
+   * @type {module:@lumjs/dom/extend}
+   */
+  get extender()
+  {
+    if (this.$extender === undefined)
+    {
+      const Extender = require('./extend');
+      this.$extender = new Extender(this);
+    }
+    return this.$extender;
+  }
+
+  /**
+   * A default `ListCompiler` instance.
+   * @type {module:@lumjs/dom/listcompiler}
+   */
+  get listCompiler()
+  {
+    if (this.$listCompiler === undefined)
+    {
+      const ListCompiler = require('./listcompiler');
+      this.$listCompiler = new ListCompiler(this);
+    }
+    return this.$listCompiler;
+  }
+
+  /**
+   * Find nodes matching a selector query.
+   * 
+   * Uses `this.query.find()` as the engine. 
+   * @see {@link module:@lumjs/dom/query#find} for more details.
+   * 
+   * @param {string} query - The query selector.
+   * @param {module:@lumjs/dom.QueryTarget} [inNode] - Node(s) to look in.
+   *   Will default to the top-level `document` if not specified.
+   * @param {boolean} [asHTMLCollection=this.options.findHTML]
+   *   If `true`, this will return an `HTMLCollection` instead of a `NodeList`.
+   * @returns {(NodeList|HTMLCollection)}
+   * 
+   * If `this.options.extendQueries` is `true`, the result
+   * will be extended using `this.extend()`.
+   * 
+   */
+  find(query, inNode=this.document, asHTMLCollection=this.options.findHTML) 
+  { 
+    const res = this.query.find(query, inNode, asHTMLCollection);
+    if (this.options.extendQueries)
+    {
+      this.extend(res);
+    }
+    return res;
+  }
+
+  /**
+   * Find the first child matching a selector query.
+   * 
+   * Uses `this.query.get()` as the engine.
+   * @see {@link module:@lumjs/dom/query#get} for more details.
+   * 
+   * @param {string} query - The query selector.
+   * @param {module:@lumjs/dom.QueryTarget} [inNode] - Node(s) to look in.
+   * @returns {?Node}
+   * 
+   * If `this.options.extendQueries` is `true`, the result
+   * will be extended using `this.extend()`.
+   * 
+   */
+  get(query, inNode=this.document)  
+  { 
+    const res = this.query.get(query, inNode); 
+    if (this.options.extendQueries &amp;&amp; res)
+    {
+      this.extend(res);
+    }
+    return res;
+  }
+
+  /**
+   * Add event handlers to target node(s).
+   * 
+   * An alias to `this.events.on()`;
+   * @see {@link module:@lumjs/dom/events#on} for details.
+   */
+  on(...args)  
+  { 
+    return this.events.on(...args); 
+  }
+
+  /**
+   * Remove event handlers from target node(s).
+   * 
+   * An alias to `this.events.off()`;
+   * @see {@link module:@lumjs/dom/events#off} for details.
+   */
+  off(...args) 
+  { 
+    return this.events.off(...args); 
+  }
+
+  /**
+   * Extend a node or node-container with additional features.
+   * 
+   * An alias to `this.extender.extend()`;
+   * @see {@link module:@lumjs/dom/extend#extend} for details.
+   */
+  extend(node)
+  {
+    return this.extender.extend(node);
+  }
+
+} // LumDOM class
+
+LumDOM.isWindow = isWindow;
+
+module.exports = LumDOM;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

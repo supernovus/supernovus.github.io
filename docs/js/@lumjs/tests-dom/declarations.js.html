@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: declarations.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: declarations.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * A bunch of string values and helper functions related to DOM testing.
+ * 
+ * @module @lumjs/tests-dom/declarations
+ */
+
+/**
+ * The Modern HTML (HTML 5) docType.
+ */
+exports.DOCTYPE_HTML = '&lt;!DOCTYPE html>';
+
+/**
+ * The HTML 4 Transitional (loose) docType.
+ */
+exports.DOCTYPE_HTML_4_TRANS = `
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+`;
+ 
+/**
+ * The HTML 4 Strict docType.
+ */
+exports.DOCTYPE_HTML_4_STRICT = `
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+`;
+ 
+/**
+ * The HTML 4 Frameset docType.
+ */
+exports.DOCTYPE_HTML_4_FRAMESET = `
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+ "http://www.w3.org/TR/html4/frameset.dtd">
+`;
+
+/**
+ * The XHTML 1.0 Strict docType.
+ */
+exports.DOCTYPE_XHTML_10_STRICT = `
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+`;
+
+/**
+ * The XHTML 1.0 Transitional docType.
+ */
+exports.DOCTYPE_XHTML_10_TRANS = `
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+`;
+
+/**
+ * The XHTML 1.0 Frameset docType.
+ */
+exports.DOCTYPE_XHTML_10_FRAMESET = `
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+`;
+
+/**
+ * The XHTML 1.1 docType.
+ */
+exports.DOCTYPE_XHTML_11 = `
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+`;
+
+/**
+ * The XML 1.0 declaration with UTF-8 encoding.
+ */
+exports.XML_DEC = '&lt;?xml version="1.0" encoding="UTF-8"?>';
+
+/**
+ * Opening `&lt;html>` element tag for HTML documents.
+ */
+exports.HTML_TAG = '&lt;html>';
+
+/**
+ * Opening `&lt;html>` element tag with extra attributes for XHTML 1.0 documents.
+ */
+exports.XHTML_10_TAG = `
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+`;
+
+/**
+ * Opening `&lt;html>` element tag with extra attributes for XHTML 1.1 documents.
+ */
+exports.XHTML_11_TAG = `
+&lt;html version="-//W3C//DTD XHTML 1.1//EN"
+      xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.w3.org/1999/xhtml
+                          http://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd">
+`;
+
+/**
+ * Replace the `&lt;html>` opening tag with an extended version.
+ * 
+ * @param {string} doc - The full document we are updating.
+ * @param {string} tag - The replacement `&lt;html>` tag.
+ * @returns {string} The `doc` with the replacement done.
+ */
+exports.replaceHtml = function(doc, tag)
+{
+  return doc.replace(exports.HTML_TAG, tag);
+}
+
+/**
+ * Replace the `&lt;html>` opening tag with a version that has the recommended 
+ * [XHTML 1.0]{@link module:@lumjs/tests-dom/declarations.XHTML_10_TAG} 
+ * attributes added.
+ * 
+ * @param {string} doc - The full document we are updating.
+ * @returns {string} The `doc` with the replacement done.
+ */
+exports.xhtml10Tag = function(doc)
+{
+  return exports.replaceHtml(doc, exports.XHTML_10_TAG);
+}
+
+/**
+ * Replace the `&lt;html>` opening tag with a version that has the recommended
+ * [XHTML 1.1]{@link module:@lumjs/tests-dom/declarations.XHTML_11_TAG} 
+ * attributes added.
+ * 
+ * @param {string} doc - The full document we are updating.
+ * @returns {string} The `doc` with the replacement done.
+ */
+exports.xhtml11Tag = function(doc)
+{
+  return exports.replaceHtml(doc, exports.XHTML_11_TAG);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests-dom.html">@lumjs/tests-dom</a></li><li><a href="module-@lumjs_tests-dom_declarations.html">@lumjs/tests-dom/declarations</a></li><li><a href="module-@lumjs_tests-dom_documents.html">@lumjs/tests-dom/documents</a></li><li><a href="module-@lumjs_tests-dom_documents_default.html">@lumjs/tests-dom/documents/default</a></li><li><a href="module-@lumjs_tests-dom_documents_doctypes.html">@lumjs/tests-dom/documents/doctypes</a></li><li><a href="module-@lumjs_tests-dom_documents_frameset.html">@lumjs/tests-dom/documents/frameset</a></li><li><a href="module-@lumjs_tests-dom_documents_xml.html">@lumjs/tests-dom/documents/xml</a></li><li><a href="module-@lumjs_tests-dom_test.html">@lumjs/tests-dom/test</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:37:34 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: test.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: test.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
+const {S,F,N,isObj,isInstance,isType,isArray,isNil} = core.types;
+
+const LumTest = require('@lumjs/tests').Test;
+const LumDOM = require('@lumjs/dom');
+
+const lib = require('./index');
+
+// Single-argument tests we're going to auto-add handlers for.
+const DOM_TESTS = 
+[
+  'isNode', 'isWindow',
+  'isQueryNode', 'isElement', 'isDocument', 'isAttribute', 'isTextNode', 
+  'isNodeList', 'isHTMLCollection', 'isContainer',
+  'isListener',
+];
+
+// Tests we defined in the actual class for exporting purposes.
+const OWN_TESTS =
+[
+  'isDOM', 'isNodeType', 'found', 'foundIn', 'got', 'gotIn',
+  'notFound', 'notFoundIn', 'notGot', 'notGotIn',
+];
+
+// Meta functions that aren't tests.
+const META_FUNCS =
+[
+  'setDOM',
+];
+
+/**
+ * The `DOMTest` class for writing unit tests for DOM testing.
+ * 
+ * This is an extension of the `@lumjs/tests.Test` library,
+ * and adds a bunch of methods for tests involving DOM nodes.
+ * 
+ * @exports module:@lumjs/tests-dom/test
+ * @property {module:@lumjs/dom} dom - A `LumDOM` instance.
+ */
+class DOMTest extends LumTest
+{
+  /**
+   * Build a new `DOMTest` instance.
+   * 
+   * @param {object} [opts] Named options.
+   * 
+   *   Supports all of the options as `@lumjs/tests.Test`,
+   *   plus a few specific to this class.
+   * 
+   *   If none of the options related to assigning or creating
+   *   a `dom` instance are specified, a *default instance*
+   *   will be generated using the 
+   *   [default test document]{@link @lumjs/tests-dom/documents/default.HTML}.
+   * 
+   * @param {object} [opts.dom] A `@lumjs/dom` instance.
+   * 
+   *   This takes priority over `opts.window` or `opts.doc`.
+   * 
+   * @param {object} [opts.window] A `window` object.
+   * 
+   *   This will be passed to 
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM} 
+   *   to build a new instance. It takes priority over `opts.doc`.
+   * 
+   * @param {string} [opts.doc] An HTML document to parse.
+   * 
+   *   This will be passed to 
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM} 
+   *   to build a new instance. 
+   * 
+   */
+  constructor(opts={})
+  {
+    // Call the `LumTest` constructor first.
+    super(opts);
+
+    // Set our test methods to an extended list.
+    this.$testMethods = LumTest.$METHODS.test.concat(OWN_TESTS, DOM_TESTS);
+
+    // Finally, set the `LumDOM` object using `setDOM()`.
+    this.setDOM(opts);
+  }
+
+  /**
+   * Set the `dom` instance.
+   * 
+   * Sets `this.dom` to an instance of the `@lumjs/dom` helper library
+   * (referred internally as `LumDOM`). It has several ways of being
+   * called to provide a flexible way to quickly change the instance.
+   * 
+   * @param {(object|string)} [opts] Many ways to get the `dom` instance. 
+   * 
+   * - If `opts` is a `string` it's assumed to be an HTML document, and
+   *   will be passed to [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM}
+   *   to create a new `dom` instance.
+   * - If `opts` is a `LumDOM` (`@lumjs/dom`) instance, it will be assigned 
+   *   directly to `this.dom` with no further action required.
+   * - If `opts` is a `Window` instance, it will be passed to
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM} to get the `dom`.
+   * - If `opts` is a *plain* `object`, it supports the same parameters as the
+   *   `constructor` with the same preferences.
+   * 
+   * @param {LumDOM} [opts.dom] A `@lumjs/dom` instance.
+   * 
+   *   If specified, directly assign the `dom` instance.
+   *   No further options are used if this was set.
+   * 
+   * @param {Window} [opts.window] A `window` object.
+   * 
+   *   This will be passed to 
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM} 
+   *   to build a new instance.
+   * 
+   * @param {string} [opts.doc] An HTML document to parse.
+   * 
+   *   This will be passed to 
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM} 
+   *   to build a new instance. 
+   * 
+   * @param {object} [opts.domOptions] `LumDOM` constructor options.
+   * 
+   *   If specified, this will be passed to 
+   *   [getLumDOM()]{@link module:@lumjs/tests-dom.getLumDOM}
+   *   as the constructor options.
+   * 
+   * @returns {void}
+   * @throws {TypeError} If the `opts` was not a supported value.
+   */
+  setDOM(opts)
+  {
+    let getParam, getOpts;
+    if (typeof opts === S)
+    { // It's a document.
+      getParam = opts;
+    }
+    else if (isObj(opts))
+    { // This can take a few forms.
+      if (isInstance(opts, LumDOM))
+      { // It's an instance of LumDOM itself.
+        this.dom = opts;
+        return;
+      }
+      else if (LumDOM.isWindow(opts))
+      { // The options are a `window` object.
+        getParam = opts;
+      }
+      else if (isInstance(opts.dom, LumDOM))
+      { // The LumDOM instance was a named option.
+        this.dom = opts.dom;
+        return;
+      }
+      else if (LumDOM.isWindow(opts.window))
+      { // The `window` object was a named option.
+        getParam = opts.window;
+        getOpts  = opts.domOptions; // May be undefined, that's ok.
+      }
+      else if (typeof opts.doc === S)
+      { // A document was a named option.
+        getParam = opts.doc;
+        getOpts  = opts.domOptions; // Ditto on the undefined bit.
+      }
+      else if (isObj(opts.domOptions))
+      { // Explicitly named getLumDOM options.
+        getOpts = opts.domOptions;
+      }
+      else 
+      { // One last fallback...
+        getOpts = opts;
+      }
+    }
+    else if (opts !== undefined)
+    { // Nothing else is valid.
+      throw new TypeError("passed opts was not a supported value");
+    }
+
+    this.dom = lib.getLumDOM(getParam, getOpts);
+  }
+
+  /**
+   * Run a Lum DOM test method and see if it passes.
+   * 
+   * @param {*} got - Argument(s) for the DOM test method.
+   * @param {string} want - The name of a DOM test method.
+   * @param {string} [desc] A short description of the test.
+   * @param {object} [opts] Options for modifying behaviours.
+   * @param {string} [opts.name=want] Name for the comparitor.
+   * @param {boolean} [opts.stringify=true] Stringify values in TAP output?
+   * @param {boolean} [opts.not=false] We want the negated result.
+   * @param {boolean} [opts.isArgs=false] Is `got` an array of arguments?
+   * 
+   * @returns {Log} The test log with the results.
+   * 
+   * @throws {TypeError} If `want` is not a valid `LumDOM` test function.
+   */
+  isDOM(got, want, desc, opts={})
+  {
+    if (!isType(S, want) || typeof this.dom[want] !== F)
+    {
+      throw new TypeError("want must be the name of a LumDOM test function");
+    }
+
+    let res; 
+    
+    if (opts.isArgs)
+    { // Run the test with the arguments.
+      if (isArray(got))
+      {
+        res = this.dom[want](...got);
+      }
+      else 
+      {
+        throw new TypeError("isArgs was true, but 'got' was not an array");
+      }
+    }
+    else 
+    { // Run the test with a single value.
+      res = this.dom[want](got);
+    }
+
+    if (opts.not)
+    { // Inverse the result.
+      res = !res;
+    }
+
+    let details = null;
+    if (!res)
+    { // The test failed, add the deets.
+      details = 
+      {
+        got, 
+        stringify: opts.stringify ?? true,
+        comparitor: opts.name ?? want,
+      };
+    }
+
+    return this.ok(res, desc, null, details);
+  }
+
+  /**
+   * See if a valid is a `Node` with a specific `nodeType` value.
+   * 
+   * @param {*} got 
+   * @param {number} want - The wanted `nodeType` value.
+   * @param {string} [desc] 
+   * @returns {Log}
+   */
+  isNodeType(got, want, desc)
+  {
+    return this.isDOM([want, got], 'isNodeType', desc, {isArgs: true});
+  }
+
+  /**
+   * Look for nodes using a CSS query selector.
+   * 
+   * This uses `this.dom.find()` as the query function.
+   * 
+   * @param {string} query - The CSS selector to look for.
+   * @param {number} [count] Number of elements that should be found.
+   * 
+   *   If this is specified and is greater than `0` then we will
+   *   use the `===` test on the result count (`nodelist.length`).
+   * 
+   *   Otherwise we'll use `> 0` as the test on the result count.
+   * 
+   * @param {string} [desc] 
+   * @param {object} [opts]
+   * @param {object} [opts.node] Specific element(s) to look in.
+   * 
+   *   Must be an `Element`, `Document`, `DocumentFragment`,
+   *   `NodeList`, or `HTMLCollection` object.
+   * 
+   *   If not specified, `this.dom.document` will be used.
+   * 
+   * @returns {Log}
+   */
+  found(query, count, desc, opts={})
+  {
+    const found = this.dom.find(query, opts.node);
+    let comp;
+    if (typeof count === N &amp;&amp; count > 0)
+    { // Result count should be an exact number.
+      comp = '===';
+    }
+    else 
+    { // Result count should be 1 or more.
+      comp = '>'; // Want a value greater than zero.
+      count = 0; // A sanity check.
+    }
+    // Okay, off we go!
+    return this.cmp(found.length, count, comp, desc);
+  }
+
+  /**
+   * A version of [found()]{@link module:@lumjs/tests-dom/test#found} 
+   * specifying the element(s) to search in.
+   * 
+   * Most of the parameters are identical to that method.
+   * 
+   * @param {object} node - Specific element(s) to look in.
+   * 
+   *   See the description of the `opts.node` parameter in the 
+   *   [found()]{@link module:@lumjs/tests-dom/test#found}
+   *   for a list of acceptable object types.
+   * 
+   * @param {*} query 
+   * @param {*} count 
+   * @param {*} desc 
+   * @returns {Log}
+   */
+  foundIn(node, query, count, desc)
+  {
+    return this.found(query, count, desc, {node});
+  }
+
+  /**
+   * Look for a single node using a CSS query selector.
+   * 
+   * This uses `this.dom.get()` as the query function.
+   * 
+   * All of the parameters are described in the docs for the
+   * [found()]{@link module:@lumjs/tests-dom/test#found} method.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @param {*} opts 
+   * @returns {Log}
+   */
+  got(query, desc, opts={})
+  {
+    const got = this.dom.get(query, opts.node);
+    return this.ok(isObj(got), desc);
+  }
+
+  /**
+   * A version of [got()]{@link module:@lumjs/tests-dom/test#got}
+   * specifying the element(s) to search in.
+   * 
+   * @param {*} node
+   * 
+   *   See the description of the `opts.node` parameter in the 
+   *   [found()]{@link module:@lumjs/tests-dom/test#found}
+   *   for a list of acceptable object types.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @returns {Log}
+   */
+  gotIn(node, query, desc)
+  {
+    return this.got(query, desc, {node});
+  }
+
+  /**
+   * See if a CSS query selector matches no nodes.
+   * 
+   * This uses `this.dom.find()` as the query function.
+   * 
+   * All of the parameters are described in the docs for the
+   * [found()]{@link module:@lumjs/tests-dom/test#found} method.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @param {*} opts 
+   * @returns {Log}
+   */
+  notFound(query, desc, opts={})
+  {
+    const found = this.dom.find(query, opts.node);
+    return this.is(found.length, 0, desc);
+  }
+
+  /**
+   * A version of [notFound()]{@link module:@lumjs/tests-dom/test#notFound}
+   * specifying the element(s) to search in.
+   * 
+   * @param {*} node
+   * 
+   *   See the description of the `opts.node` parameter in the 
+   *   [found()]{@link module:@lumjs/tests-dom/test#found}
+   *   for a list of acceptable object types.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @returns {Log}
+   */
+  notFoundIn(node, query, desc)
+  {
+    return this.notFound(query, desc, {node});
+  }
+
+  /**
+   * See if a CSS query selector matches no nodes.
+   * 
+   * This uses `this.dom.get()` as the query function.
+   * 
+   * All of the parameters are described in the docs for the
+   * [found()]{@link module:@lumjs/tests-dom/test#found} method.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @param {*} opts 
+   * @returns {Log}
+   */
+  notGot(query, desc, opts={})
+  {
+    const got = this.dom.get(query, opts.node);
+    return this.ok(isNil(got), desc);
+  }
+
+  /**
+   * A version of [notGot()]{@link module:@lumjs/tests-dom/test#notGot}
+   * specifying the element(s) to search in.
+   * 
+   * @param {*} node
+   * 
+   *   See the description of the `opts.node` parameter in the 
+   *   [found()]{@link module:@lumjs/tests-dom/test#found}
+   *   for a list of acceptable object types.
+   * 
+   * @param {*} query 
+   * @param {*} desc 
+   * @returns {Log}
+   */
+  notGotIn(node, query, desc)
+  {
+    return this.notGot(query, desc, {node});
+  }
+
+} // DOMTest class
+
+module.exports = DOMTest;
+
+// Add our test methods for export to the functional() API.
+LumTest.$METHODS.extend(DOMTest,
+{
+  add:
+  {
+    domMainTests: OWN_TESTS,
+    domAutoTests: DOM_TESTS,
+    domMeta: META_FUNCS,
+  },
+});
+
+// Register the DOM test definitions themselves.
+for (const testName of DOM_TESTS)
+{
+  DOMTest.prototype[testName] = function (got, desc)
+  {
+    return this.isDOM(got, testName, desc);
+  }
+}
+
+/**
+ * Is it a `Node`?
+ * @method module:@lumjs/tests-dom/test#isNode 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `Node` with `querySelector()`?
+ * @method module:@lumjs/tests-dom/test#isQueryNode 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it an `Element`?
+ * @method module:@lumjs/tests-dom/test#isElement
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `Document`?
+ * @method module:@lumjs/tests-dom/test#isDocument 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it an `Attribute`?
+ * @method module:@lumjs/tests-dom/test#isAttribute 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `Text` node?
+ * @method module:@lumjs/tests-dom/test#isTextNode 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `NodeList`?
+ * @method module:@lumjs/tests-dom/test#isNodeList 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it an `HTMLCollection`?
+ * @method module:@lumjs/tests-dom/test#isHTMLCollection
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `NodeList`, `HTMLCollection`, or a sub-class thereof?
+ * @method module:@lumjs/tests-dom/test#isContainer
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+/**
+ * Is it a `function` or an `object` with a `handleEvent()` method?
+ * @method module:@lumjs/tests-dom/test#isListener 
+ * @param {*} got
+ * @param {string} [desc]
+ * @returns {Log}
+ */
+
+// the end
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests-dom.html">@lumjs/tests-dom</a></li><li><a href="module-@lumjs_tests-dom_declarations.html">@lumjs/tests-dom/declarations</a></li><li><a href="module-@lumjs_tests-dom_documents.html">@lumjs/tests-dom/documents</a></li><li><a href="module-@lumjs_tests-dom_documents_default.html">@lumjs/tests-dom/documents/default</a></li><li><a href="module-@lumjs_tests-dom_documents_doctypes.html">@lumjs/tests-dom/documents/doctypes</a></li><li><a href="module-@lumjs_tests-dom_documents_frameset.html">@lumjs/tests-dom/documents/frameset</a></li><li><a href="module-@lumjs_tests-dom_documents_xml.html">@lumjs/tests-dom/documents/xml</a></li><li><a href="module-@lumjs_tests-dom_test.html">@lumjs/tests-dom/test</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:37:34 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
