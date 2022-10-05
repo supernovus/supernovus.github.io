@@ -42,60 +42,83 @@ const clone = obj => copy({}, obj);
  * It replaces the `prop()` method from the old Lum.js v4.
  * 
  * @param {(object|function)} obj - The object to add a property to.
- * @param {?(string|boolean|object)} name - If a `string`, the property name.
- *   Property names may also be `symbol` values.
+ * @param {?(string|symbol|boolean|object)} name 
+ * If a `string` or `symbol`, it's the property name.
  * 
- *   If this is `null` or `undefined` then the `value` is ignored entirely,
- *   and instead a bound version of this function is created with the
- *   `obj` already passed as the first parameter, and any of the options from
- *   `opts` added to a new default set of options bound to the function.
- *   Can be useful if you need to add a lot of properties to the same object.
+ * If this is `null` or `undefined` then the `value` is ignored entirely,
+ * and instead a bound version of this function is created with the
+ * `obj` already passed as the first parameter, and any of the options from
+ * `opts` added to a new default set of options bound to the function.
+ * Can be useful if you need to add a lot of properties to the same object.
  * 
- *   If this is a `boolean`, then the same logic as if it was `null` or 
- *   `undefined` will apply, except that an `enumerable` property with this 
- *   value will also be added to the descriptors.
+ * If this is a `boolean`, then the same logic as if it was `null` or 
+ * `undefined` will apply, except that an `enumerable` property with this 
+ * value will also be added to the descriptors.
  * 
- *   If this is an `object`, we also ignore `value` entirely, as each of 
- *   the keys of this object will be used as the name of a property, 
- *   and the value associated with the key will be the value to assign it.
+ * If this is an `object`, we also ignore `value` entirely, as each of 
+ * the keys of this object will be used as the name of a property, 
+ * and the value associated with the key will be the value to assign it.
  * 
  * @param {*} value - Used to determine the value of the property.
  * 
- *   If it is an a valid descriptor object (as per `doesDescriptor()`),
- *   it will be used as the descriptor. If it has no `configurable`
- *   property defined, one will be added, and will be set to `true`.
- *   This behaviour may be overridden by the `opts` parameter.
+ * If it is an a valid descriptor object (as per `doesDescriptor()`),
+ * it will be used as the descriptor. If it has no `configurable`
+ * property defined, one will be added, and will be set to `true`.
+ * This behaviour may be overridden by the `opts` parameter.
  * 
- *   If this and `opts` are both `function` values, then this will
- *   be used as a *getter*, and `opts` will be used a *setter*.
+ * If this and `opts` are both `function` values, then this will
+ * be used as a *getter*, and `opts` will be used a *setter*.
  * 
- *   Any other value passed here will be used as the `value` in a
- *   pre-canned descriptor, also with `configurable` set to `true`.
+ * Any other value passed here will be used as the `value` in a
+ * pre-canned descriptor, also with `configurable` set to `true`.
  * 
  * @param {*} [opts] - A multi-purpose option.
  * 
- *   If this is an `object` then it is reserved for named options.
- *   The named options `configurable`, `enumerable`, and `writable`
- *   can be used to define default values to the descriptor properties
- *   of the same name.
+ * If this is an `object` then it is reserved for named options.
  * 
- *   If `value` and this are both `function` values, then `value` will
- *   be used as a *getter* and this will be used as a *setter*.
+ * The named options `configurable`, `enumerable`, and `writable`
+ * can be used to define default values to the descriptor properties
+ * of the same name.
  * 
- *   If `value` is a valid descriptor object, then setting this to `false`
- *   will disable the assumption that it is the descriptor to set.
- *   Setting this to `true` on will instruct the function to make a clone 
- *   of the descriptor object before modifying any properties in it.
+ * If `value` and this are both `function` values, then `value` will
+ * be used as a *getter* and this will be used as a *setter*.
  * 
- *   This defaults to `undefined`, except if 
+ * If this is `true`, it sets `opts.cloneDesc` to `true`.
+ *   
+ * If this is `false`, it sets `opts.autoDesc` to `false`.
+ * 
+ * This defaults to `undefined`, except in bound functions.
+ * 
+ * @param {boolean} [opts.autoDesc=true] Automatically detect descriptors?
+ * 
+ * If `true` (the default value) then the automatic descriptor detection
+ * is used any time the `value` is an `object`.
+ * 
+ * If `false` the descriptor detection is disabled, and we'll always
+ * wrap all values in a new internal descriptor.
+ * 
+ * @param {boolean} [opts.cloneDesc=false] Clone descriptors?
+ * 
+ * If `true` then we'll clone detected descriptors before making
+ * any changes to them.
+ * 
+ * If `false` (the default value), we'll use passed descriptors
+ * directly, so any changes will be made on the original.
+ * 
+ * @param {boolean} [opts.configurable=true] Default `configurable` value 
+ * @param {boolean} [opts.enumerable=false] Default `enumerable` value
+ * @param {boolean} [opts.writable=false] Default `writable` value
+ * 
+ * Only used with *data descriptors* and will be ignored with
+ * *accessor* descriptors.
  * 
  * @returns {*} Normally the `obj` argument with new property added.
  * 
- *   The exception is if this is a bound copy of the function created
- *   using the syntax described in the `name` parameter documentation.
- *   In that case the return value is the bound copy itself.
- *   While that might seem strange, it allows for chaining in a way
- *   that otherwise would not be possible, take this example:
+ * The exception is if this is a bound copy of the function created
+ * using the syntax described in the `name` parameter documentation.
+ * In that case the return value is the bound copy itself.
+ * While that might seem strange, it allows for chaining in a way
+ * that otherwise would not be possible, take this example:
  * 
  * ```
  *   def(myObj)('name', "Bob")('age', 42);
@@ -164,11 +187,31 @@ function def(obj, name, value, opts)
     throw new TypeError("Property name must be a string or a Symbol");
   }
 
+  function getOpt(name, defVal)
+  {
+    const revVal = !defVal;
+    if (isObj(opts) &amp;&amp; typeof opts[name] === B)
+    { // Found the option.
+      return opts[name];
+    }
+    else if (opts === revVal)
+    { // A special default rule was found.
+      return revVal;
+    }
+    else 
+    { // Return the default.
+      return defVal;
+    }
+  }
+
+  const autoDesc  = getOpt('autoDesc',  true);
+  const cloneDesc = getOpt('cloneDesc', false);
+
   let desc;
 
-  if (opts !== false &amp;&amp; doesDescriptor(value))
+  if (autoDesc &amp;&amp; doesDescriptor(value))
   { // The value is a descriptor, let's use it.
-    desc = (opts === true) ? clone(value) : value;
+    desc = cloneDesc ? clone(value) : value;
   }
   else if (typeof value === F &amp;&amp; typeof opts === F)
   { // A getter and setter were both specified.
@@ -179,27 +222,28 @@ function def(obj, name, value, opts)
     desc = {value};
   }
 
-  if (isObj(opts))
-  { // If opts is an object, let's look for some supported defaults.
-    const cd = (opt, defval) =>
-    {
-      if (typeof opts[opt] === B &amp;&amp; typeof desc[opt] !== B)
-      { // Default descriptor option specified in `opts`
-        desc[opt] = opts[opt];
-      }
-      else if (typeof defval === B)
-      { // A fallback default. 
-        desc[opt] = defval;
-      }
+  const cd = (opt, defval) =>
+  {
+    if (typeof desc[opt] === B) 
+    { // Property was set explicitly.
+      return;
     }
+    else if (isObj(opts) &amp;&amp; typeof opts[opt] === B)
+    { // Default descriptor option specified in `opts`
+      desc[opt] = opts[opt];
+    }
+    else if (typeof defval === B)
+    { // A fallback default. 
+      desc[opt] = defval;
+    }
+  }
 
-    cd('configurable', true);
-    cd('enumerable');
-    if (desc.get === undefined &amp;&amp; desc.set === undefined)
-    { // Only look for this one on data descriptors.
-      cd('writable');
-    }
-  } // if isObj(opts)
+  cd('configurable', true);
+  cd('enumerable');
+  if (desc.get === undefined &amp;&amp; desc.set === undefined)
+  { // Only look for this one on data descriptors.
+    cd('writable');
+  }
 
   // Now after all that, let's actually define the property!
   Object.defineProperty(obj, name, desc);
@@ -224,7 +268,7 @@ module.exports = def;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:24:28 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

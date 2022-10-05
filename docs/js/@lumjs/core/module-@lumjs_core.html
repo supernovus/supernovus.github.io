@@ -40,7 +40,9 @@
         
             <div class="description"><p>Core Library</p>
 <p>This is the foundation upon which all the rest of my JS libraries
-are built. It provides fundamental helper functions and classes.</p></div>
+are built. It provides fundamental helper functions and classes.</p>
+<p>Properties marked as «Lazy» will be loaded on-demand the first time
+the property is accessed. All other properties are always loaded.</p></div>
         
 
         
@@ -153,7 +155,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
 
 
 <div class="description">
-    <p>A simple base class for making <em>abstract</em> classes.</p>
+    <p>A simple base class for making <em>abstract</em> classes</p>
 </div>
 
 
@@ -191,7 +193,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line76">line 76</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -216,14 +218,603 @@ are built. It provides fundamental helper functions and classes.</p></div>
 
         
             
-<h4 class="name" id=".arrays"><span class="type-signature">(static, constant) </span>arrays<span class="type-signature"></span></h4>
+<h4 class="name" id=".arrays"><span class="type-signature">(static) </span>arrays<span class="type-signature"> :<a href="module-@lumjs_core_arrays.html">module:@lumjs/core/arrays</a></span></h4>
 
 
 
 
 <div class="description">
-    <p>Array utility functions.</p>
+    <p>Array utility functions «Lazy»</p>
 </div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_arrays.html">module:@lumjs/core/arrays</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".context"><span class="type-signature">(static) </span>context<span class="type-signature"> :<a href="module-@lumjs_core_context.html">module:@lumjs/core/context</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>Information about the JS context we're running in</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_context.html">module:@lumjs/core/context</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line96">line 96</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".flags"><span class="type-signature">(static) </span>flags<span class="type-signature"> :<a href="module-@lumjs_core_flags.html">module:@lumjs/core/flags</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>Functions for working with binary flags «Lazy»</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_flags.html">module:@lumjs/core/flags</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line110">line 110</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".Functions"><span class="type-signature">(static) </span>Functions<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>A <em>factory</em> for special types of JS <code>function</code> constructors</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line154">line 154</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-@lumjs_core_meta.Functions.html">module:@lumjs/core/meta.Functions</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".obj"><span class="type-signature">(static) </span>obj<span class="type-signature"> :<a href="module-@lumjs_core_obj.html">module:@lumjs/core/obj</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>Functions for manipulating objects</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_obj.html">module:@lumjs/core/obj</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line117">line 117</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".opt"><span class="type-signature">(static) </span>opt<span class="type-signature"> :<a href="module-@lumjs_core_opt.html">module:@lumjs/core/opt</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>Functions for getting values and properties with fallback defaults «Lazy»</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_opt.html">module:@lumjs/core/opt</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line124">line 124</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".strings"><span class="type-signature">(static) </span>strings<span class="type-signature"> :<a href="module-@lumjs_core_strings.html">module:@lumjs/core/strings</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>Functions for working with strings and locales «Lazy»</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="module-@lumjs_core_strings.html">module:@lumjs/core/strings</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line103">line 103</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".types"><span class="type-signature">(static, constant) </span>types<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Constants and functions for type checks
+and other fundamental functions</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-@lumjs_core_types.html">module:@lumjs/core/types</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".def"><span class="type-signature">(static) </span>def<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Define properties on an object or function</p>
+</div>
+
+
+
+
+
+
 
 
 
@@ -261,645 +852,6 @@ are built. It provides fundamental helper functions and classes.</p></div>
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="index.js.html">index.js</a>, <a href="index.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_arrays.html">module:@lumjs/core/arrays</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".context"><span class="type-signature">(static, constant) </span>context<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Information about the JS context we're running in.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line29">line 29</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_context.html">module:@lumjs/core/context</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".flags"><span class="type-signature">(static, constant) </span>flags<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Functions for working with binary flags.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line43">line 43</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_flags.html">module:@lumjs/core/flags</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".Functions"><span class="type-signature">(static) </span>Functions<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>A <em>factory</em> for special types of JS <code>function</code> constructors.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line82">line 82</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_meta.Functions.html">module:@lumjs/core/meta.Functions</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".modules"><span class="type-signature">(static, constant) </span>modules<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Meta functions related to JS modules.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line64">line 64</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_modules.html">module:@lumjs/core/modules</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".opt"><span class="type-signature">(static, constant) </span>opt<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Functions for getting values and properties with fallback defaults.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line57">line 57</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_opt.html">module:@lumjs/core/opt</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".strings"><span class="type-signature">(static, constant) </span>strings<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Functions for working with strings and locales.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line36">line 36</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_strings.html">module:@lumjs/core/strings</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".types"><span class="type-signature">(static, constant) </span>types<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Constants and functions for basic type checking.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line15">line 15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_types.html">module:@lumjs/core/types</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="~obj"><span class="type-signature">(inner, constant) </span>obj<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Functions for manipulating objects.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line50">line 50</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="module-@lumjs_core_obj.html">module:@lumjs/core/obj</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".def"><span class="type-signature">(static) </span>def<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Define properties on an object or function.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -950,7 +902,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
 
 
 <div class="description">
-    <p>Create a magic <em>Enum</em> object.</p>
+    <p>Create a magic <em>Enum</em> object</p>
 </div>
 
 
@@ -994,7 +946,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line105">line 105</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line171">line 171</a>
     </li></ul></dd>
     
 
@@ -1037,7 +989,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
     
 
     
-    <h4 class="name" id=".lazy"><span class="type-signature">(static) </span>lazy<span class="signature">(obj, name, initfunc, onset<span class="signature-attributes">opt</span>, desc<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id=".lazy"><span class="type-signature">(static) </span>lazy<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1045,11 +997,7 @@ are built. It provides fundamental helper functions and classes.</p></div>
 
 
 <div class="description">
-    <p>Build a lazy initializer property.</p>
-<p>Basically the first time the property is accessed it's built.
-Subsequent accesses will use the already built property.
-This is an extension of the def method, and indeed an
-alias called <code>def.lazy()</code> is also available.</p>
+    <p>Define properties on an object or function</p>
 </div>
 
 
@@ -1058,236 +1006,6 @@ alias called <code>def.lazy()</code> is also available.</p>
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The object to add the property to.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The name of the property to add.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>initfunc</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-@lumjs_core.html#~InitFunc">module:@lumjs/core~InitFunc</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The function to initialize the property.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>onset</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>How to handle assignment.</p>
-<p>If this is <code>true</code> then the new value will be assigned directly,
-skipping the initialization process entirely.</p>
-<p>If this is <code>false</code> then any attempt at assignment will throw
-a <code>ReferenceError</code> with a message indicating the property is read-only.</p>
-<p>If this is a <code>function</code> it will take two arguments, the
-first being the value that is trying to be assigned, and
-the second being the currently assigned value.
-As with any getter or setter, <code>this</code> will be the <code>obj</code> itself.
-The function must return the value to be assigned.
-If it returns <code>undefined</code>, then the value was not valid,
-and will not be assigned.</p>
-<p>If this is anything else, assignment will do nothing at all.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>desc</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>Descriptor rules for the property.
-We only support two descriptor rules with this function, and
-their default values are the same as the <code>def()</code> function.</p>
-<ul>
-<li><code>configurable</code> → <code>true</code></li>
-<li><code>enumerable</code> → <code>false</code>
-Any other descriptor properties are invalid here.</li>
-</ul></td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -1323,53 +1041,38 @@ Any other descriptor properties are invalid here.</li>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lazy.js.html">lazy.js</a>, <a href="lazy.js.html#line50">line 50</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
     
 
     
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The object we defined the property on.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-@lumjs_core_types.html#.lazy">module:@lumjs/core/types.lazy</a></li>
+        </ul>
     </dd>
-</dl>
+    
 
     
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1389,7 +1092,7 @@ Any other descriptor properties are invalid here.</li>
 
 
 <div class="description">
-    <p>Throw an <code>Error</code> saying that a feature is not yet implemented.</p>
+    <p>Throw an <code>Error</code> saying that a feature is not yet implemented</p>
 </div>
 
 
@@ -1433,7 +1136,7 @@ Any other descriptor properties are invalid here.</li>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line88">line 88</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -1484,7 +1187,7 @@ Any other descriptor properties are invalid here.</li>
 
 
 <div class="description">
-    <p>Make an object support the <em>Observable</em> API.</p>
+    <p>Make an object support the <em>Observable</em> API «Lazy»</p>
 </div>
 
 
@@ -1528,7 +1231,7 @@ Any other descriptor properties are invalid here.</li>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line113">line 113</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line179">line 179</a>
     </li></ul></dd>
     
 
@@ -1685,7 +1388,7 @@ Any other descriptor properties are invalid here.</li>
 
 
 <div class="description">
-    <p>Get a simplistic debugging stacktrace.</p>
+    <p>Get a simplistic debugging stacktrace</p>
 </div>
 
 
@@ -1729,7 +1432,7 @@ Any other descriptor properties are invalid here.</li>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line69">line 69</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -1770,146 +1473,6 @@ Any other descriptor properties are invalid here.</li>
     
 
     
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-
-    
-
-    
-    <h4 class="name" id="~InitFunc"><span class="type-signature"></span>InitFunc<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-    <h5>This:</h5>
-    <ul><li>{object}</li></ul>
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The <code>name</code> parameter passed to <code>lazy()</code></p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lazy.js.html">lazy.js</a>, <a href="lazy.js.html#line4">line 4</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-    
 
     
 </article>
@@ -1928,7 +1491,7 @@ Any other descriptor properties are invalid here.</li>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:24:28 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

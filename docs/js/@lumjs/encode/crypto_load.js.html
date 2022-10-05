@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: crypto/load.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: crypto/load.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {F,S,isObj} = require('@lumjs/core/types');
+
+/**
+ * Crypto-JS Module Loader
+ * 
+ * Uses some dark magic to normalize any weirdness, bugs, 
+ * or gotchyas in the upsteam library.
+ * 
+ * @module @lumjs/encode/crypto/load
+ */
+
+const cc = require('crypto-js/core');
+
+/**
+ * Load and return a specific `crypto-js` module.
+ * 
+ * This is a wrapper for `require()` that prefixes
+ * the `crypto-js/` package namespace.
+ * 
+ * Generally you should never have to call this manually.
+ * Instead use one of the more specialized methods.
+ * 
+ * Note that **this** is the actual *default export* from
+ * the `load` module, and all the other functions are
+ * child properties of it.
+ * 
+ * @param {string} name - The name of the module.
+ * 
+ * @param {boolean} [toLower=true] Enforce lowercase names?
+ * 
+ * If `true` (the default value), the `name` will be
+ * normalized to *lowercase* as is expected by the library.
+ * 
+ * @returns {(object|function)} The module content.
+ * 
+ * Some `crypto-js` modules return a child `object`, some return
+ * a child `function`, and some return the `crypto-js/core` object.
+ * The wide difference in return values is part of why this
+ * method should not be used directly.
+ * 
+ * @alias module:@lumjs/encode/crypto/load.load
+ */
+function load(name, toLower=true)
+{
+  if (toLower)
+    name = name.toLowerCase();
+  return require('crypto-js/'+name);
+}
+
+// Export the load function, and make all other functions properties of it.
+module.exports = exports = load;
+load.load = load; // Fuckery.
+
+/**
+ * Get a Hashing function or progressive instance.
+ * 
+ * @param {string} name - The name of the algorithm.
+ *
+ * Hashing algorithms supported by `crypto-js`:
+ * 
+ * - MD5
+ * - SHA-1
+ * - SHA-256
+ * - SHA-512
+ * - SHA-224
+ * - SHA-384
+ * - SHA-3
+ * - RIPEMD-160
+ * 
+ * You can omit the `-` characters, and the parameter is
+ * case-insensitive.
+ *
+ * @param {(boolean|object)} [instance=false] Return an instance?
+ * 
+ * If this is `true` we'll return an object instance for
+ * progressive hashing.
+ * 
+ * If this is an `object`, we'll return an object instance, and
+ * this will be passed as the options to the `algo.create()` method.
+ * 
+ * If this is `false` (default), we'll return a hashing function.
+ * 
+ * @returns {(function|object)} Output depends on parameters.
+ */
+exports.hash = function(name, instance=false)
+{
+  if (instance)
+  { // Return a progressive instance.
+    const algo = load.algo(name);
+    const opts = isObj(instance) ? instance : {};
+    return algo.create(opts);
+  }
+  else 
+  { // Return a hashing function.
+    return load(name.replaceAll('-', ''));
+  }  
+}
+
+/**
+ * Get a `HMAC` Hashing function or progressive instance.
+ * 
+ * @param {string} libName - Name of the hashing algorithm to use.
+ *
+ *   See {@link module:@lumjs/encode/crypto/load.hash} for a list.
+ *
+ * @param {string} [passphrase] - A secret passphrase for a hashing instance.
+ * 
+ * If this is specified, we'll return an object instance for
+ * progressive hashing.
+ * 
+ * If this is **not** specified, we'll return a hashing function.
+ * 
+ * @returns {(object|function)} Output depends on parameters.
+ */
+exports.hmac = function(libName, passphrase)
+{
+  if (typeof passphrase === S)
+  { // Return a progressive instance.
+    const algo = load.algo(libName);
+    const hmac = load.algo('HMAC');
+    return hmac.create(algo, passphrase);
+  }
+  else 
+  { // Return a hashing function.
+    return load('hmac-'+libName.replaceAll('-', ''));
+  }
+}
+
+const Ciphers =
+{
+  rc4drop()
+  {
+    load('rc4', false);
+    return cc.RC4Drop;
+  },
+  des()
+  {
+    load('tripledes', false);
+    return cc.DES;
+  }
+}
+
+/**
+ * Get a cipher transcoder.
+ * 
+ * @param {string} name - The name of the algorithm.
+ *
+ * Cipher algorithms supported by `crypto-js`:
+ * 
+ * - AES
+ * - DES
+ * - TripleDES
+ * - Rabbit
+ * - RabbitLegacy
+ * - RC4
+ * - RC4Drop
+ * 
+ * The parameter is case-insensitive.
+ *
+ * @returns {function} The hashing function.
+ */
+exports.cipher = function(name)
+{
+  name = name.replaceAll('-', '').toLowerCase();
+  if (typeof Ciphers[name] === F)
+  { // A custom loader function.
+    return Ciphers[name]();
+  }
+  return load(name, false);
+}
+
+const Algos =
+{
+  RC4DROP()
+  {
+    load('rc4', false);
+    return cc.algo.RC4Drop;
+  },
+  des()
+  {
+    load('tripledes', false);
+    return cc.algo.DES;
+  },
+  TRIPLEDES: 'TripleDES',
+  RABBIT: 'Rabbit',
+  RABBITLEGACY()
+  {
+    load('rabbit-legacy', false);
+    return cc.algo.RabbitLegacy;
+  },
+}
+
+/**
+ * Get an algorithm plugin.
+ *
+ * @param {string} name - The name of the algorithm
+ *
+ * It can be any algorithm supported by either
+ * the [hash()]{@link module:@lumjs/encode/crypto.hash}
+ * or [cipher()]{@link module:@lumjs/encode/crypto.cipher}
+ * as well as standalone algorithms like `PBKDF2`, `HMAC`, `EvpKDF`, etc.
+ *
+ * @returns {object} The algorithm plugin.
+ * 
+ * You'll need to use the `create()` method on the plugin to get
+ * an instance before you can start hashing.
+ * 
+ */
+exports.algo = function(name)
+{
+  name = name.replaceAll('-','').toUpperCase();
+
+  if (typeof Algos[name] === F)
+  { // A custom loader.
+    return Algos[name]();
+  }
+  else if (typeof Algos[name] === S)
+  { // A specific case-sensitive spelling.
+    name = Algos[name];
+  }
+
+  // We make sure the library is loaded.
+  load(name);
+
+  // Now we'll get the object out of the core.
+  return cc.algo[name];
+}
+
+const Encoders =
+{
+  utf16be()
+  {
+    load('enc-utf16', false);
+    return cc.enc.Utf16BE;
+  },
+  utf16le()
+  {
+    load('enc-utf16', false);
+    return cc.enc.Utf16LE;
+  },
+}
+
+/**
+ * Get an encoder plugin.
+ * 
+ * @param {*} name - The name of the encoder.
+ * 
+ * Encoders supported:
+ * 
+ * - Base64
+ * - Base64-URL
+ * - Latin1
+ * - Hex
+ * - UTF-8
+ * - UTF-16
+ * - UTF-16LE
+ * 
+ * You can omit the `-` characters, and the parameter is
+ * case-insensitive.
+ * 
+ * @returns {object} The encoder plugin.
+ */
+exports.enc = function(name)
+{
+  name = name.replaceAll('-','').toLowerCase();
+
+  if (typeof Encoders[name] === F)
+  { // A custom loader.
+    return Encoders[name]();
+  }
+
+  // We make sure the library is loaded.
+  return load('enc-'+name, false);
+}
+
+const Paddings =
+{
+  ansix923()
+  { // This module has a typo in it, correcting that here.
+    load('pad-ansix923', false);
+    return cc.pad.AnsiX923;
+  }
+}
+
+/**
+ * Get a padding plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+exports.pad = function(name)
+{
+  name = name.replaceAll('-','').toLowerCase();
+
+  if (typeof Paddings[name] === F)
+  { // A custom loader.
+    return Paddings[name]();
+  }
+
+  return load('pad-'+name, false);
+}
+
+const Modes =
+{
+  CBC()
+  { // Built-in mode, no load required.
+    return cc.mode.CBC;
+  },
+  CTRGLADMAN()
+  { // Filename fuckery.
+    return load('mode-ctr-gladman', false);
+  }
+}
+
+/**
+ * Get a mode plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+exports.mode = function(name)
+{
+  name = name.replaceAll('-','').toUpperCase();
+
+  if (typeof Modes[name] === F)
+  { // A custom loader.
+    return Modes[name]();
+  }
+
+  return load('mode-'+name);
+}
+
+/**
+ * Get a format plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+exports.format = function(name)
+{
+  return load('format-'+name);
+}
+
+// That's all folks.
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_encode.html">@lumjs/encode</a></li><li><a href="module-@lumjs_encode_base64.html">@lumjs/encode/base64</a></li><li><a href="module-@lumjs_encode_base91.html">@lumjs/encode/base91</a></li><li><a href="module-@lumjs_encode_crypto.html">@lumjs/encode/crypto</a></li><li><a href="module-@lumjs_encode_crypto_load.html">@lumjs/encode/crypto/load</a></li><li><a href="module-@lumjs_encode_hash.html">@lumjs/encode/hash</a></li><li><a href="module-@lumjs_encode_safe64.html">@lumjs/encode/safe64</a></li><li><a href="module-@lumjs_encode_safe64_header.html">@lumjs/encode/safe64/header</a></li><li><a href="module-@lumjs_encode_util.html">@lumjs/encode/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_encode_safe64-Settings.html">Settings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:31:30 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: @lumjs/encode/hash</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: @lumjs/encode/hash</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+                <div class="class-description"><p>Hashifier</p>
+<p>A simple yet flexible class for building cryptographic hashes.</p></div>
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Build a new Hashifier</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options</p>
+<p>If this is a <code>string</code>, it's assumed to be the <code>options.algo</code> option.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>algo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "SHA256"
+                
+                </td>
+            
+
+            <td class="description last"><p>Hashing algorithm</p>
+<p>By default we use &quot;SHA256&quot; for backwards compatibility with my
+older libraries and apps. You can set it to any <em>hashing algorithm</em>
+from the <code>crypto-js</code> library (we use our own
+<a href="module-@lumjs_encode_crypto.html">crypto</a> helper.)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>safe64</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Default options for <code>safe64()</code></p>
+<p>If specified, this will become the default options for the
+safe64() method.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>base91</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Default options for <code>base91()</code></p>
+<p>If specified, this will become the default options for the
+base91() method.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="hash.js.html">hash.js</a>, <a href="hash.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_encode.html">@lumjs/encode</a></li><li><a href="module-@lumjs_encode_base64.html">@lumjs/encode/base64</a></li><li><a href="module-@lumjs_encode_base91.html">@lumjs/encode/base91</a></li><li><a href="module-@lumjs_encode_crypto.html">@lumjs/encode/crypto</a></li><li><a href="module-@lumjs_encode_crypto_load.html">@lumjs/encode/crypto/load</a></li><li><a href="module-@lumjs_encode_hash.html">@lumjs/encode/hash</a></li><li><a href="module-@lumjs_encode_safe64.html">@lumjs/encode/safe64</a></li><li><a href="module-@lumjs_encode_safe64_header.html">@lumjs/encode/safe64/header</a></li><li><a href="module-@lumjs_encode_util.html">@lumjs/encode/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_encode_safe64-Settings.html">Settings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:31:30 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

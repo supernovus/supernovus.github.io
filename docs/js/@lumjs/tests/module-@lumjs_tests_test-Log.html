@@ -96,7 +96,7 @@
             <td class="type">
             
                 
-<span class="param-type"><a href="module-@lumjs_tests_test.html">module:@lumjs/tests/test</a></span>
+<span class="param-type">object</span>
 
 
             
@@ -106,7 +106,7 @@
 
             
 
-            <td class="description last"><p>The parent <code>Test</code> instance.</p></td>
+            <td class="description last"><p>The parent <code>Test</code> or <code>Stats</code> instance.</p></td>
         </tr>
 
     
@@ -204,7 +204,36 @@
 
         <tr>
             
-                <td class="name"><code>skippedReason</code></td>
+                <td class="name"><code>todo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Was the test marked TODO?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reason</code></td>
             
 
             <td class="type">
@@ -226,7 +255,7 @@
 
             
 
-            <td class="description last"><p>If the test was skipped, why?</p></td>
+            <td class="description last"><p>If the test was skipped or TODO, why?</p></td>
         </tr>
 
     
@@ -366,7 +395,7 @@
 
             
 
-            <td class="description last"><p>The value that was received in an <code>is</code> test.</p></td>
+            <td class="description last"><p>The value that was received in a test.</p></td>
         </tr>
 
     
@@ -397,7 +426,38 @@
 
             
 
-            <td class="description last"><p>The value that was expectged in an <code>is</code> test.</p></td>
+            <td class="description last"><p>The value that was expectged in a test.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>comparitor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The comparitor used in a test.</p></td>
         </tr>
 
     
@@ -410,7 +470,7 @@
             <td class="type">
             
                 
-<span class="param-type">*</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -429,6 +489,37 @@
             
 
             <td class="description last"><p>If <code>true</code> then output the details as JSON.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>info</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional array of extra information.</p></td>
         </tr>
 
     
@@ -474,7 +565,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="log.js.html">log.js</a>, <a href="log.js.html#line22">line 22</a>
+        <a href="test_log.js.html">test/log.js</a>, <a href="test_log.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -633,7 +724,7 @@ The <code>Test.tap()</code> method uses it when generating a full log.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="log.js.html">log.js</a>, <a href="log.js.html#line49">line 49</a>
+        <a href="test_log.js.html">test/log.js</a>, <a href="test_log.js.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -701,13 +792,13 @@ The <code>Test.tap()</code> method uses it when generating a full log.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_functional.html">@lumjs/tests/functional</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_tests_harness-Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Log.html">Log</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="@lumjs_tests_harness-module_BrowserPlugin.html">BrowserPlugin</a></li><li><a href="@lumjs_tests_harness-module_NodePlugin.html">NodePlugin</a></li><li><a href="@lumjs_tests_harness-module_PlanFailure.html">PlanFailure</a></li><li><a href="@lumjs_tests_harness-module_Plugin.html">Plugin</a></li><li><a href="@lumjs_tests_harness-module_QueuedTest.html">QueuedTest</a></li><li><a href="@lumjs_tests_harness-module_TestFailure.html">TestFailure</a></li><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_harness_parser.html">@lumjs/tests/harness/parser</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li><li><a href="module-@lumjs_tests_test_functional.html">@lumjs/tests/test/functional</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_tests.Harness.html">Harness</a></li><li><a href="module-@lumjs_tests_test-Log.html">Log</a></li><li><a href="module-@lumjs_tests_test-Stats.html">Stats</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 12 2022 08:24:19 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:26 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

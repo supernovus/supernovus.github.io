@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: safe64/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: safe64/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {S,B,isObj} = require('@lumjs/core/types');
+const Base64 = require('../base64');
+const Utf8 = Base64.Utf8;
+const {FORMAT,TYPE,VERSION} = require('./common');
+const Header = require('./header');
+const Settings = require('./settings');
+
+const PLUGINS =
+{
+  [FORMAT.JSON]:   'json',
+  [FORMAT.PHP]:    'php',
+  [FORMAT.UBJSON]: 'ubjson',
+}
+
+// Internal function. Really simplistic at the moment.
+// When we have more than one version, it'll need updating.
+function detectHeader(str)
+{
+  return str.startsWith('SV03');
+}
+
+/**
+ * URL-safe variant of the Base64 algorithm, with extras.
+ *
+ * Version 3 header format is: `SVvvFfTt`
+ *
+ * - Uppercase letters are *literal* characters.
+ * - Lowercase letters are hexidecimal integers:
+ *   - `vv` = *version* (mandatory)
+ *   - `f`  = *format*  (optional if `FORMAT.NONE`)
+ *   - `t`  = *type*    (optional if `TYPE.RAW` or `FORMAT.PHP`)
+ *
+ * Examples: 
+ * 
+ * - `SV03F1T1` (ver = 3, format = JSON, type = ARR_OBJ)
+ * - `SV03F2`   (ver = 3, format = PHP,  type = *)
+ * - `SV03`     (ver = 3, format = NONE, type = RAW)
+ * 
+ * @exports module:@lumjs/encode/safe64
+ */
+module.exports = class
+{
+  /**
+   * Encode data to Safe64 format.
+   *
+   * @param {(string|WordArray)} data - The data to encode
+   * 
+   * This **does not** do any serialization of data.
+   * If you need to serialize data, see the 
+   * [encode()]{@link module:@lumjs/encode/safe64#encode}
+   * instance method or the 
+   * [encodeData()]{@link module:@lumjs/encode/safe64.encodeData}
+   * static method.
+   *
+   * @param {(object|boolean)} [opts] Encoding options
+   * 
+   * In addition to the options specific to this method, any option
+   * for [urlize()]{@link module:@lumjs/encode/safe64.urlize} may be passed
+   * here as well.
+   * 
+   * @param {object} [opts.stringFormat] Format for string parsing
+   * 
+   * Can be any *encoding plugin* from the `crypto-js` library.
+   * The *default* is `CryptoJS.enc.Utf8`.
+   * 
+   * See [base64.encode()]{@link module:@lumjs/encode/base64.encode}
+   * for details.
+   *
+   * @return {string} The encoded string.
+   */
+  static encode(rawdata, opts={})
+  {    
+    let b64 = Base64.encode(rawdata, opts.stringFormat);
+    return this.urlize(b64, opts);
+  }
+
+  /**
+   * Convert a Base64 string into a Safe64 string.
+   *
+   * @param {string} string - The Base64 string to convert.
+   * @param {object} [opts] Options
+   * @param {boolean} [opts.addHeader=false] Add a `v3` header?
+   * @param {number} [opts.format=NONE] The `format` field for the header.
+   *
+   * See [FORMAT]{@link module:@lumjs/encode/safe64.FORMAT} for a list.
+   * 
+   * @param {number} [opts.type=RAW] The `type` field for the header.
+   * 
+   * See [TYPE]{@link module:@lumjs/encode/safe64.TYPE} for a list.
+   *
+   * @param {number} [opts.version=VERSION] The Safe64 version number.
+   * @param {boolean} [opts.fullHeader=false] Always include full header?
+   * 
+   * Include all header fields, even if optional ones aren't required.
+   * 
+   * @return {string} A Safe64 string.
+   */
+  static urlize(string, opts={})
+  {
+    if (typeof opts === B)
+    {
+      opts = {useTildes: opts};
+    }
+    else if (!isObj(opts))
+    {
+      throw new TypeError("invalid opts parameter");
+    }
+
+    string = string.replaceAll('+', '-');
+    string = string.replaceAll('/', '_');
+    string = string.replaceAll('=', opts.useTildes ? '~' : '');
+
+    if (opts.addHeader)
+    { // Build a header.
+      const header
+      = Header.build(
+        opts.format     ?? FORMAT.NONE, 
+        opts.type       ?? TYPE.RAW, 
+        opts.version    ?? VERSION, 
+        opts.fullHeader ?? false
+      );
+      return header + string;
+    }
+    return string;
+  }
+
+  /**
+   * Convert a Safe64 string back into a Base64 string.
+   *
+   * @param {string} string - The Safe64 string to convert
+   * @param {object} [opts] Options
+   * @param {boolean} [opts.stripHeader=false] Strip `v3` headers?
+   * @return {string} A Base64 string.
+   */
+  static deurlize(string, opts={})
+  {
+    if (!isObj(opts))
+    {
+      throw new TypeError("invalid opts parameter");
+    }
+
+    string = string.replaceAll('-', '+');
+    string = string.replaceAll('_', '/');
+    string = string.replaceAll('~', '=');
+    string += "===".substring((string.length+3)%4);
+
+    const stripHeader = opts.stripHeader ?? detectHeader(string);
+
+    return stripHeader ? this.stripHeader(string) : string;
+  }
+
+  /**
+   * Decode a Safe64 string into raw data.
+   *
+   * @param {string} string  The Base64 string to decode.
+   * @param {object} [opts] Decoding options
+   * 
+   * In addition to the options specific to this method, any
+   * options supported by {@link module:@lumjs/encode/safe64.deurlize}
+   * may be passed as well.
+   * 
+   * @param {(object|false)} [opts.stringFormat] Output string format
+   *
+   * Can be any *encoding plugin* from the `crypto-js` library.
+   * The *default* is `CryptoJS.enc.Utf8`.
+   * 
+   * See [base64.decode()]{@link module:@lumjs/encode/base64.decode}
+   * for details.
+   * 
+   * @return {(string|object)} The decoded output.
+   * 
+   * The output of this is the value returned from the
+   * [Base64.decode()]{@link module:@lumjs/encode/base64.decode}
+   * method. 
+   * 
+   * This **does not** do anything with data that was
+   * serialized using the Data extension.
+   * If you are working with serialized data, see the 
+   * [decode()]{@link module:@lumjs/encode/safe64#decode}
+   * instance method or the 
+   * [decodeData()]{@link module:@lumjs/encode/safe64.decodeData}
+   * static method.
+   * 
+   */
+  static decode(string, opts={})
+  {
+    const b64 = this.deurlize(string, opts);
+    return Base64.decode(b64, opts.stringFormat);
+  }
+
+  /**
+   * Strip off a `v3` header from a string.
+   * 
+   * @param {string} string 
+   * @returns {string}
+   */
+  static stripHeader(string)
+  {
+    return Header.parse(string).string;
+  }
+
+  // Now for the instance methods.
+
+  /**
+   * Build a Safe64 instance.
+   * 
+   * Building a `Safe64` instance allows for a more flexible API,
+   * and enables the `v3` data extensions.
+   * 
+   * @param {object} [opts] Options
+   * 
+   * @param {number} [opts.format=JSON] Default data format.
+   * 
+   * See {@link module:@lumjs/encode/safe64.FORMAT} for a list.
+   * 
+   * @param {number} [opts.type=ARR_OBJ] Default return type.
+   * 
+   * See {@link module:@lumjs/encode/safe64.TYPE} for a list.
+   * 
+   * @param {boolean} [opts.addHeader=true] Add a `v3` header to output?
+   * 
+   * The headers are generally only needed for the Data extension,
+   * but they're safe to use in any encoded string.
+   * 
+   * @param {boolean} [opts.fullHeader=false] Always include full header?
+   * 
+   * If this option is `true`, all optional header fields will always
+   * be included, even if they aren't necessary.
+   * 
+   * @param {object} [opts.stringFormat] String format.
+   * 
+   * Can be any *encoding plugin* from the `crypto-js` library.
+   * 
+   * @param {function} [opts.jsonReplacer] Replacer function for JSON
+   * 
+   * When using `FORMAT.JSON` this will be used by `encode()` when it
+   * passes the data to `JSON.stringify()`.
+   * 
+   * @param {function} [opts.jsonReviver] Reviver function for JSON
+   * 
+   * When using `FORMAT.JSON` this will be used by `decode()` when it
+   * passes the string to `JSON.parse()`.
+   * 
+   * @param {object} [opts.phpEncodeScope] Scope for `serialize()`
+   * 
+   * When using `FORMAT.PHP`, a map of custom `class` definitions
+   * to use when `encode()` calls `serialize()`.
+   * 
+   * @param {object} [opts.phpDecodeScope] Scope for `unserialize()`
+   * 
+   * When using `FORMAT.PHP`, a map of custom `class` definitions
+   * to use when `decode()` calls `unserialize()`.
+   * 
+   * @param {object} [opts.phpScope] Default PHP scope
+   * 
+   * If this is set, it will be used as the default for both the
+   * `opts.phpEncodeScope` and `opts.phpDecodeScope`. It's basically
+   * a quick way to set both at the same time.
+   * 
+   * @param {object} [opts.phpEncodeOpts] Options for `serialize()`
+   * 
+   * Passed by `encode()` when using `FORMAT.PHP`.
+   * 
+   * @param {object} [opts.phpDecodeOpts] Options for `unserialize()`
+   * 
+   * Passed by `decode()` when using `FORMAT.PHP`.
+   * 
+   * @param {object} [opts.phpOpts] Default PHP options
+   * 
+   * If this is set, it will be used as the default for both the
+   * `opts.phpEncodeOpts` and `opts.phpDecodeOpts`. It's basically
+   * a quick way to set both at the same time.
+   * 
+   * @param {object} [opts.ubEncoderOpts] Options for `UBJSON.encode()`
+   * 
+   * @param {object} [opts.ubDecoderOpts] Options for `UBJSON.decode()`
+   * 
+   * @param {boolean} [opts.encodeStrings=false] Encode `string` values?
+   * 
+   * Normally we assume strings are already serialized, and we simply
+   * encode them with the url-safe Base64 variant.
+   * 
+   * If this is `true` we'll serialize `string` values with whatever
+   * serialization format is selected. This is probably not useful.
+   * 
+   * @param {boolean} [opts.useTildes=false] Enable legacy `v1` output?
+   * 
+   * You probably don't want or need this.
+   * The original Safe64 replaced `=` symbols with `~` symbols, while the
+   * `v2` and higher simply strip them from the output entirely.
+   * Unless you *really* have a reason for needing this, don't use it!
+   * 
+   */
+  constructor(opts={})
+  {
+    this.encFormat     = opts.format         ?? FORMAT.JSON;
+    this.encType       = opts.type           ?? TYPE.ARR_OBJ;
+    this.addHeader     = opts.addHeader      ?? true;
+    this.fullHeader    = opts.fullHeader     ?? false;
+    this.stringFormat  = opts.stringFormat   ?? Utf8;
+    this.encodeStrings = opts.encodeStrings  ?? false;
+    this.useTildes     = opts.useTildes      ?? false;
+    this.version       = opts.version        ?? VERSION;
+
+    this.phpEncOpts    = opts.phpEncodeOpts  ?? opts.phpOpts;
+    this.phpDecOpts    = opts.phpDecodeOpts  ?? opts.phpOpts;
+    this.phpEncScope   = opts.phpEncodeScope ?? opts.phpScope;
+    this.phpDecScope   = opts.phpDecodeScope ?? opts.phpScope;
+
+    this.jsonReviver   = opts.jsonReviver;
+    this.jsonReplacer  = opts.jsonReplacer;
+
+    this.ubEncOpts     = opts.ubEncoderOpts;
+    this.ubDecOpts     = opts.ubDecoderOpts;
+  }
+
+  getPlugin(fmt=this.encFormat)
+  {
+    const name = PLUGINS[fmt];
+
+    if (typeof name !== S)
+    {
+      throw new TypeError("invalid format value");
+    }
+
+    const plugin = require('./'+name);
+
+    if (!isObj(plugin))
+    {
+      throw new TypeError("invalid format plugin");
+    }
+
+    return plugin;
+  }
+
+  $parseHeader(string)
+  {
+    const settings = new Settings(this.encFormat, this.encType);
+    return Header.parse(string, settings);
+  }
+
+  $encodeValue(data)
+  {
+    const opts =
+    { // Options built from our instance properties.
+      stringFormat: this.stringFormat,
+      useTildes: this.useTildes,
+      addHeader: this.addHeader,
+      fullHeader: this.fullHeader,
+      format: this.encFormat,
+      type: this.encType,
+      version: this.version,
+    }
+    return exports.encode(data, opts);
+  }
+
+  $decodeValue(input, stringFormat=this.stringFormat)
+  {
+    if (typeof input === S)
+    {
+      input = this.$parseHeader(input);
+    }
+    else if (!(input instanceof Settings))
+    {
+      throw new TypeError("input must be a string or Safe64 Settings instance");
+    }
+    return exports.decode(input.string, {stringFormat});
+  }
+
+  /**
+   * Transform data into a Safe64 string.
+   * 
+   * @param {*} data - The data to serialize and encode
+   * 
+   * Generally this should only be either: 
+   * 
+   * - An `object` in which case it'll be serialized using the current 
+   * *format*, then encoded in Safe64.
+   * - A string, which we generally assume is already serialized and simply
+   *   encode it as a Safe64 directly.
+   * 
+   * If the `addHeader` property is `true` (the default setting), then
+   * a header will always be added to every Safe64 string returned by
+   * this method.
+   * 
+   * @returns {string}
+   */
+  encode(data)
+  {
+    if (typeof data === S &amp;&amp; !this.encodeStrings)
+    { // It's a string already, forward it onwards.
+      return this.$encodeValue(data);
+    }
+    else if (this.format === FORMAT.NONE)
+    { // We don't want to format it.
+      return this.$encodeValue(data.toString());
+    }
+
+    const encoded = this.getPlugin().encode.call(this, data);
+
+    if (typeof encoded !== S &amp;&amp; !isObj(encoded))
+    {
+      throw new Error("serialization did not return a string or object");
+    }
+
+    return this.$encodeValue(encoded);
+  } // encode()
+
+  /**
+   * Decode a Safe64-encoded object.
+   * 
+   * @param {string} string - The Safe64 string to decode and unserialize
+   * 
+   * If there is no header, we will attempt to decode the string with
+   * our current `format` and `type`, but that is not guaranteed to work.
+   * 
+   * You should always send a Safe64 string *with a header* to this method.
+   * 
+   * @returns {mixed} The original data value.
+   */
+  decode(string)
+  {
+    const opts = this.$parseHeader(string);
+
+    if (opts.format === FORMAT.NONE || opts.type === TYPE.RAW)
+    { // Nothing further to do.
+      return this.$decodeValue(opts);
+    }
+
+    return this.getPlugin(opts.format).decode.call(this, opts);
+  } // decode()
+
+  /**
+   * Create a new `Safe64` instance, then call its `encode()` method.
+   * 
+   * @param {*} data - Data to pass to `instance.encode()`
+   * @param {object} [opts] - Options for constructor.
+   * @returns {string} The Safe64 string.
+   */
+  static encodeData(data, opts={})
+  {
+    const s64 = new exports(opts);
+    return s64.encode(data);
+  }
+
+  /**
+   * Create a new `Safe64` instance, then call its `decode()` method.
+   * 
+   * @param {string} string - String to pass to `instance.decode()`
+   * @param {object} [opts] - Options for constructor.
+   * @returns {mixed} The decoded data.
+   */
+  static decodeData(string, opts={})
+  {
+    const s64 = new exports(opts);
+    return s64.decode(string);
+  }
+
+} // Safe64 class
+
+// Now let's add some static references.
+exports = module.exports;
+
+exports.VERSION  = VERSION;
+exports.FORMAT   = FORMAT;
+exports.TYPE     = TYPE;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_encode.html">@lumjs/encode</a></li><li><a href="module-@lumjs_encode_base64.html">@lumjs/encode/base64</a></li><li><a href="module-@lumjs_encode_base91.html">@lumjs/encode/base91</a></li><li><a href="module-@lumjs_encode_crypto.html">@lumjs/encode/crypto</a></li><li><a href="module-@lumjs_encode_crypto_load.html">@lumjs/encode/crypto/load</a></li><li><a href="module-@lumjs_encode_hash.html">@lumjs/encode/hash</a></li><li><a href="module-@lumjs_encode_safe64.html">@lumjs/encode/safe64</a></li><li><a href="module-@lumjs_encode_safe64_header.html">@lumjs/encode/safe64/header</a></li><li><a href="module-@lumjs_encode_util.html">@lumjs/encode/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_encode_safe64-Settings.html">Settings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:31:30 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

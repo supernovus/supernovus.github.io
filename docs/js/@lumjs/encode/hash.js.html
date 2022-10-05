@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: hash.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: hash.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {S,F,isObj,isNil} = require('@lumjs/core/types');
+
+const util   = require('./util');
+const Base91 = require('./base91');
+const Safe64 = require('./safe64');
+const Crypto = require('./crypto');
+const cload  = Crypto.load;
+
+const DEFALGO = 'SHA256';
+
+/**
+ * Hashifier
+ * 
+ * A simple yet flexible class for building cryptographic hashes.
+ * 
+ * @exports module:@lumjs/encode/hash
+ */
+module.exports = class
+{
+  /**
+   * Build a new Hashifier
+   *
+   * @param {(object|string)} [options] Options
+   * 
+   * If this is a `string`, it's assumed to be the `options.algo` option.
+   * 
+   * @param {string} [options.algo="SHA256"] Hashing algorithm
+   *
+   * By default we use "SHA256" for backwards compatibility with my
+   * older libraries and apps. You can set it to any *hashing algorithm*
+   * from the `crypto-js` library (we use our own 
+   * [crypto]{@link module:@lumjs/encode/crypto} helper.)
+   * 
+   * @param {object} [options.safe64] Default options for `safe64()`
+   * 
+   * If specified, this will become the default options for the
+   * [safe64()]{@link module:@lumjs/encode/hash#safe64} method.
+   * 
+   * @param {object} [options.base91] Default options for `base91()`
+   * 
+   * If specified, this will become the default options for the
+   * [base91()]{@link module:@lumjs/encode/hash#base9164} method.
+   *
+   */
+  constructor(options={})
+  {
+    if (typeof options === S)
+    {
+      options = {algo: options};
+    }
+
+    const algo = options.algo ?? DEFALGO;
+
+    this.algoLib = cload.algo(algo);
+    this.hashFunction = cload.hash(algo);
+
+    //console.debug("&lt;hash>", {hash: this, algo, options});
+
+    if (!isObj(this.algoLib) || typeof this.hashFunction !== F)
+    {
+      throw new Error("Invalid hashing algorithm");
+    }
+
+    this.safe64Options = options.safe64 ?? {};
+    this.base91Options = options.base91 ?? {};
+
+  } // construct()
+
+  /**
+   * Get a cryptographic *hash*.
+   * 
+   * If you pass `input`, it will be hashed *immediately* and returned.
+   *
+   * Otherwise, if there is a current *progressive hash* in the process of
+   * being built, it will be *finalized* and returned.
+   *
+   * This will return `undefined` if there is no valid data to be hashed.
+   *
+   * @param {(string|WordArray)} [input] Input to hash immediately.
+   *
+   * @return {WordArray|undefined}
+   */
+  hash(input)
+  {
+    if (isNil(input))
+    { // No input, let's see if we have a progrssive hash being built.
+      if (typeof this.currentHash === 'object')
+      { // Let's return the finalized hash.
+        let value = this.currentHash.finalize();
+        delete this.currentHash;
+        return value;
+      }
+    }
+    else if (typeof input === 'string' || this.valid(hash))
+    { // Input data was passed, let's hash it now.
+      return this.hashFunction(input);
+    }
+  }
+
+  // Not really a useful public method.
+  valid(hash)
+  { // WordArray is not a standard object and doesn't work with instanceof.
+    return (isObj(hash) &amp;&amp; typeof hash.toString === 'function');
+  }
+
+  /**
+   * Get hash as a Hex string.
+   *
+   * @param {(string|WordArray)} [input] 
+   * See [hash()]{@link module:@lumjs/encode/hash#hash}
+   * @returns {string}
+   * 
+   * This uses the default `Hex` encoder from `crypto-js` to perform
+   * the hashing, so output is directly as if you'd used that library.
+   */
+  hex(input)
+  {
+    const hash = this.hash(input);
+    if (this.valid(hash)) return hash.toString();
+  }
+
+  /**
+   * Get hash as a Base64-encoded string.
+   *
+   * @param {(string|WordArray)} [input] 
+   * See [hash()]{@link module:@lumjs/encode/hash#hash}
+   * @returns {string}
+   * 
+   * This uses the direct `Base64` encoder from `crypto-js` to perform
+   * the hashing, so output is directly as if you'd used that library.
+   */
+  base64(input)
+  {
+    const hash = this.hash(input);
+    const base64 = Crypto.enc.Base64;
+    if (this.valid(hash)) return hash.toString(base64);
+  }
+
+  /**
+   * Get hash as a Safe64-encoded string.
+   * 
+   * Calls [base64()]{@link module:@lumjs/encode/hash#base64},
+   * then passes the output from that to
+   * [urlize()]{@link module:@lumjs/encode/safe64.urlize} to
+   * convert into the *Safe64* format.
+   *
+   * @param {(string|WordArray)} [input] 
+   * See [hash()]{@link module:@lumjs/encode/hash#hash}
+   * @param {object} [opts]
+   * Options for `urlize()`.
+   * @returns {string}
+   * 
+   * By default it's a raw *Safe64* string with **no** header,
+   * and **no** tildes. The `opts` passed can change the format
+   * by enabling *tildes* or adding a *header*.
+   * 
+   */
+  safe64(input, opts={})
+  {
+    let base64 = this.base64(input); 
+    if (base64)
+      return Safe64.urlize(base64, opts);
+  }
+
+  /**
+   * Get hash as a Base91-encoded string.
+   * 
+   * The `crypto-js` library set currently does not natively support
+   * the `base91` encoding format.
+   * 
+   * So this offers a few different ways to encode `crypto-js` hashes
+   * in `base91` format using our own 
+   * [base91]{@link module:@lumjs/encode/base91} module.
+   *
+   * @param {(string|WordArray)} [input] 
+   * See [hash()]{@link module:@lumjs/encode/hash#hash}
+   * @param {object} [opts] Options for how to encode the hash.
+   * @param {boolean} [opts.words=false] Use `hash.words`?
+   * 
+   * If this is `true`, we will pass the `hash.words` array to
+   * the `base91.encode()` method to encode them.
+   * 
+   * If this is true, then `opts.enc` and `opts.nba` are ignored.
+   * 
+   * @param {object} [opts.enc] The `crypto-js` encoder.
+   * 
+   * That can be any of the `crypto.enc.*` plugins.
+   * If not specified, the default `Hex` encoding format will be used.
+   * 
+   * @param {(boolean|object)} [opts.nba=true] Use `numByteArray()` ?
+   * 
+   * If this is `true` the *hash string* will be passed to `numByteArray()`
+   * with the *default options* and the output from that will be passed to 
+   * `base91.encode()`.
+   * 
+   * If this is an `object`, then the same logic as `true` applies, except this
+   * will be used as the *explicit options* for the `numByteArray()` method.
+   * 
+   * If this is `false` the *hash string* itself will be passed directly to
+   * `base91.encode()` without further encoding.
+   * 
+   * The default value of `true` is provided for backwards compatibility with
+   * the previous version of this library which did not have as many options.
+   * 
+   * @returns {string}
+   */
+  base91(input, opts={})
+  {
+    let hash = this.hash(input);
+    if (this.valid(hash)) 
+      return Base91.encode(util.numByteArray(hash.toString()))
+  }
+
+  /**
+   * Add input to a progressive hash.
+   *
+   * If there is not already a progressive hash being built, we will
+   * create one automatically. Use the `hash()` method with no parameter
+   * to retrieve the finalized hash as a `WordArray` object, or one of
+   * the other convenience methods to return it in a specific string
+   * format.
+   *
+   * @param {string|WordArray} input  A value to add to the hash.
+   *
+   * @return Lum.Hashifier  The current object.
+   */
+  add(input)
+  {
+    if (!isObj(this.currentHash))
+    { // We need to start a new hash.
+      this.currentHash = this.algoLib.create();
+    }
+
+    this.currentHash.update(input);
+    
+    return this;
+  }
+
+  static new(opts={})
+  {
+    return new this(opts);
+  }
+
+} // Hashifier class
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_encode.html">@lumjs/encode</a></li><li><a href="module-@lumjs_encode_base64.html">@lumjs/encode/base64</a></li><li><a href="module-@lumjs_encode_base91.html">@lumjs/encode/base91</a></li><li><a href="module-@lumjs_encode_crypto.html">@lumjs/encode/crypto</a></li><li><a href="module-@lumjs_encode_crypto_load.html">@lumjs/encode/crypto/load</a></li><li><a href="module-@lumjs_encode_hash.html">@lumjs/encode/hash</a></li><li><a href="module-@lumjs_encode_safe64.html">@lumjs/encode/safe64</a></li><li><a href="module-@lumjs_encode_safe64_header.html">@lumjs/encode/safe64/header</a></li><li><a href="module-@lumjs_encode_util.html">@lumjs/encode/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_encode_safe64-Settings.html">Settings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:31:30 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

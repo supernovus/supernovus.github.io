@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: test/base.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: test/base.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
+const {types} = core;
+const {S,N,isObj} = types;
+const Log = require('./log');
+
+/**
+ * Minimalistic base class for the `Test` library.
+ * 
+ * This doesn't have any of the regular testing methods,
+ * it's simply the core properties, constructor, and output methods.
+ *
+ * @alias module:@lumjs/tests/test~Base
+ * 
+ * @property {number}  planned - Number of tests planned, `0` if unplanned.
+ * @property {number}  failed  - Number of tests that failed.
+ * @property {number}  skipped - Number of tests that were skipped.
+ * @property {number}  ran     - Number of tests ran (*calculated*). 
+ * @property {string}  id      - Unique test id used by `Harness` libary.
+ * @property {boolean} isTop   - Test module was loaded from the command line.
+ * @property {?object} harness - The top-level `Harness` if one was found.
+ */
+class Base
+{
+  /**
+   * Build a new instance.
+   * 
+   * @param {object} [opts] Named options.
+   * @param {string} [opts.id] A unique test id, used by Harness.
+   * @param {number} [opts.plan] Passed to `plan()` method.
+   * @param {object} [opts.moduleName] Options for `core.modules.name()`.
+   * @param {object} [opts.module] The node module to export this test to.
+   *
+   *   If you use this option, `opts.module.exports` will be assigned
+   *   to the test instance, overriding anything that may have been 
+   *   assigned to it previously.
+   *
+   *   Also, if this is passed, and `opts.id` was not specified, and id
+   *   will be auto-generated based on the filename of the module.
+   *
+   * @param {number} [opts.stringify=1] The depth `stringify()` should recurse
+   *   objects and Arrays before switching to plain JSON stringification.
+   *
+   */
+  constructor (opts={})
+  {
+    if (typeof opts === N)
+    {
+      opts = {plan: opts};
+    }
+    else if (typeof opts === S)
+    {
+      opts = {id: opts};
+    }
+
+    const hasModule = isObj(opts.module);
+
+    if (typeof opts.id === S)
+    { // A specific id was specified.
+      this.id = opts.id;
+    }
+    else if (hasModule)
+    { // We're going to generate a simple name.
+      this.id = core.modules.name(opts.module, opts.moduleName);
+    }
+    else 
+    { // An anonymous test.
+      this.id = null;
+    }
+
+    this.stringifyDepth = opts.stringify ?? 1;
+
+    this.failed  = 0;
+    this.skipped = 0;
+    this.planned = 0;
+
+    // The test logs for each unit.
+    this.log = [];
+
+    // These three will be updated below if possible.
+    this.isTop   = false;
+    this.harness = null;
+
+    if (typeof opts.plan === N)
+    {
+      this.plan(opts.plan);
+    }
+
+    if (hasModule)
+    { // If a module was passed, its going to export this test.
+      opts.module.exports = this;
+      // We'll also use the module to determine if we're Harnessed or not.
+      if (require.main === opts.module)
+      { // Was called directly.
+        this.isTop = true;
+      }
+    }
+
+    if (!this.isTop)
+    { // Try to find a Harness instance.
+      if (isObj(require.main) &amp;&amp; require.main.exports instanceof Harness)
+      { // We found the Harness instance.
+        this.harness = require.main.exports;
+      }
+    }
+
+  }
+
+  // Internal method.
+  $log()
+  {
+    return new Log(this);
+  }
+
+  // A wrapper around types.stringify()
+  stringify(what)
+  {
+    return types.stringify(what, this.stringifyDepth);
+  }
+
+  /**
+   * Indicate how many tests are planned to be run in this set.
+   * 
+   * @param {number} num - The number of tests that should run. 
+   */
+  plan (num)
+  {
+    if (typeof num === N)
+    {
+      this.planned = num;
+    }
+    else if (num === false)
+    {
+      this.planned = 0;
+    }
+    else
+    {
+      throw new Error("Invalid value passed to plan()");
+    }
+  }
+
+  /**
+   * Add diagnostics info directly to our test logs.
+   * 
+   * @param {*} msg - The info to add. 
+   *   If this is a `string` it will be displayed as a comment as is.
+   *   If it is anything else, it will be encoded as JSON first.
+   * 
+   */
+  diag (msg)
+  {
+    this.log.push(msg);
+  }
+
+  /**
+   * Return TAP formatted output for all the tests.
+   * 
+   * @returns {string} The test logs, in TAP format.
+   */
+  tap ()
+  {
+    let out = '';
+    if (this.planned > 0)
+    {
+      out += '1..'+this.planned+"\n";
+    }
+    let t = 1;
+    for (const log of this.log)
+    {
+      if (log instanceof Log)
+      {
+        out += log.tap(t++);
+      }
+      else
+      { // A comment.
+        out += '# ' + (typeof log === S ? log : this.stringify(log)) + "\n";
+      }
+    }
+    if (this.skipped)
+    {
+      out += '# Skipped '+this.skipped+" tests\n";
+    }
+    if (this.failed)
+    {
+      out += '# Failed '+this.failed+(this.failed>1?' tests':' test');
+      if (this.planned)
+        out += ' out of '+this.planned;
+      out += "\n";
+    }
+    const ran = t-1;
+    if (this.planned > 0 &amp;&amp; this.planned != ran)
+    {
+      out += '# Looks like you planned '+this.planned+' but ran '+ran+" tests\n";
+    }
+    return out;
+  }
+
+  /**
+   * A read-only *accessor* property alias for `tap()`.
+   * @returns {string}
+   * @see {@link module:@lumjs/tests/test#tap}
+   */
+  get TAP()
+  {
+    return this.tap();
+  }
+
+  /**
+   * A calculated property of the number of tests that were ran.
+   * @type {int}
+   */
+  get ran ()
+  {
+    let ran = 0;
+    for (const log of this.log)
+    {
+      if (log instanceof Log)
+      {
+        ran++;
+      }
+    }
+    return ran;
+  }
+
+  /**
+   * Send the TAP output to the `console`.
+   *
+   * This is a low-level method and is no longer recommended for use.
+   * Instead call the `done()` method, which will *do the right thing*.
+   */
+  output ()
+  {
+    console.log(this.tap());
+    return this;
+  }
+
+  /**
+   * We're done testing.
+   *
+   * This will mark the test-set as finished, so attempting to run further
+   * tests after will result in a `RangeError` being thrown.
+   *
+   * If no `Harness` is in use, this will also run `this.output()`.
+   */
+  done ()
+  {
+    if (this.$done)
+    {
+      throw new RangeError('Test set is already done');
+    }
+    this.$done = true;
+
+    return (this.harness ? this : this.output());
+  }
+
+} // class Test
+
+// Export the class
+module.exports = Base;
+
+// Finally at the bottom after `module.exports` has been set, we will load
+// the Harness class to avoid circular references failing.
+const Harness = require('../harness');
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests.html">@lumjs/tests</a></li><li><a href="module-@lumjs_tests_harness.html">@lumjs/tests/harness</a></li><li><a href="module-@lumjs_tests_harness_parser.html">@lumjs/tests/harness/parser</a></li><li><a href="module-@lumjs_tests_test.html">@lumjs/tests/test</a></li><li><a href="module-@lumjs_tests_test_functional.html">@lumjs/tests/test/functional</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_tests_test-Base.html">Base</a></li><li><a href="module-@lumjs_tests_test-Log.html">Log</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Sep 26 2022 13:46:15 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

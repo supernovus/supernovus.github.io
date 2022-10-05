@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: crypto.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: crypto.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {F,S} = require('@lumjs/core/types');
+
+/**
+ * Crypto-JS helpers.
+ * @module @lumjs/encode/crypto
+ */
+
+/**
+ * The `crypto-js/core` library is always available.
+ * @alias module:@lumjs/encode/crypto.core
+ */
+const cc = require('crypto-js/core');
+exports.core = cc;
+
+/**
+ * The `WordArray` component.
+ */
+exports.WordArray = cc.lib.WordArray;
+
+/**
+ * Load and return a specific `crypto-js` module.
+ * 
+ * This is simply a wrapper for `require()` that prefixes
+ * the `crypto-js/` package namespace.
+ * 
+ * Generally you won't have to call this manually,
+ * instead use one of the more specialized methods.
+ * 
+ * The one big exception is the `PBKDF2` module which
+ * should be loaded directly from here.
+ * 
+ * @param {string} name - The name of the module.
+ * 
+ * This is case-insensitive by default, and will be
+ * normalized to lowercase as is expected by the library.
+ * 
+ * @returns {*} The module content.
+ * 
+ * @alias module:@lumjs/encode/crypto.load
+ */
+function load(name, toLower=true)
+{
+  if (toLower)
+    name = name.toLowerCase();
+  return require('crypto-js/'+name);
+}
+exports.load = load;
+
+/**
+ * Get a hashing function.
+ * 
+ * @param {string} name - The name of the algorithm.
+ *
+ * Hashing algorithms supported by `crypto-js`:
+ * 
+ * - MD5
+ * - SHA-1
+ * - SHA-256
+ * - SHA-512
+ * - SHA-224
+ * - SHA-384
+ * - SHA-3
+ * - RIPEMD-160
+ * 
+ * You can omit the `-` characters, and the parameter is
+ * case-insensitive.
+ *
+ * @returns {function} The hashing function.
+ * @alias module:@lumjs/encode/crypto.load.hash
+ */
+load.hash = function(name)
+{
+  name = name.replaceAll('-', '');
+  return load(name);
+}
+
+const Ciphers =
+{
+  rc4drop()
+  {
+    load('rc4', false);
+    return cc.RC4Drop;
+  },
+  des()
+  {
+    load('tripledes', false);
+    return cc.DES;
+  }
+}
+
+/**
+ * Get a cipher transcoder.
+ * 
+ * @param {string} name - The name of the algorithm.
+ *
+ * Cipher algorithms supported by `crypto-js`:
+ * 
+ * - AES
+ * - DES
+ * - TripleDES
+ * - Rabbit
+ * - RabbitLegacy
+ * - RC4
+ * - RC4Drop
+ * 
+ * The parameter is case-insensitive.
+ *
+ * @returns {function} The hashing function.
+ */
+load.cipher = function(name)
+{
+  name = name.replaceAll('-', '').toLowerCase();
+  if (typeof Ciphers[name] === F)
+  { // A custom loader function.
+    return Ciphers[name]();
+  }
+  return load(name, false);
+}
+
+const Algos =
+{
+  RC4DROP()
+  {
+    load('rc4', false);
+    return cc.algo.RC4Drop;
+  },
+  des()
+  {
+    load('tripledes', false);
+    return cc.algo.DES;
+  },
+  TRIPLEDES: 'TripleDES',
+  RABBIT: 'Rabbit',
+  RABBITLEGACY()
+  {
+    load('rabbit-legacy', false);
+    return cc.algo.RabbitLegacy;
+  },
+}
+
+/**
+ * Get an algorithm plugin.
+ *
+ * @param {string} name - The name of the algorithm
+ *
+ *   It can be any algorithm supported by either
+ *   the [hash()]{@link module:@lumjs/encode/crypto.hash}
+ *   or [cipher()]{@link module:@lumjs/encode/crypto.cipher}
+ *   methods.
+ *
+ * @returns {object} The hashing algorithm plugin.
+ * 
+ *   You'll need to use the `create()` method on the plugin to get
+ *   an instance before you can start hashing.
+ * 
+ */
+load.algo = function(name)
+{
+  name = name.replaceAll('-','').toUpperCase();
+
+  if (typeof Algos[name] === F)
+  { // A custom loader.
+    return Algos[name]();
+  }
+  else if (typeof Algos[name] === S)
+  { // A specific case-sensitive spelling.
+    name = Algos[name];
+  }
+
+  // We make sure the library is loaded.
+  load(name);
+
+  // Now we'll get the object out of the core.
+  return cc.algo[name];
+}
+
+/**
+ * Get a `HMAC` hashing instance.
+ * 
+ * @param {string} libName - Name of the hashing algorithm to use.
+ *
+ *   See {@link module:@lumjs/encode/crypto.hash} for a list.
+ *
+ * @param {string} passphrase - A secret passphrase for the hashing instance.
+ * 
+ * @returns {object} The HMAC hashing *instance*, ready to go.
+ */
+exports.hmac = function(libName, passphrase)
+{
+  const algo = load.algo(libName);
+  const hmac = load.algo('HMAC', false);
+  return hmac.create(algo, passphrase);
+}
+
+const Encoders =
+{
+  utf16be()
+  {
+    load('enc-utf16', false);
+    return cc.enc.Utf16BE;
+  },
+  utf16le()
+  {
+    load('enc-utf16', false);
+    return cc.enc.Utf16LE;
+  },
+}
+
+/**
+ * Get an encoder plugin.
+ * 
+ * @param {*} name - The name of the encoder.
+ * 
+ * Encoders supported:
+ * 
+ * - Base64
+ * - Base64-URL
+ * - Latin1
+ * - Hex
+ * - UTF-8
+ * - UTF-16
+ * - UTF-16LE
+ * 
+ * You can omit the `-` characters, and the parameter is
+ * case-insensitive.
+ * 
+ * @returns {object} The encoder plugin.
+ */
+load.enc = function(name)
+{
+  name = name.replaceAll('-','').toLowerCase();
+
+  if (typeof Encoders[name] === F)
+  { // A custom loader.
+    return Encoders[name]();
+  }
+
+  // We make sure the library is loaded.
+  return load('enc-'+name, false);
+}
+
+const Paddings =
+{
+  ansix923()
+  { // This module has a typo in it, correcting that here.
+    load('pad-ansix923', false);
+    return cc.pad.AnsiX923;
+  }
+}
+
+/**
+ * Get a padding plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+load.pad = function(name)
+{
+  name = name.replaceAll('-','').toLowerCase();
+
+  if (typeof Paddings[name] === F)
+  { // A custom loader.
+    return Paddings[name]();
+  }
+
+  return load('pad-'+name, false);
+}
+
+const Modes =
+{
+  CBC()
+  { // Built-in mode, no load required.
+    return cc.mode.CBC;
+  },
+  CTRGLADMAN()
+  { // Filename fuckery.
+    return load('mode-ctr-gladman', false);
+  }
+}
+
+/**
+ * Get a mode plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+load.mode = function(name)
+{
+  name = name.replaceAll('-','').toUpperCase();
+
+  if (typeof Modes[name] === F)
+  { // A custom loader.
+    return Modes[name]();
+  }
+
+  return load('mode-'+name);
+}
+
+/**
+ * Get a format plugin.
+ * 
+ * @param {string} name - Name of the plugin.
+ * @returns {object}
+ */
+load.format = function(name)
+{
+  return load('format-'+name);
+}
+
+// Okay, now let's build the Proxy objects.
+
+for (const loader in load)
+{
+  exports[loader] = new Proxy(load, 
+  {
+    get(load, lib)
+    {
+      return load[loader](lib);
+    }
+  });
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_encode.html">@lumjs/encode</a></li><li><a href="module-@lumjs_encode_base64.html">@lumjs/encode/base64</a></li><li><a href="module-@lumjs_encode_base91.html">@lumjs/encode/base91</a></li><li><a href="module-@lumjs_encode_crypto.html">@lumjs/encode/crypto</a></li><li><a href="module-@lumjs_encode_hash.html">@lumjs/encode/hash</a></li><li><a href="module-@lumjs_encode_safe64.html">@lumjs/encode/safe64</a></li><li><a href="module-@lumjs_encode_safe64_header.html">@lumjs/encode/safe64/header</a></li><li><a href="module-@lumjs_encode_util.html">@lumjs/encode/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_encode_safe64-Settings.html">Settings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Sep 21 2022 16:28:21 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
