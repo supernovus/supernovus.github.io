@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: arrays/list.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: arrays/list.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+const {F,S} = require('../types');
+
+/**
+ * A wrapper class to abstract functionality of various kinds of lists.
+ *
+ * Supports `Array`, `Set`, and `Map` explicitly.
+ * Other classes may be supported. YMMV.
+ *
+ * @alias module:@lumjs/core/arrays.List
+ */
+class List
+{
+  /**
+   * A list of known closure properties.
+   *
+   * Corresponding `wrap_${closure}` methods will be used to generate
+   * the closure properties.
+   */
+  static get KNOWN_CLOSURES()
+  {
+    return (Object.getOwnPropertyNames(this.prototype)
+      .filter(name => name.startsWith('wrap_')));
+  }
+
+  /**
+   * Build a new List wrapper.
+   *
+   * @param {object} obj - The list object.
+   *
+   * Typically an `Array`, `Set`, `Map`, or something similar.
+   * Not all of types will support all features. YMMV.
+   *
+   * @param {object} [opts] Options for advanced use.
+   *
+   * @param {bool} [opts.allowRaw=false] Attempt to support raw objects?
+   *
+   * Treat regular Javascript objects as lists, as they are a kind of
+   * map after all. This may lead to unusual results. YMMV.
+   *
+   * @param {mixed} [opts.closures=true] Create closure methods?
+   *
+   * If `true` or `"*"` we will create all known closure properties.
+   *
+   * If an `Array` it's the list of closure names we want to create.
+   * Possible values can be found in `List.KNOWN_CLOSURES`.
+   *
+   * If it's a `string` it's treated as a whitespace separated list
+   * of closure names and split into an `Array`.
+   *
+   * If `false` we won't create any closure properties.
+   *
+   */
+  constructor(obj, opts={})
+  {
+    this.obj = obj;
+    this.opts = opts;
+    this.allowRaw = opts.allowRaw ?? false;
+    this.setupClosures(opts.closures ?? true);  
+  }
+
+  setupClosures(closures)
+  {
+    if (!closures)
+    { // Nothing to do.
+      return;
+    }
+
+    if (closures === true || closures === '*')
+    { // Setup all closures.
+      closures = this.constructor.KNOWN_CLOSURES;
+    }
+    else if (typeof closures === S)
+    {
+      closures = closures.trim().split(/\s+/);
+    }
+    
+    if (Array.isArray(closures))
+    {
+      for (const closure of closures)
+      {
+        const meth = 'wrap_'+closure;
+        if (typeof this[meth] === F)
+        { // Create the detail property.
+          this[closure] = this[meth]();
+        }
+        else
+        {
+          console.error({closure, closures, list: this});
+          throw new Error("Unsupported closure");
+        }
+      }
+    }
+    else
+    {
+      console.error({closures, list: this});
+      throw new TypeError("Invalid closures value");
+    }
+  }
+
+  unsupported(obj, forClosure, info, retVal=false)
+  {
+    console.error("Unsupported object", {obj, forClosure, info, list: this});
+    return () => retVal;
+  }
+
+  /**
+   * Return a closure that returns if an item is in a list object.
+   *
+   * @param {object} obj - The list object the closure will be for.
+   *
+   * May be an `Array`, `Set`, `Map`, or `TypedArray` or any object
+   * that has either an `includes()` or `has()` method.
+   *
+   * @returns {function}
+   * @throws {TypeError}
+   */
+  wrap_contains(obj=this.obj, allowRaw=this.allowRaw)
+  {
+    if (typeof obj.includes === F)
+    { // Array and TypedArray have includes()
+      return item => obj.includes(item);
+    }
+    else if (typeof obj.has === F)
+    { // Set and Map have has()
+      return item => obj.has(item);
+    }
+    else if (allowRaw)
+    { // A fallback to raw object search.
+      return item => (typeof obj[item] !== undefined);
+    }
+    else
+    { // Nope.
+      return this.unsupported(obj, 'contains', {allowRaw});
+    }
+  }
+
+  /**
+   * Return a closure that removes an item from a list.
+   *
+   * @param {object} obj - The list object the closure will be for.
+   *
+   * May be an `Array`, `Set`, `Map`, or anything with a `delete()` method.
+   *
+   * @returns {function}
+   * @throws {TypeError}
+   */
+  wrap_remove(obj=this.obj, allowRaw=this.allowRaw)
+  {
+    let closure;
+    if (Array.isArray(obj))
+    { // Arrays have no easy method to do this.
+      closure = function(item) 
+      {
+        let removed = 0;
+        let index = obj.indexOf(item);
+        while (index !== -1)
+        {
+          obj.splice(index, 1);
+          removed++;
+          index = obj.indexOf(item, index);
+        }
+        return removed;
+      }
+    }
+    else if (typeof obj.delete === F)
+    { // Use the delete() method.
+      closure = item => (obj.delete(item) ?  1 : 0);
+    }
+    else if (allowRaw)
+    { // Fallback to removing the property.
+      closure = function(item)
+      {
+        if (obj[item] === undefined)
+        {
+          return 0;
+        }
+        else
+        {
+          return (delete obj[item] ? 1 : 0);
+        }
+      }
+    }
+    else
+    { // Nada.
+      closure = this.unsupported(obj, 'remove', {allowRaw}, 0);
+    }
+    return closure;
+  }
+
+  /** 
+   * See if our list object contains *any* of the specified items.
+   *
+   * @param  {...any} items 
+   * @returns {boolean}
+   */
+  containsAny(...items)
+  {
+    for (const item of items)
+    {
+      if (this.contains(item))
+      { // Item found.
+        return true;
+      }
+    }
+ 
+    // No items found.
+    return false;
+  }
+
+  /**
+    * See if our list contains *all* of the specified items.
+    *
+    * @param  {...any} items 
+    * @returns {boolean}
+    */
+  containsAll(...items)
+  {
+    for (const item of items)
+    {
+      if (!this.contains(item))
+      { // An item was missing.
+        return false;
+      }
+    }
+    // All items found.
+    return true;
+  }
+
+  /**
+   * Remove items from our list object.
+   * 
+   * Passed any number of items, it will see if any of those items are
+   * found in the array, and if they are, will remove them from the array.
+   * 
+   * @param  {...any} items 
+   * @returns {number} Number of items actually removed.
+   */
+  removeAll(...items)
+  {
+    let removed = 0;
+    for (const item of items)
+    {
+      removed += this.remove(item);
+    }
+    return removed;
+  }
+
+  /**
+   * Return a List instance for the passed object.
+   *
+   * If the object is already a `List` it is returned as is.
+   *
+   * @param {object} obj - The list object.
+   * @param {object} [opts] - Passed to constructor.
+   */
+  static for(obj, opts)
+  {
+    return (obj instanceof this) ? obj : new this(obj, opts);
+  }
+}
+
+const CONTAINS_OPTS = {closures: ['contains']};
+
+/** 
+ * See if an list object contains *any* of the specified items.
+ *
+ * @param {object} list - A `List` or object for `new List(list)`;
+ * @param  {...any} items 
+ * @returns {boolean}
+ * @alias module:@lumjs/core/arrays.containsAny
+ */
+function containsAny(list, ...items)
+{
+  return List.for(list, CONTAINS_OPTS).containsAny(...items);
+}
+
+List.containsAny = containsAny;
+
+ /**
+  * See if a list contains *all* of the specified items.
+  *
+  * @param {object} list - A `List` or object for `new List(list)`;
+  * @param  {...any} items 
+  * @returns {boolean}
+  * @alias module:@lumjs/core/arrays.containsAll
+  */
+function containsAll(list, ...items)
+{
+  return List.for(list, CONTAINS_OPTS).containsAll(...items);
+}
+
+List.containsAll = containsAll;
+
+const REMOVE_OPTS = {closures: ['remove']};
+
+/**
+ * Remove items from a list object.
+ * 
+ * Passed any number of items, it will see if any of those items are
+ * found in the array, and if they are, will remove them from the array.
+ * 
+ * @param {object} list - A `List` or object for `new List(list)`; 
+ * @param  {...any} items 
+ * @returns {number} Number of items actually removed.
+ * @alias module:@lumjs/core/arrays.removeItems
+ */
+function removeItems(list, ...items)
+{
+  return List.for(list, REMOVE_OPTS).removeAll(...items);
+}
+
+List.removeItems = removeItems;
+
+module.exports = exports = List;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

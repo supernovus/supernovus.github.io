@@ -34,53 +34,118 @@
  * describing the current JS environment and execution context.
  * 
  * @module @lumjs/core/context
- * @property {boolean} AMD - AMD (*RequireJS*) module loading detected.
- * @property {boolean} CJS - CommonJS environment detected.
+ * @property {boolean} hasDefine - A global `define()` function was found.
  * @property {boolean} hasRequire - A global `require()` function was found.
- * @property {boolean} hasExports - A global `exports` object was found.
+ * @property {boolean} hasExports - A global `exports` variable was found.
  * @property {boolean} hasModule - A global `module` object was found.
- * @property {boolean} isNode - Is likely *Node.js*, *Electron*, etc.
+ * @property {boolean} hasModuleExports - A `module.exports` exists.
+ * @property {boolean} hasSyncedExports - `exports === module.exports`
+ * @property {boolean} isNode - An alias to `Node.ok`.
  * @property {boolean} isBrowser - A web-browser environment detected.
  * @property {boolean} isWindow - Is a browser `Window` context.
  * @property {boolean} isWorker - Is a browser `Worker` (sub-types below.)
  * @property {boolean} isServiceWorker - Is a `ServiceWorker` context.
  * @property {boolean} isDedicatedWorker - Is a `DedicatedWorker` context.
  * @property {boolean} isSharedWorker - Is a `SharedWorker` context.
+ * @property {object} AMD - Asynchronous Module Definition detection.
+ * @property {boolean} AMD.isSupported - The `define.amd` property is set.
+ * @property {boolean} AMD.isRequireJS - A global `requirejs` was found.
+ * @property {object} CJS - CommonJS detection.
+ * @property {boolean} CJS.standard - `hasDefine &amp;&amp; hasRequire`
+ * @property {boolean} CJS.nodeLike - `CJS.standard &amp;&amp; hasExports`
+ * @property {boolean} CJS.isLumV5 - Lum.js browser bundler detected.
+ * @property {boolean} CJS.isWebpack - Webpack bundler detected.
+ * @property {boolean} CJS.inBrowser - `CJS.isLumV5 || CJS.isWebpack`
+ * @property {object} Node - Node.js detection.
+ * @property {boolean} Node.isSane - `CJS.nodeLike &amp;&amp; !CJS.inBrowser`
+ * @property {boolean} Node.hasProcess - A global `process` object exists.
+ * @property {boolean} Node.ok - `Node.isSane &amp;&amp; Node.hasProcess`
+ * @property {?string} Node.ver - `process.versions.node ?? null`
+ * @property {?object} Node.versions - `process.versions ?? null`
+ * @property {Array} Node.args - Command line arguments.
+ * @property {string} Node.script - Command line script name.
+ * @property {object} Electron - Electron detection.
+ * @property {boolean} ok - Electron environment detected.
+ * @property {boolean} isDefault - Is this the default app?
+ * @property {boolean} isBundled - Is this a bundled app?
+ * @property {boolean} isMain - Is this the main renderer frame?
+ * @property {?string} type - `process.type`
  * @property {object} root - See {@link module:@lumjs/core/types.root}
  */
 
-const {root,B,F,U,O,isComplex,def} = require('./types');
+const {root,B,F,U,O,isComplex,isObj,def} = require('./types');
 
 const ctx = {root};
-
 const rootHas = what => typeof root[what] !== U;
 const cd = def(ctx, true);
+const CJS = {};
+const AMD = {};
+const Node = {};
+const Elec = {};
+const cjs = def(CJS, true);
+const amd = def(AMD, true);
+const node = def(Node, true);
+const elec = def(Elec, true);
+const isLumV5 = typeof module.$lib === O &amp;&amp; module.$lib.$cached === module;
 
-function isCommonJS(module)
-{
-  if (typeof module !== O || module === null) return false;
-  if (!ctx.hasRequire) return false;
-  if (!isComplex(module.exports)) return false;
-  if (typeof module.$lib === O &amp;&amp; typeof module.$lib.$cached === O) 
-    return false; // It's our fake CommonJS emulation layer.
-  // Okay, all tests are okay.
-  return true;
-}
-
-cd('AMD', typeof define === F &amp;&amp; define.amd)
+cd('hasDefine', typeof define === F)
   ('hasRequire', typeof require === F)
-  ('hasExports', typeof exports !== U)
+  ('hasExports', typeof exports !== U &amp;&amp; isComplex(exports))
   ('hasModule', typeof module === O &amp;&amp; module !== null)
-  ('CJS', isCommonJS(module)) // Detected value at load time in *this* module.
-  ('isCommonJS', isCommonJS)  // Dynamically detect via a module *reference*.
-  ('isNode', ctx.CJS &amp;&amp; ctx.hasExports)
-  ('isWindow', !ctx.CJS &amp;&amp; rootHas('window'))
-  ('isWorker', !ctx.CJS &amp;&amp; rootHas('WorkerGlobalScope'))
-  ('isServiceWorker', !ctx.CJS &amp;&amp; rootHas('ServiceWorkerGlobalScope'))
-  ('isDedicatedWorker', !ctx.CJS &amp;&amp; rootHas('DedicatedWorkerGlobalScope'))
-  ('isSharedWorker', !ctx.CJS &amp;&amp; rootHas('SharedWorkerGlobalScope'))
-  ('isBrowser', ctx.isWindow || ctx.isWorker)
-  ;
+  ('hasModuleExports', ctx.hasModule &amp;&amp; isComplex(module.exports))
+  ('hasSyncedExports', ctx.hasExports &amp;&amp; ctx.hasModuleExports 
+    &amp;&amp; exports === module.exports)
+
+cjs('standard', ctx.hasModule &amp;&amp; ctx.hasRequire)
+   ('nodeLike', CJS.standard &amp;&amp; ctx.hasExports)
+   ('isLumV5', CJS.nodeLike &amp;&amp; isLumV5)
+   ('isWebpack', CJS.nodeLike &amp;&amp; require.resolve === require)
+   ('inBrowser', CJS.isLumV5 || CJS.isWebpack)
+
+node('isSane', CJS.nodeLike &amp;&amp; !CJS.inBrowser)
+    ('hasProcess', typeof process === O &amp;&amp; process !== null)
+    ('ok', Node.isSane &amp;&amp; Node.hasProcess)
+    ('versions', Node.hasProcess ? process.versions : null)
+    ('ver', Node.hasProcess ? process.versions.node : null)
+    ('args', {get: function()
+    { // Inspired by yargs hideBin() function.
+      if (Node.ok)
+      {
+        const o = (Elec.isBundled) ? 1 : 2;
+        return process.argv.slice(o);
+      }
+      return [];
+    }})
+    ('script', {get: function()
+    { // Inspired by yargs getProcessArgvBin() function.
+      if (Node.ok)
+      {
+        const i = (Elec.isBundled) ? 0 : 1;
+        return process.argv[i];
+      }
+      return '';
+    }})
+
+elec('ok', Node.ok &amp;&amp; !!Node.versions.electron)
+    ('isDefault', Elec.ok &amp;&amp; !!process.defaultApp)
+    ('isBundled', Elec.ok &amp;&amp; !process.defaultApp)
+    ('isMain', Elec.ok &amp;&amp; !!process.isMainFrame)
+    ('type', Elec.ok &amp;&amp; process.type)
+
+amd('isSupported', ctx.hasDefine &amp;&amp; isObj(define.amd))
+   ('isRequireJS', AMD.isSupported &amp;&amp; typeof requirejs === F)
+
+cd('CJS', CJS)
+  ('AMD', AMD)
+  ('Node', Node)
+  ('Electron', Elec)
+  ('isNode', Node.ok)
+  ('isWindow', typeof Window === F &amp;&amp; rootHas(window))
+  ('isWorker', rootHas('WorkerGlobalScope'))
+  ('isServiceWorker', rootHas('ServiceWorkerGlobalScope'))
+  ('isDedicatedWorker', rootHas('DedicatedWorkerGlobalScope'))
+  ('isSharedWorker', rootHas('SharedWorkerGlobalScope'))
+  ('isBrowser', !ctx.isNode &amp;&amp; (ctx.isWindow || ctx.isWorker))
 
 /**
  * See if a root-level name is defined.
@@ -135,13 +200,13 @@ module.exports = ctx;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: console.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: console.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const def = require('./types/def');
+const {F} = require('./types/js');
+
+/**
+ * A super simple singleton wrapper around the Javascript console.
+ * 
+ * By default includes `info`, `log`, `warn`, and `error` methods.
+ * It may be expanded further using the `addMethod` method.
+ * 
+ * @exports module:@lumjs/core/console
+ */
+const LC = 
+{
+  /**
+   * A custom handler.
+   * 
+   * If a `function`, it will be called to handle all method calls.
+   * 
+   * If an `Array`, it will have all log entries added as objects with
+   * at least `time`, `method`, and `opts` properties.
+   * By default and `arguments` property will also be included.
+   * See `msgArguments` and `msgArgs` for further details.
+   * 
+   * If the boolean value `false`, all output will be thrown into the void.
+   * 
+   * If it is an `object`, then each property name represents a method name,
+   * and the values will be treated as a handler for that method only.
+   * All handler types are supported (i.e. `function`, `Array`, or `false`.)
+   * A special method name of `DEFAULT` may be specified as a default handler
+   * for method names not explicitly specified in the object.
+   * If no `DEFAULT` is specified and there is no handler value for a method
+   * name, calls to it will be passed through to the real console object.
+   * 
+   * If no handler was set, all methods are passed to the real console object.
+   * 
+   * Default value: `null`
+   */
+  handler: null,
+
+  /**
+   * Return the message object?
+   * 
+   * Only applicable if `handler` is an `Array`.
+   * 
+   * If `true`, return the message `object`. 
+   * If `false`, returns `undefined`.
+   * 
+   * Default value: `false`
+   */
+  returnMsg: false,
+
+  /**
+   * The name to include the `arguments` magic object in the log.
+   * 
+   * Only applicable if `handler` is an `Array`.
+   * 
+   * This used to be hard-coded as `"arguments"` but the `shortArgs`
+   * option has replaced it as the array is simpler for most purposes.
+   * 
+   * Default value: `null`
+   */
+  msgArguments: null,
+
+  /**
+   * The name to include the `args` array in the log.
+   * 
+   * Only applicable if `handler` is an `Array`.
+   * 
+   * Default value: `"arguments"`
+   */
+  msgArgs: 'arguments',
+
+  /**
+   * Use the method name as the first argument in function calls.
+   * 
+   * Default value: `true`
+   */
+  methodArg: true,
+}
+
+/** 
+ * A reference to the real console object.
+ * @alias module:@lumjs/core/console.real
+ */ 
+const RC = globalThis.console;
+def(LC, 'real', RC);
+
+// Only including a few common ones.
+const DEFAULT_METHODS = ['debug','info','log','warn','error'];
+
+// Options that can be changed via handler settings.
+const HANDLER_OPTIONS = 
+[
+  'returnMsg', 'methodArg', 'msgArguments', 'msgArgs'
+];
+
+/**
+ * Add a wrapper method to the console wrapper object.
+ * @param {string} method - The console method to wrap.
+ * @alias module:@lumjs/core/console.addMethod
+ */
+function addMethod(method)
+{
+  def(LC, method, function(...args)
+  {
+    if (typeof LC.trigger === F)
+    { // Support for core.observable(core.console);
+      LC.trigger(method, ...args);
+    }
+
+    let handler = LC.handler;
+    const opts = {}
+
+    function checkHandlerOptions(src)
+    {
+      for (const opt of HANDLER_OPTIONS)
+      {
+        if (src[opt] !== undefined)
+        { 
+          opts[opt] = src[opt];
+        }
+      }
+    }
+
+    // Get the default options.
+    checkHandlerOptions(LC);
+
+    // Check for complex handler definitions as a plain object.
+    if (isObj(handler) &amp;&amp; !Array.isArray(handler))
+    { // Look for options in the handler defs.
+      checkHandlerOptions(handler);
+
+      if (handler[method] !== undefined)
+      { // A handler for that method was found.
+        handler = handler[method];
+      }
+      else if (handler.DEFAULT !== undefined)
+      { // A default handler.
+        handler = handler.DEFAULT;
+      }
+    }
+    
+    if (typeof handler === F)
+    { // A custom handler function.
+      checkHandlerOptions(handler);
+      if (opts.methodArg) 
+        args.unshift(method)
+      return handler(...args);
+    }
+    else if (Array.isArray(handler))
+    { // Add a message item to a log array.
+      checkHandlerOptions(handler);
+
+      const time = new Date().toJSON();
+      const msg = {time, method, opts};
+
+      if (typeof opts.msgArguments === S)
+        msg[opts.msgArguments] = arguments;
+      if (typeof opts.msgArgs === S)
+        msg[opts.msgArgs] = args;
+
+      handler.push(msg);
+
+      if (opts.returnMsg) return msg;
+    }
+    else if (handler !== false) 
+    { // Pass through to the real console.
+      return RC[method](...args);
+    }
+  });
+}
+
+def(LC, 'addMethod', addMethod);
+
+for (const method of DEFAULT_METHODS)
+{
+  addMethod(method);
+}
+
+module.exports = LC;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

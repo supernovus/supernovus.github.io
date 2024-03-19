@@ -28,14 +28,6 @@
 
 <header>
     
-        
-            
-                <div class="class-description"><p>The core DOM helper library.</p>
-<p>Given a reference to a <code>Window</code> object (either from a browser or <code>jsdom</code>),
-this instance provides a bunch of convenience methods.</p></div>
-            
-        
-    
 </header>
 
 <article>
@@ -46,112 +38,6 @@ this instance provides a bunch of convenience methods.</p></div>
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>window</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Window</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The top-level window object.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Options to customize behaviours.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
     <h5 class="subsection-title">Properties:</h5>
@@ -248,7 +134,7 @@ this instance provides a bunch of convenience methods.</p></div>
 
         <tr>
             
-                <td class="name"><code>extendQueries</code></td>
+                <td class="name"><code>autoExtend</code></td>
             
 
             <td class="type">
@@ -278,8 +164,89 @@ this instance provides a bunch of convenience methods.</p></div>
                 </td>
             
 
-            <td class="description last"><p>If <code>true</code> the results from <code>find()</code> and <code>get()</code> will be passed through
-<code>this.extender.extend()</code> before being returned.</p></td>
+            <td class="description last"><p>If <code>true</code> the results from <code>find()</code>, <code>get()</code>, <code>html()</code>, and similar methods
+will be passed through <code>this.extender.extend()</code> automatically.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoWrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>If <code>true</code> the results from the same methods mentioned in <code>autoExtend</code> will
+be passed through <code>this.wrapper.wrap()</code> automatically.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoAdopt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    3
+                
+                </td>
+            
+
+            <td class="description last"><p>Set if the <code>html()</code> and <code>xml()</code> methods will import created nodes
+into the current <code>document</code> automatically. This uses bitwise flags:</p>
+<ul>
+<li><code>1</code> =&gt; Adopt <code>Element</code> results from <code>html()</code>.</li>
+<li><code>2</code> =&gt; Adopt <code>HTMLCollection</code> results from <code>html()</code>.</li>
+<li><code>4</code> =&gt; Adopt <em>valid</em> results from <code>xml()</code>.</li>
+</ul></td>
         </tr>
 
     
@@ -325,7 +292,7 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line69">line 69</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -335,54 +302,6 @@ this instance provides a bunch of convenience methods.</p></div>
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>If the <code>window</code> fails the
-<a href="module-@lumjs_dom.html#.isWindow">isWindow()</a> test.</p>
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">TypeError</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-
-
-
-
-
 
 
         
@@ -460,7 +379,7 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line107">line 107</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line131">line 131</a>
     </li></ul></dd>
     
 
@@ -532,7 +451,7 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line368">line 368</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line417">line 417</a>
     </li></ul></dd>
     
 
@@ -604,7 +523,7 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line382">line 382</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line431">line 431</a>
     </li></ul></dd>
     
 
@@ -676,7 +595,7 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line396">line 396</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line445">line 445</a>
     </li></ul></dd>
     
 
@@ -748,12 +667,331 @@ this instance provides a bunch of convenience methods.</p></div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line354">line 354</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line403">line 403</a>
     </li></ul></dd>
     
 
     
 
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="ready"><span class="type-signature"></span>ready<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get a Promise that resolves using <code>whenReady()</code></p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line582">line 582</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="windowReady"><span class="type-signature"></span>windowReady<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get a Promise that resolves using <code>whenWindowReady()</code></p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line593">line 593</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".HTML_MODE"><span class="type-signature">(static) </span>HTML_MODE<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line621">line 621</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-@lumjs_dom_util.html#.HTML_MODE">module:@lumjs/dom/util.HTML_MODE</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".NODE_TYPE"><span class="type-signature">(static) </span>NODE_TYPE<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line609">line 609</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-@lumjs_dom_util.html#.NODE_TYPE">module:@lumjs/dom/util.NODE_TYPE</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".PARSE_TYPE"><span class="type-signature">(static) </span>PARSE_TYPE<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line615">line 615</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>module:@lumjs/dom/util.PARSE_TYPE</li>
+        </ul>
+    </dd>
     
 
     
@@ -769,358 +1007,6 @@ this instance provides a bunch of convenience methods.</p></div>
 
     
         <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".isWindow"><span class="type-signature">(static) </span>isWindow<span class="signature">(obj)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Try to determine if an object is a <code>Window</code> using <em>duck-typing</em>.</p>
-<p>Like any <em>duck-typing</em> based test, it's not <em>guaranteed</em> to be
-100% accurate, but I feel it's good enough for this specific case.</p>
-<p>Basically, a real <code>window</code> object should have a property called
-<code>Window</code> and the <code>window</code> object should be an instance of
-its own <code>Window</code> property. Very <em>meta</em>, welcome to the <strong>DOM</strong>.</p>
-<p>There is also the <a href="module-@lumjs_dom.html#isWindow">instance.isWindow()</a>
-method which is separate from this and much more straightforward, as it's
-a simple <code>instanceof</code> check.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The object to test.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line29">line 29</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Whether the object seems to be a <code>Window</code> instance.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".new"><span class="type-signature">(static) </span>new<span class="signature">(window)</span><span class="type-signature"> &rarr; {<a href="module-@lumjs_dom.html">module:@lumjs/dom</a>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>A static shortcut method for building a new instance.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>window</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Window</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The <code>window</code> object.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line98">line 98</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>If the <code>window</code> fails the
-<a href="module-@lumjs_dom.html#.isWindow">isWindow()</a> test.</p>
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">TypeError</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-@lumjs_dom.html">module:@lumjs/dom</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
 
         
             
@@ -1272,7 +1158,7 @@ a simple <code>instanceof</code> check.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line336">line 336</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line385">line 385</a>
     </li></ul></dd>
     
 
@@ -1379,7 +1265,7 @@ a simple <code>instanceof</code> check.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line485">line 485</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line534">line 534</a>
     </li></ul></dd>
     
 
@@ -1617,7 +1503,7 @@ Will default to the top-level <code>document</code> if not specified.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line423">line 423</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line472">line 472</a>
     </li></ul></dd>
     
 
@@ -1653,7 +1539,7 @@ Will default to the top-level <code>document</code> if not specified.</p></td>
 
         
 <div class="param-desc">
-    <p>If <code>this.options.extendQueries</code> is <code>true</code>, the result
+    <p>If <code>this.options.autoExtend</code> is <code>true</code>, the result
 will be extended using <code>this.extend()</code>.</p>
 </div>
 
@@ -1738,7 +1624,7 @@ will be extended using <code>this.extend()</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line345">line 345</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line394">line 394</a>
     </li></ul></dd>
     
 
@@ -1937,7 +1823,7 @@ will be extended using <code>this.extend()</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line447">line 447</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line496">line 496</a>
     </li></ul></dd>
     
 
@@ -1973,7 +1859,7 @@ will be extended using <code>this.extend()</code>.</p>
 
         
 <div class="param-desc">
-    <p>If <code>this.options.extendQueries</code> is <code>true</code>, the result
+    <p>If <code>this.options.autoExtend</code> is <code>true</code>, the result
 will be extended using <code>this.extend()</code>.</p>
 </div>
 
@@ -2003,7 +1889,7 @@ will be extended using <code>this.extend()</code>.</p>
     
 
     
-    <h4 class="name" id="html"><span class="type-signature"></span>html<span class="signature">(string)</span><span class="type-signature"> &rarr; {Element}</span></h4>
+    <h4 class="name" id="html"><span class="type-signature"></span>html<span class="signature">(string, mode<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*}</span></h4>
     
 
     
@@ -2035,7 +1921,11 @@ will be extended using <code>this.extend()</code>.</p>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -2060,10 +1950,328 @@ will be extended using <code>this.extend()</code>.</p>
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>The HTML to parse.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    HTML_MODE.AUTO
+                
+                </td>
+            
+
+            <td class="description last"><p>How to handle return value.</p>
+<p>This should always be one of the values from the
+<a href="module-@lumjs_dom_util.html#.HTML_MODE">HTML_MODES</a> Enum.</p>
+<p>You can omit this parameter entirely and just pass an object
+of <code>opts</code> if you want.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Options</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Same as the <code>mode</code> parameter.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>extend</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Override <code>this.options.autoExtend</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Override <code>this.options.autoWrap</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>adoptSingle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Adopt <code>Element</code> results?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>adoptMultiple</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Adopt <code>HTMLCollection</code> results?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>adopt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Set both <code>adoptSingle</code> and <code>adoptMultiple</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2104,7 +2312,7 @@ will be extended using <code>this.extend()</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line275">line 275</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line308">line 308</a>
     </li></ul></dd>
     
 
@@ -2133,24 +2341,10 @@ will be extended using <code>this.extend()</code>.</p>
 
         
 <div class="param-desc">
-    <p>Parsed element.</p>
-<p>What element is returned depends on the parsed content:</p>
-<ul>
-<li>
-<p>If there are <em>any</em> child elements in the <code>&lt;head/&gt;</code>, or there
-are <strong>no</strong> child elements in the <code>&lt;body/&gt;</code>, then the top-level
-<code>&lt;html/&gt;</code> element will be returned.</p>
-</li>
-<li>
-<p>If the <code>&lt;body/&gt;</code> has <em>only one</em> child element, then the single
-<em>child element</em> will be returned.</p>
-</li>
-<li>
-<p>If there is <em>more than one</em>, then the <code>&lt;body/&gt;</code> itself will be returned.</p>
-<p>If <code>this.options.extendQueries</code> is <code>true</code> then the return value
-will be extended using <code>this.extend()</code> automatically.</p>
-</li>
-</ul>
+    <p>Parsed element(s).</p>
+<p>The actual return value depends on the <code>mode</code> parameter.
+In the default mode (<code>AUTO</code>), the output will always be either
+an <code>Element</code> or an <code>HTMLCollection</code>.</p>
 </div>
 
 
@@ -2161,7 +2355,7 @@ will be extended using <code>this.extend()</code> automatically.</p>
     </dt>
     <dd>
         
-<span class="param-type">Element</span>
+<span class="param-type">*</span>
 
 
     </dd>
@@ -2280,7 +2474,7 @@ will be extended using <code>this.extend()</code> automatically.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line193">line 193</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line216">line 216</a>
     </li></ul></dd>
     
 
@@ -2436,7 +2630,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line223">line 223</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line246">line 246</a>
     </li></ul></dd>
     
 
@@ -2591,7 +2785,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line186">line 186</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line209">line 209</a>
     </li></ul></dd>
     
 
@@ -2746,7 +2940,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line179">line 179</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -2901,7 +3095,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line214">line 214</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line237">line 237</a>
     </li></ul></dd>
     
 
@@ -3057,7 +3251,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line236">line 236</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line259">line 259</a>
     </li></ul></dd>
     
 
@@ -3212,7 +3406,7 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line134">line 134</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line158">line 158</a>
     </li></ul></dd>
     
 
@@ -3367,7 +3561,186 @@ Including the various sub-classes, or our custom lists.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line207">line 207</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line230">line 230</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="isNodeType"><span class="type-signature"></span>isNodeType<span class="signature">(type, node)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Is a node a specific <code>nodeType</code>?</p>
+<p>The order of the parameters may be reversed.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <code>nodeType</code> integer value.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <code>Node</code> we are testing.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -3524,7 +3897,7 @@ the class name.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line148">line 148</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -3679,7 +4052,7 @@ the class name.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line200">line 200</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -3839,7 +4212,7 @@ and uses a basic <code>instanceof</code> check.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line124">line 124</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -3946,7 +4319,7 @@ and uses a basic <code>instanceof</code> check.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line474">line 474</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line523">line 523</a>
     </li></ul></dd>
     
 
@@ -4042,7 +4415,7 @@ and uses a basic <code>instanceof</code> check.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line463">line 463</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line512">line 512</a>
     </li></ul></dd>
     
 
@@ -4203,10 +4576,13 @@ and uses a basic <code>instanceof</code> check.</p>
                 </td>
             
 
-            <td class="description last"><p>The MIME type.
-See the <code>PARSE_TYPE</code> enum for a full list of valid values.</p>
-<p>If this is <code>true</code> we will use <code>text/xml</code>.
-If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we will use <code>text/html</code>.</p></td>
+            <td class="description last"><p>The MIME type.</p>
+<ul>
+<li>If this is <code>true</code> we will use <code>text/xml</code>.</li>
+<li>If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we will use <code>text/html</code>.</li>
+<li>If this is a <code>string</code> it must be one of the
+PARSE_TYPE properties.</li>
+</ul></td>
         </tr>
 
     
@@ -4247,7 +4623,7 @@ If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we w
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line248">line 248</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line273">line 273</a>
     </li></ul></dd>
     
 
@@ -4296,6 +4672,284 @@ If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we w
 </dl>
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="whenReady"><span class="type-signature"></span>whenReady<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Run a callback function when the DOM is ready.</p>
+<p>If the DOM is ready when this is called, the callback
+will be executed immediately.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line547">line 547</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="whenWindowReady"><span class="type-signature"></span>whenWindowReady<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Run a callback function when the Window is fully loaded.</p>
+<p>If the Window is loaded when this is called, the callback
+will be executed immediately.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line567">line 567</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4408,7 +5062,7 @@ If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we w
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line317">line 317</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line366">line 366</a>
     </li></ul></dd>
     
 
@@ -4438,7 +5092,7 @@ If this is <code>false</code>, <code>null</code>, or <code>undefined</code> we w
         
 <div class="param-desc">
     <p>Parsed element.</p>
-<p>If <code>this.options.extendQueries</code> is <code>true</code> then the return value
+<p>If <code>this.options.autoExtend</code> is <code>true</code> then the return value
 will be extended using <code>this.extend()</code> automatically.</p>
 <p>NOTE: if there are XML parser errors, there will be a <code>&lt;parsererror/&gt;</code>
 element in the returned element, as per the <code>DOMParser</code> specification.</p>
@@ -4453,6 +5107,401 @@ element in the returned element, as per the <code>DOMParser</code> specification
     <dd>
         
 <span class="param-type">Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isWindow"><span class="type-signature">(static) </span>isWindow<span class="signature">(obj)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Try to determine if an object is a <code>Window</code> using <em>duck-typing</em>.</p>
+<p>Like any <em>duck-typing</em> based test, it's not <em>guaranteed</em> to be
+100% accurate, but I feel it's good enough for this specific case.</p>
+<p>Basically, a real <code>window</code> object should have a property called
+<code>Window</code> and the <code>window</code> object should be an instance of
+its own <code>Window</code> property. Very <em>meta</em>, welcome to the <strong>DOM</strong>.</p>
+<p>There is also the <a href="module-@lumjs_dom.html#isWindow">instance.isWindow()</a>
+method which is separate from this and much more straightforward, as it's
+a simple <code>instanceof</code> check.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The object to test.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line30">line 30</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Whether the object seems to be a <code>Window</code> instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".new"><span class="type-signature">(static) </span>new<span class="signature">(window, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="module-@lumjs_dom.html">module:@lumjs/dom</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>A static shortcut method for building a new instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>window</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Window</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The <code>window</code> object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options for the constructor.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line122">line 122</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the <code>window</code> fails the
+<a href="module-@lumjs_dom.html#.isWindow">isWindow()</a> test.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">TypeError</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-@lumjs_dom.html">module:@lumjs/dom</a></span>
 
 
     </dd>
@@ -4529,7 +5578,7 @@ element in the returned element, as per the <code>DOMParser</code> specification
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line36">line 36</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -4604,7 +5653,7 @@ element in the returned element, as per the <code>DOMParser</code> specification
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line46">line 46</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -4679,7 +5728,7 @@ element in the returned element, as per the <code>DOMParser</code> specification
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line51">line 51</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -4754,7 +5803,7 @@ element in the returned element, as per the <code>DOMParser</code> specification
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line41">line 41</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -4784,13 +5833,13 @@ element in the returned element, as per the <code>DOMParser</code> specification
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 11:01:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

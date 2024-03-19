@@ -28,12 +28,6 @@
 
 <header>
     
-        
-            
-                <div class="class-description"><p>The <code>Events</code> class for managing DOM events in a more efficient manner.</p></div>
-            
-        
-    
 </header>
 
 <article>
@@ -44,69 +38,6 @@
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dom</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-@lumjs_dom.html">module:@lumjs/dom</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The parent DOM helper instance.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
     <h5 class="subsection-title">Properties:</h5>
@@ -190,7 +121,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line70">line 70</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -200,24 +131,6 @@
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -233,6 +146,9 @@
 
         <dl>
             <dt><a href="module-@lumjs_dom_events.Handler.html">Handler</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></dt>
             <dd></dd>
         </dl>
     
@@ -254,7 +170,9 @@
 
 
 <div class="description">
-    <p>A map of events names to event classes.</p>
+    <p>A map of event names to specific classes.</p>
+<p>The classes <strong>MUST</strong> either extend the global <code>Event</code> class,
+or the <code>@lumjs/dom/events.Plugin</code> class. Nothing else is valid.</p>
 <p>Currently includes:</p>
 <ul>
 <li><code>wheel</code> → <code>WheelEvent</code></li>
@@ -315,7 +233,80 @@ I'll document when I get around to it.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line42">line 42</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line45">line 45</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".PLUGINS"><span class="type-signature">(static, constant) </span>PLUGINS<span class="type-signature"> :object</span></h4>
+
+
+
+
+<div class="description">
+    <p>Event Handler Plugins</p>
+<p>A map of classname to the constructor function for that classname.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -492,7 +483,7 @@ event class to use. So <code>click</code> will be a <code>MouseEvent</code> whil
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line251">line 251</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line284">line 284</a>
     </li></ul></dd>
     
 
@@ -782,7 +773,7 @@ See <code>on()</code> for more details.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line214">line 214</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line247">line 247</a>
     </li></ul></dd>
     
 
@@ -1118,7 +1109,7 @@ replace the <code>options.ctrl</code> with the new instance.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line144">line 144</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line158">line 158</a>
     </li></ul></dd>
     
 
@@ -1428,7 +1419,7 @@ for each node. Has no effect at all if <code>event</code> is an <code>Event</cod
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="events.js.html">events.js</a>, <a href="events.js.html#line296">line 296</a>
+        <a href="events_index.js.html">events/index.js</a>, <a href="events_index.js.html#line336">line 336</a>
     </li></ul></dd>
     
 
@@ -1496,13 +1487,13 @@ for each node. Has no effect at all if <code>event</code> is an <code>Event</cod
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 11:01:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

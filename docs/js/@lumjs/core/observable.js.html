@@ -26,8 +26,10 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>
-const {B,F,S,def,isObj,isComplex,TYPES} = require('./types');;
+            <pre class="prettyprint source linenums"><code>// Defining these after observable.
+const {B,F,S,def,isObj,isComplex,TYPES,console} = require('./types');
+const {duplicateAll: clone} = require('./obj/copyall');
+const lock = Object.freeze;
 
 /**
  * Make an object support the *Observable* API.
@@ -37,31 +39,74 @@ const {B,F,S,def,isObj,isComplex,TYPES} = require('./types');;
  * @param {object} el - The object we are making observable.
  * @param {object} [opts] Options that define behaviours.
  * @param {string} [opts.wildcard='*'] The event name used as a wildcard. 
- * @param {boolean} [opts.wrapthis=false] If `true`, `this` will be a wrapper.
  * 
- * If 'wrapthis' is true, the function will be called with a wrapper object as 
- * the 'this' variable instead of the target object. The wrapper will be:
- *
+ * @param {boolean} [opts.wrapargs=false] If `true`, the event handlers will 
+ * be passed a wrapper object as the sole argument:
+ * 
  * ```js
- * {
- *   self: el,        // The target object.
- *   name: event,     // The event name that was triggered.
+ * { 
+ *   isObservable:
+ *   { // Immutable;
+ *     event: true,   // This is an event data object.
+ *     target: false, // This is not the target object.
+ *   },
  *   wildcard: bool,  // Will be true if this was a wildcard event handler.
  *   func: function,  // The function being called.
+ *   args: array,     // The arguments passed to trigger.
+ *   self: el,        // The target object.
+ *   name: event,     // The event name that was triggered.
+ *   target: el,      // An alias to `self`.
+ *   type: event,     // An alias to `name`.
+ *   // ...
  * }
  * ```
  * 
- * @param {boolean} [opts.addname=!opts.wrapthis] If `true` callbacks with 
- *   multiple events will have the name of the triggered event added as
- *   the first parameter.
+ * @param {boolean} [opts.wrapthis=false] If `true`, `this` in event 
+ * handlers will be the same object as `opts.wrapargs`.
  * 
- * @param {boolean} [opts.addis=opts.wrapthis] If `true` add immutable
- *   property named `isObservable` which will have a value of `true`.
+ * @param {?function} [opts.wrapsetup=null] Setup function for wrapper data.
+ * 
+ * This function will be called with the target `el` as `this`,
+ * and will be passed the wrapper object (before it is locked),
+ * so it can examine the event name and arguments passed to
+ * `trigger()` and adjust the object accordingly.
+ * 
+ * This allows the wrapper objects to have a lot more custom properties,
+ * and feel more like the standard Event objects used by the `DOM`.
+ * 
+ * If this is specified, but neither `opts.wrapargs` or `opts.wrapthis` 
+ * is `true`, then `opts.wrapargs` will be changed to `true` implicitly.
+ * 
+ * @param {boolean} [opts.wraplock=true] If `true`, the wrapper object
+ * will be made immutable using the `Object.freeze()` method.
+ * 
+ * @param {boolean} [opts.addname] If `true` callbacks with 
+ * multiple events will have the name of the triggered event added as
+ * the first parameter.
+ * 
+ * If either `wrapthis` or `wrapargs` are `true`, then this will default
+ * to `false`, otherwise it will default to `true`.
+ * 
+ * @param {boolean} [opts.addis] If `true` add a read-only, frozen
+ * object property named `isObservable` with the value:
+ * 
+ * ```js
+ * {
+ *   event: false, // This is not an event data object.
+ *   target: true, // This is the target object.
+ * }
+ * ```
+ *
+ * If either `wrapthis` or `wrapargs` are `true`, then this will default
+ * to `true`, otherwise it will default to `false`.
+ * 
  * @param {string} [opts.addme] If set, add a method with this name
- *   to the object, which is a version of `observable()` with the
- *   default options being the same as the current `opts`.
- *   If `opts.wrapthis` is `true`, then this defaults to `'makeObservable'`.
- *   In any other case it defaults to `null`.
+ * to the `el` object, which is a version of `observable()` with the
+ * default options being the same as the current `opts`.
+ * 
+ * @param {string} [opts.addre] If set, add a method with this name
+ * to the `el` object, which is a function that can re-build the
+ * observable API methods with new `opts` replacing the old ones. 
  *
  * @returns {object} el
  * 
@@ -97,30 +142,54 @@ function observable (el={}, opts={})
     ? opts.wildcard
     : '*';
 
-  const wrapthis = (typeof opts.wrapthis === 'boolean') 
+  const wrapsetup = (typeof opts.wrapsetup === F)
+    ? opts.wrapsetup 
+    : null;
+
+  const wrapthis = (typeof opts.wrapthis === B) 
     ? opts.wrapthis 
     : false;
 
-  const addname = (typeof opts.addname === 'boolean') 
-    ? opts.addname 
-    : !wrapthis;
+  const wrapargs = (typeof opts.wrapargs === B)
+    ? opts.wrapargs
+    : (wrapsetup ? !wrapthis : false);
 
-  const addis = (typeof opts.addis === 'boolean')
+  const wrapped = (wrapthis || wrapargs);
+
+  const wraplock = (typeof opts.wraplock === B)
+    ? opts.wraplock
+    : true;
+
+  const addname = (typeof opts.addname === B) 
+    ? opts.addname 
+    : !wrapped;
+
+  const addis = (typeof opts.addis === B)
     ? opts.addis
-    : wrapthis;
+    : wrapped;
 
   const validIdent = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/;
 
-  const addme = (typeof opts.addme === 'string'
+  const addme = (typeof opts.addme === S
     &amp;&amp; validIdent.test(opts.addme))
     ? opts.addme
-    : (wrapthis ? 'makeObservable' : null);
+    : null;
+
+  const addre = (typeof opts.addre === S
+    &amp;&amp; validIdent.test(opts.addre))
+    ? opts.addre
+    : null;
 
   const slice = Array.prototype.slice;
 
   function onEachEvent (e, fn) 
   { 
-    e.replace(/\S+/g, fn);
+    const es = e.split(/\s+/);
+    const me = es.length > 1;
+    for (e of es)
+    {
+      fn(e, me);
+    }
   }
 
   const add = def(el);
@@ -130,29 +199,41 @@ function observable (el={}, opts={})
     if (fn.busy) return;
     fn.busy = 1;
 
-    let fthis;
+    let fobj;
 
-    if (wrapthis)
-    {
+    if (wrapped)
+    { // Something is going to use our wrapper object.
       const isWild = (name === wildcard);
       const fname = isWild ? (addname ? args[0] : args.shift()) : name;
-      fthis = 
+
+      fobj = 
       {
+        isObservable: lock({event: true, target: false}),
         self: el,
-        name: fname,
+        target: el,
+        name: fname, 
+        type: fname,
         func: fn,
         wildcard: isWild,
+        args,
       };
-    }
-    else
-    {
-      fthis = el;
+
+      if (wrapsetup)
+      {
+        wrapsetup.call(el, fobj);
+      }
+
+      if (wraplock)
+      {
+        lock(fobj);
+      }
     }
 
-    let fargs = (fn.typed &amp;&amp; addname) ? [name].concat(args) : args;
-
+    const fthis = wrapthis ? fobj : el;
+    const fargs = wrapargs ? [fobj] 
+      : ((fn.typed &amp;&amp; addname) ? [name].concat(args) : args);
+    
     fn.apply(fthis, fargs);
-
     fn.busy = 0;
   }
 
@@ -175,10 +256,10 @@ function observable (el={}, opts={})
       return el;
     }
 
-    onEachEvent(events, function(name, pos) 
+    onEachEvent(events, function(name, typed) 
     {
       (callbacks[name] = callbacks[name] || []).push(fn);
-      fn.typed = pos > 0;
+      fn.typed = typed;
     });
 
     return el;
@@ -272,27 +353,27 @@ function observable (el={}, opts={})
 
   if (addis)
   {
-    add('isObservable', true);
+    add('isObservable', lock({event: false, target: true}));
   }
 
   if (addme)
   { // Add a wrapper for observable() that sets new default options.
-    const ourProps = Object.keys(opts);
     add(addme, function (obj=null, mopts={})
     {
-      if (ourProps.length > 0)
-      {
-        for (const prop of ourProps)
-        {
-          if (mopts[prop] === undefined)
-          {
-            mopts[prop] = opts[prop];
-          }
-        }
-      }
-      return observable(obj, mopts);
+      return observable(obj, clone(opts, mopts));
     });
   }
+
+  if (addre)
+  { // Add a method to change the observable options.
+    add(addre, function(opts={})
+    {
+      return observable(el, opts);
+    });
+  }
+
+  // Metadata
+  add('$$observable$$', lock({opts, observable}));
 
   return el
 
@@ -343,13 +424,13 @@ TYPES.add('OBSERV', 'observable', isObservable, 'doesObservable');
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

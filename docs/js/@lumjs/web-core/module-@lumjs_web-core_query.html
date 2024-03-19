@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: @lumjs/web-core/query</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: @lumjs/web-core/query</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Query helpers</p></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="query.js.html">query.js</a>, <a href="query.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".find"><span class="type-signature">(static) </span>find<span class="signature">(&hellip;args)</span><span class="type-signature"> &rarr; {mixed}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>A wrapper around querySelector and querySelectorAll,
+with some extra filtering features that adds significant power.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The type determines what the argument is for.</p>
+<ul>
+<li>A <em>queryable</em> object instance will be used as the <code>node</code> to search in.
+If no node is explicitly specified, the global <code>document</code> will be used.
+See <a href="module-@lumjs_web-core_utils.html#.isQueryable">module:@lumjs/web-core/utils.isQueryable</a> for details.
+Only <strong>ONE</strong> <em>queryable</em> argument is supported.</li>
+<li>A <code>boolean</code> value will explicitly set if we want <em>multiple</em> matches.
+Only <strong>ONE</strong> <code>boolean</code> argument is supported.
+If <strong>NO</strong> <code>boolean</code> value is passed, the following logic will be used:
+<ul>
+<li>A single selector starting with a <code>#</code> and having <em>NO</em> spaces, commas,
+or <code>&gt;</code> symbols will set the <em>multiple</em> option to <code>false</code>.</li>
+<li>Anything else will set the <em>multiple</em> option to <code>true</code>.</li>
+</ul>
+</li>
+<li>Any <code>string</code> arguments will be assumed to be <em>selector queries</em> for
+the <code>querySelector*</code> methods. Any number may be passed; they will be
+joined into a single selector <code>string</code> using commas.</li>
+<li>Any <code>function</code> arguments will be used to filter the elements further.
+Each function will be passed an element and must return a <code>boolean</code>
+indicating if it passed the test and should be included. Unlike the
+query strings where <em>any</em> query may pass, <em>all</em> filter tests must pass
+for the element to be included in the returned list.</li>
+<li>A plain <code>object</code> (non-instance) may be passed to be used as the options
+for the <code>getNested()</code> function, which is only used if <strong>NO</strong> <code>string</code>
+arguments were passed. Only <strong>ONE</strong> plain <code>object</code> is supported.
+See <a href="module-@lumjs_web-core_utils.html#.getNested">module:@lumjs/web-core/utils.getNested</a> for details.</li>
+</ul>
+<p>At <em>least</em> <strong>ONE</strong> <code>string</code> <em>OR</em> <code>function</code> argument <strong>MUST</strong> be passed
+for this function to be valid. It will return <code>null</code> or an empty array
+if neither of those arguments were specified.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="query.js.html">query.js</a>, <a href="query.js.html#line79">line 79</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Output depends on passed arguments.</p>
+<ul>
+<li>
+<p>If the <em>multiple</em> option is <code>false</code> then this will return either
+a single <code>Element</code> or <code>null</code> if no elements passed the tests.</p>
+</li>
+<li>
+<p>If a filter <code>function</code> was specified then multiple elements will be
+returned as an <code>Array</code>, otherwise the return value will be the
+<code>NodeList</code> from <code>querySelectorAll()</code>.</p>
+</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">mixed</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".isSingular"><span class="type-signature">(static) </span>isSingular<span class="signature">(selector)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Is the string a query for a singular element?</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>selector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Query selector</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="query.js.html">query.js</a>, <a href="query.js.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_web-core.html">@lumjs/web-core</a></li><li><a href="module-@lumjs_web-core_content.html">@lumjs/web-core/content</a></li><li><a href="module-@lumjs_web-core_eventbuilder.html">@lumjs/web-core/eventbuilder</a></li><li><a href="module-@lumjs_web-core_events.html">@lumjs/web-core/events</a></li><li><a href="module-@lumjs_web-core_listcompiler.html">@lumjs/web-core/listcompiler</a></li><li><a href="module-@lumjs_web-core_parser.html">@lumjs/web-core/parser</a></li><li><a href="module-@lumjs_web-core_query.html">@lumjs/web-core/query</a></li><li><a href="module-@lumjs_web-core_utils.html">@lumjs/web-core/utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_web-core_listcompiler-ListBuilder.html">ListBuilder</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 13:06:00 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

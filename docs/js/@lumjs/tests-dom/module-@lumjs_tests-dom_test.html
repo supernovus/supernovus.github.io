@@ -28,14 +28,6 @@
 
 <header>
     
-        
-            
-                <div class="class-description"><p>The <code>DOMTest</code> class for writing unit tests for DOM testing.</p>
-<p>This is an extension of the <code>@lumjs/tests.Test</code> library,
-and adds a bunch of methods for tests involving DOM nodes.</p></div>
-            
-        
-    
 </header>
 
 <article>
@@ -46,221 +38,6 @@ and adds a bunch of methods for tests involving DOM nodes.</p></div>
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>opts</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Named options.</p>
-<p>Supports all of the options as <code>@lumjs/tests.Test</code>,
-plus a few specific to this class.</p>
-<p>If none of the options related to assigning or creating
-a <code>dom</code> instance are specified, a <em>default instance</em>
-will be generated using the
-default test document.</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dom</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>A <code>@lumjs/dom</code> instance.</p>
-<p>This takes priority over <code>opts.window</code> or <code>opts.doc</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>window</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>A <code>window</code> object.</p>
-<p>This will be passed to
-<a href="module-@lumjs_tests-dom.html#.getLumDOM">getLumDOM()</a>
-to build a new instance. It takes priority over <code>opts.doc</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>doc</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An HTML document to parse.</p>
-<p>This will be passed to
-<a href="module-@lumjs_tests-dom.html#.getLumDOM">getLumDOM()</a>
-to build a new instance.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
     <h5 class="subsection-title">Properties:</h5>
@@ -354,24 +131,6 @@ to build a new instance.</p></td>
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -1766,204 +1525,6 @@ for a list of acceptable object types.</p></td>
     
 
     
-    <h4 class="name" id="isDocument"><span class="type-signature"></span>isDocument<span class="signature">(got, desc<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Log}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Is it a <code>Document</code>?</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>got</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>desc</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="test.js.html">test.js</a>, <a href="test.js.html#line477">line 477</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Log</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="isDOM"><span class="type-signature"></span>isDOM<span class="signature">(got, want, desc<span class="signature-attributes">opt</span>, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Log}</span></h4>
     
 
@@ -2419,6 +1980,204 @@ for a list of acceptable object types.</p></td>
     <p>The test log with the results.</p>
 </div>
 
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Log</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="isDocument"><span class="type-signature"></span>isDocument<span class="signature">(got, desc<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Log}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Is it a <code>Document</code>?</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>got</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>desc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="test.js.html">test.js</a>, <a href="test.js.html#line477">line 477</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
 
 
 <dl>
@@ -5270,13 +5029,13 @@ as the constructor options.</p></td>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests-dom.html">@lumjs/tests-dom</a></li><li><a href="module-@lumjs_tests-dom_declarations.html">@lumjs/tests-dom/declarations</a></li><li><a href="module-@lumjs_tests-dom_documents.html">@lumjs/tests-dom/documents</a></li><li><a href="module-@lumjs_tests-dom_documents_default.html">@lumjs/tests-dom/documents/default</a></li><li><a href="module-@lumjs_tests-dom_documents_doctypes.html">@lumjs/tests-dom/documents/doctypes</a></li><li><a href="module-@lumjs_tests-dom_documents_frameset.html">@lumjs/tests-dom/documents/frameset</a></li><li><a href="module-@lumjs_tests-dom_documents_xml.html">@lumjs/tests-dom/documents/xml</a></li><li><a href="module-@lumjs_tests-dom_test.html">@lumjs/tests-dom/test</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_tests-dom.html">@lumjs/tests-dom</a></li><li><a href="module-@lumjs_tests-dom_test.html">@lumjs/tests-dom/test</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:37:34 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 10:45:59 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

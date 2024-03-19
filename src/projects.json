@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2022-10-04T172000-0700",
+  "updated": "2024-03-19T110000-0700",
   "title": "supernovus/Lum API documentation",
   "srcurl": "https://github.com/supernovus/",
   "docurl": "docs/",
@@ -11,21 +11,21 @@
       "name": "@lumjs/core",
       "desc": "Foundational core library",
       "src": "lum.core.js",
-      "ver": "1.5.1"
+      "ver": "1.20.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/tests",
       "desc": "Simple Testing libraries",
       "src": "lum.tests.js",
-      "ver": "1.7.0"
+      "ver": "1.8.2"
     },
     {
       "lang": "js",
-      "name": "@lumjs/compat",
-      "desc": "Compatibility libraries",
-      "src": "lum.compat.js",
-      "ver": "1.2.0"
+      "name": "@lumjs/web-core",
+      "desc": "Web app core library",
+      "src": "lum.web-core.js",
+      "ver": "1.1.0"
     },
     {
       "lang": "js",
@@ -40,7 +40,7 @@
       "name": "@lumjs/simple-loader",
       "desc": "A simple resource loader",
       "src": "lum.simple-loader.js",
-      "ver": "1.0.0"
+      "ver": "3.0.0"
     },
     {
       "skip": true,
@@ -48,28 +48,35 @@
       "name": "@lumjs/oquery",
       "desc": "Object queries",
       "src": "lum.oquery.js",
+      "ver": "1.0.1"
+    },
+    {
+      "lang": "js",
+      "name": "@lumjs/html-xml",
+      "desc": "Common test resources for HTML/XML documents",
+      "src": "lum.html-xml.js",
       "ver": "1.0.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/dom",
-      "desc": "DOM Helpers",
+      "desc": "DOM Helpers (deprecated)",
       "src": "lum.dom.js",
-      "ver": "1.0.0"
+      "ver": "1.5.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/tests-dom",
-      "desc": "DOM testing libraries",
+      "desc": "DOM testing libraries (deprecated)",
       "src": "lum.tests-dom.js",
-      "ver": "1.1.0"
+      "ver": "2.0.0"
     },
     {
       "lang": "js",
       "name": "@lumjs/encode",
       "desc": "Encoding libraries",
       "src": "lum.encode.js",
-      "ver": "1.0.0"
+      "ver": "1.2.0"
     },
     {
       "lang": "php",

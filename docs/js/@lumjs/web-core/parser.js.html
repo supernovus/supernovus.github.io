@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: parser.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: parser.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Functions for parsing HTML and XML.
+ * @module @lumjs/web-core/parser
+ */
+"use strict";
+
+const core = require('@lumjs/core');
+const {F} = core.types;
+
+const U = require('./utils');
+const {VALID_TAG} = U;
+
+exports.VALID_TAG = VALID_TAG;
+
+/**
+ * A list of MIME-type values for `DOMParser.parseFromString()`
+ * which is used internally by all of the functions in this module.
+ * 
+ * @alias module:@lumjs/web-core/parser.MIME_TYPES
+ * @prop {string} HTML     - "text/html"
+ * @prop {string} XML      - "application/xml"
+ * @prop {string} XMLTEXT  - "text/xml"
+ * @prop {string} XHTML    - "application/xhtml+xml"
+ * @prop {string} SVG      - "application/svg+xml"
+ * 
+ */
+const MIME_TYPES = Object.freeze(
+{
+    HTML: 'text/html',
+    XML: 'application/xml',
+    XMLTEXT: 'text/xml',
+    XHTML: 'application/xhtml+xml',
+    SVG: 'image/svg+xml',
+});
+
+exports.MIME_TYPES = MIME_TYPES;
+
+/**
+ * Parse HTML source.
+ * 
+ * @param {string} text - The HTML source to parse.
+ * @param {object} [opts] Options
+ * 
+ * @param {boolean} [opts.raw=false] Return full HTML document?
+ * 
+ * If this is `true` we return the full HTML document as returned by
+ * `DOMParser.parseFromString()`.
+ * 
+ * Despite the default value being `false`, this will be forced to 
+ * `true` if no `&lt;body/>` element was found in the parsed document.
+ * 
+ * @param {boolean} [opts.multiple] Return as array?
+ * 
+ * If `true` returns an Array of the children from the `&lt;body/>`
+ * element in the parsed document. Automatically _adopts_ all of the
+ * children into the global `document`.
+ *
+ * The defaults to `false` if there is only one child in the
+ * parsed `&lt;body/>`; for more than 1 child it defaults to `true`.
+ * 
+ * @param {boolean} [opts.allNodes=false] Use _ALL_ nodes?
+ * 
+ * The `opts.multiple` option will use `body.childNodes` rather
+ * than the default of using `body.children` (only `Element` children.)
+ * 
+ * @returns {mixed} Output depends on input and options:
+ * 
+ * - If `options.raw` is `true` this will return an `HTMLDocument` object.
+ * - If `options.mutiple` is `true` this will return an `Array` of children.
+ * - If the `&lt;body/>` has at least one child, this will return an `Element`.
+ * - If none of the above match, this will return `null`.
+ * 
+ * @alias module:@lumjs/web-core/parser.parseHTML
+ */
+function parseHTML(text, opts={})
+{
+  const parser = new DOMParser();
+  const html = parser.parseFromString(text, MIME_TYPES.HTML);
+  const body = html.body;
+
+  if (opts.raw || !body)
+  { // Return the raw parsed HTML document.
+    return html;
+  }
+
+  const allNodes = opts.allNodes ?? false;
+  const elemCount 
+    = allNodes 
+    ? body.childNodes.length 
+    : body.childElementCount;
+  const multiple = opts.multiple ?? (elemCount > 1);
+
+  if (multiple)
+  { // Return an array of child elements.
+    let elements = allNodes ? body.childNodes : body.children;
+    elements = Array.from(elements);
+    for (const element of elements)
+    {
+      document.adoptNode(element);
+    }
+    return elements;
+  }
+  else
+  { // Return a single element, or null if no valid elements.
+    const element = body.firstElementChild;
+    if (element)
+    {
+      document.adoptNode(element);
+    }
+    return element;
+  }
+
+} // parseHTML()
+
+exports.parseHTML = parseHTML;
+
+/**
+ * A custom Error handler for the `parseXML()` function.
+ * 
+ * @typedef {function} ParseXMLErrorHandler
+ * @param {Element} parserError - The &lt;parsererror/> element.
+ * @param {XMLDocument} xmlDoc - The parsed XML document.
+ * @returns {mixed} What `parseXML()` should return on a parse error.
+ */
+
+/**
+ * Parse XML source.
+ * 
+ * @param {text} text - XML source to parse.
+ * @param {object} [opts] Options
+ * 
+ * @param {(boolean|ParseXMLErrorHandler)} [opts.onError] Error handling?
+ * 
+ * If this is boolean `true` then the function will always return the
+ * `XMLDocument` returned by `DOMParser.parseFromString()`,
+ * even if it has a `&lt;parsererror/>` element.
+ * 
+ * If this is a `function` then it will be used to determine the
+ * return value. See the `ParseXMLErrorHandler` for the arguments
+ * that will be sent to the handler.
+ * 
+ * In any other case when a `&lt;parsererror/>` is found, 
+ * the function will report the error to the JS console, 
+ * then return `null` instead of a document.
+ * 
+ * @param {string} [opts.type="application/xml"] MIME-type for DOM Parser.
+ * 
+ * You problably will never need to manually specify this.
+ * If you do specify this, you should use the `MIME_TYPES` constants 
+ * to ensure this is a valid value, as if the `DOMParser` doesn't
+ * support the specified type, it will throw a `TypeError`.
+ * 
+ * @returns {mixed} Output depends on options.
+ * 
+ * If no parsing errors occur, this will always be an `XMLDocument`.
+ * See the `opts.onError` description for other potential values.
+ * 
+ * @alias module:@lumjs/web-core/parser.parseXML
+ */
+function parseXML(text, opts={})
+{
+  const parser = new DOMParser();
+  const mimeType = opts.type ?? MIME_TYPES.XML;
+  const xmlDoc = parser.parseFromString(text, mimeType);
+
+  if (opts.onError === true)
+  { // Always return the doc regardless of parse errors.
+    return xmlDoc;
+  }
+
+  const parseErrors = xmlDoc.querySelector("parseerror");
+  if (parseErrors)
+  { // Parse errors found.
+    if (typeof opts.onError === F)
+    { // Custom error handler passed.
+      return opts.onError(xmlDoc);
+    }
+    else
+    { 
+      console.error("parser errors occurred", parseErrors, 
+      {
+        text, opts, xmlDoc,
+      });
+
+      return null;
+    }
+  }
+  else
+  { // No errors found, return the doc.
+    return xmlDoc;
+  }
+}
+
+exports.parseXML = parseXML;
+
+/**
+ * Create an element from a string.
+ * 
+ * @param {string} string - String to turn into an element.
+ * 
+ * If this is a valid tag name, then an empty element will be
+ * returned; e.g. `"br"` will return a `&lt;br />` element.
+ * 
+ * If this appears to be an HTML snippet, then it will be
+ * passed to `parseHTML()` and the output from that returned.
+ * 
+ * In any other case this will be converted into a text node.
+ * 
+ * @param {object} [options] Options for other methods.
+ * 
+ * Used by either `document.createElement()` or `parseHTML()`.
+ * 
+ * @returns {object} Exact type depends on the `string` argument.
+ * 
+ * @alias module:@lumjs/web-core/parser.elem
+ */
+function elem(string, options)
+{
+  if (VALID_TAG.test(string))
+  {
+    return document.createElement(string, options);
+  }
+  else if (U.guessHTML(string))
+  {
+    return parseHTML(string, options);
+  }
+  else
+  {
+    return document.createTextNode(string);
+  }
+}
+
+exports.elem = elem;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_web-core.html">@lumjs/web-core</a></li><li><a href="module-@lumjs_web-core_content.html">@lumjs/web-core/content</a></li><li><a href="module-@lumjs_web-core_eventbuilder.html">@lumjs/web-core/eventbuilder</a></li><li><a href="module-@lumjs_web-core_events.html">@lumjs/web-core/events</a></li><li><a href="module-@lumjs_web-core_listcompiler.html">@lumjs/web-core/listcompiler</a></li><li><a href="module-@lumjs_web-core_parser.html">@lumjs/web-core/parser</a></li><li><a href="module-@lumjs_web-core_query.html">@lumjs/web-core/query</a></li><li><a href="module-@lumjs_web-core_utils.html">@lumjs/web-core/utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_web-core_listcompiler-ListBuilder.html">ListBuilder</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 13:06:00 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

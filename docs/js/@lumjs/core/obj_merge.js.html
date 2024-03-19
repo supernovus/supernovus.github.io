@@ -27,50 +27,58 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>// Import required bits here.
-const {B, isObj} = require('../types');
+const {B, N, isObj} = require('../types');
+const copyProps = require('./copyprops');
+
+// A shortcut for the recursive option.
+const recursive = copyProps.RECURSE_ALL;
 
 /**
  * Merge two objects recursively.
  *
- * This is currently suseptible to circular reference infinite loops,
- * but given what it's designed for, I'm not too worried about that.
+ * This used to be a standalone function, but was poorly designed. 
+ * It's now a wrapper around the
+ * [copyProps()]{@link module:@lumjs/core/obj.copyProps} method.
  *
  * @param {object} source - The source object we're copying from.
  * @param {object} target - The target object we're copying into.
  *
- * @param {object} [opts] Options that change the behaviour.
- * @param {boolean} [opts.overwrite=true] Allow overwriting.
- *   Unlike `copy` which does not allow overwriting by default,
- *   this method does. It's not designed for the same kind of objects
- *   as `copy`, but more for JSON structured configuration files.
- *
- *   As this is currently the only option, passing the boolean
- *   as the `opts` argument directly will set this option.
+ * @param {(object|boolean)} [opts] Options for `copyProps()`
+ * 
+ * If `opts.recursive` is not a `number`, it'll be set to
+ * `copyProps.RECURSE_ALL` to enable recursion with no
+ * depth limits.
+ * 
+ * Also, if `opts.overwrite` is not explicitly set, it will
+ * be set as `true`, a different default value than `copyProps()`.
+ * 
+ * For backwards compatibility, if this specified as a `boolean`
+ * value instead of an object, it'll be assumed to be value 
+ * for the `opts.overwrite` option.
  *
  * @returns {object} The `target` object.
  * @alias module:@lumjs/core/obj.mergeNested
  */
- function mergeNested(source, target, opts={})
- {
-   if (typeof opts === B) 
-     opts = {overwrite: opts};
- 
-   const overwrite = opts.overwrite ?? true;
- 
-   for (const prop in source)
-   {
-     if (isObj(source[prop]) &amp;&amp; isObj(to[prop]))
-     { // Nested objects, recurse deeper.
-       mergeNested(source[prop], target[prop], opts);
-     }
-     else if (overwrite || target[prop] === undefined)
-     { // Not tested objects, do a simple assignment.
-       target[prop] = source[prop];
-     }
-   }
- 
-   return target;
- }
+function mergeNested(source, target, opts={})
+{
+  if (typeof opts === B) 
+  { // Boolean overwrite option was specified.
+    opts = {overwrite: opts, recursive};
+  }
+  else if (!isObj(opts))
+  { // Wasn't an object, use default values.
+    opts = {overwrite: true, recursive};
+  }
+  else
+  { // If recursive or overwrite aren't set, set them.
+    if (opts.recursive === undefined)
+      opts.recursive = recursive;
+    if (opts.overwrite === undefined)
+      opts.overwrite = true;
+  }
+  
+  return copyProps(source, target, opts);
+}
 
  exports.mergeNested = mergeNested;
  
@@ -112,13 +120,13 @@ const {B, isObj} = require('../types');
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

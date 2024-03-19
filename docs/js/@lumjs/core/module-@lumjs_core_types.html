@@ -28,10 +28,6 @@
 
 <header>
     
-        
-            
-        
-    
 </header>
 
 <article>
@@ -45,20 +41,6 @@ Everything else is built upon this.</p></div>
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <h5 class="subsection-title">Properties:</h5>
@@ -313,24 +295,6 @@ Everything else is built upon this.</p></div>
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -918,7 +882,7 @@ directly, so any changes will be made on the original.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_def.js.html">types/def.js</a>, <a href="types_def.js.html#line101">line 101</a>
+        <a href="types_def.js.html">types/def.js</a>, <a href="types_def.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -1522,7 +1486,7 @@ If this is <code>false</code> then any unknown properties will be ignored.</p></
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="observable.js.html">observable.js</a>, <a href="observable.js.html#line292">line 292</a>
+        <a href="observable.js.html">observable.js</a>, <a href="observable.js.html#line373">line 373</a>
     </li></ul></dd>
     
 
@@ -1557,222 +1521,6 @@ If this is <code>false</code> then any unknown properties will be ignored.</p></
 <h5>Returns:</h5>
 
         
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".isa"><span class="type-signature">(static) </span>isa<span class="signature">(v, &hellip;types)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>Is value a certain type, or an instance of a certain class.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>v</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The value we're testing.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>types</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                    &lt;repeatable><br>
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The types the value should be one of.</p>
-<p>For each of the <code>types</code>, if it is a <code>string</code> we test with <code>isType()</code>,
-if it is a <code>function</code> we test with <code>isInstance()</code>.</p>
-<p>If it is an <code>object</code> and has an <code>is()</code> method, use that as the test.</p>
-<p>If it is an <code>object</code> it will be passed to the current options parsers.
-The default options parser looks for an <code>object</code> property called <code>isa</code>,
-which supports the following child properties:</p>
-<ul>
-<li><code>needProto: boolean</code>, Change the <code>needProto</code> option for <code>isInstance()</code></li>
-<li><code>parsers: function</code>, Add another options parser function.</li>
-<li><code>process: function</code>, A one-time set-up function.</li>
-<li><code>test: function</code>, Pass the <code>v</code> to this test and return <code>true</code> if it passes.</li>
-<li>Anything else will be set as an option.</li>
-</ul>
-<p>Any other type value will only match if <code>v === type</code></p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_isa.js.html">types/isa.js</a>, <a href="types_isa.js.html#line135">line 135</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Was the value one of the desired types?</p>
-</div>
-
 
 
 <dl>
@@ -2110,6 +1858,365 @@ This is literally just a copy of <code>Array.isArray</code>.</p>
     
 
     
+    <h4 class="name" id=".isArrayOf"><span class="type-signature">(static) </span>isArrayOf<span class="signature">(opts, &hellip;types)</span><span class="type-signature"> &rarr; {boolean|object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>See if every item in an Array passes an <code>isa()</code> test.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options for this test function.</p>
+<p>If this argument is an <code>Array</code> it is assumed to be the
+<code>opts.value</code> named option.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The actual Array value to test.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>details</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Return detailed test results?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>empty</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Does an empty array pass the test?</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>types</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>See <a href="module-@lumjs_core_types.html#.isa">module:@lumjs/core/types.isa</a>.</p>
+<p>All arguments other than <code>opts</code> are passed to <code>isa()</code> with each item
+from the <code>opts.value</code> array as the subject of the test.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_isa.js.html">types/isa.js</a>, <a href="types_isa.js.html#line240">line 240</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Results of the test.</p>
+<p>If <code>opts.details</code> was <code>true</code> this will be a
+<a href="module-@lumjs_core_types.html#~IsArrayOfResult">module:@lumjs/core/types~IsArrayOfResult</a> object.</p>
+<p>Otherwise it will be a simple <code>boolean</code> value indicating
+if the test passed or failed.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+|
+
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".isComplex"><span class="type-signature">(static) </span>isComplex<span class="signature">(v)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
@@ -2367,7 +2474,7 @@ Like <code>isObj()</code>, <code>null</code> does not count as an <code>object</
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="enum.js.html">enum.js</a>, <a href="enum.js.html#line127">line 127</a>
+        <a href="enum.js.html">enum.js</a>, <a href="enum.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -3636,6 +3743,224 @@ this function does not count <code>null</code> as a valid <code>object</code>.</
     
 
     
+    <h4 class="name" id=".isa"><span class="type-signature">(static) </span>isa<span class="signature">(v, &hellip;types)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Is value a certain type, or an instance of a certain class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The value we're testing.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>types</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The types the value should be one of.</p>
+<p>For each of the <code>types</code>, by default if it is a <code>string</code>
+we test with <code>isType()</code>, if it is a <code>function</code> we test with <code>isInstance()</code>.</p>
+<p>If it is an <code>object</code> and has an <code>is()</code> method, use that as the test.</p>
+<p>If it is an <code>object</code> it will be passed to the current options parsers.
+The default options parser looks for an <code>object</code> property called <code>isa</code>,
+which supports the following child properties:</p>
+<ul>
+<li><code>needProto: boolean</code>, Change the <code>needProto</code> option for <code>isInstance()</code></li>
+<li><code>parsers: function</code>, Add another options parser function.</li>
+<li><code>process: function</code>, A one-time set-up function.</li>
+<li><code>test: function</code>, Pass the <code>v</code> to this test and return <code>true</code> if it passes.</li>
+<li><code>typeof: boolean</code>, If <code>true</code> use <code>typeof</code> instead of <code>isType()</code> for tests.</li>
+<li><code>instanceof: boolean</code>, If <code>true</code> use <code>instanceof</code> instead of <code>isInstance()</code>.</li>
+<li>Anything else will be set as an option that may be used by other parsers.</li>
+</ul>
+<p>Any other type value will only match if <code>v === type</code></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_isa.js.html">types/isa.js</a>, <a href="types_isa.js.html#line151">line 151</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Was the value one of the desired types?</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id=".lazy"><span class="type-signature">(static) </span>lazy<span class="signature">(target, name, initfunc, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {object|function}</span></h4>
     
 
@@ -4051,7 +4376,7 @@ the <a href="module-@lumjs_core_types.html#~LazyDef">LazyDef</a> object.</p></td
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line141">line 141</a>
+        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -4202,6 +4527,9 @@ the <a href="module-@lumjs_core_types.html#~LazyDef">LazyDef</a> object.</p></td
             
                 
 <span class="param-type">boolean</span>
+|
+
+<span class="param-type">string</span>
 
 
             
@@ -4227,7 +4555,12 @@ the <a href="module-@lumjs_core_types.html#~LazyDef">LazyDef</a> object.</p></td
                 </td>
             
 
-            <td class="description last"><p>Also accept functions?</p></td>
+            <td class="description last"><p>Also accept <code>function</code>?</p>
+<p>By default this function uses <code>isObj()</code> to perform the
+test. If <code>allowFunc</code> is <code>true</code> then it'll use <code>isComplex()</code> instead.</p>
+<p>If this is a <code>string</code> then it'll be assigned to the <code>msg</code>
+parameter, and <code>allowFunc</code> will be <code>true</code> if the word
+<code>function</code> is found in the message, or <code>false</code> otherwise.</p></td>
         </tr>
 
     
@@ -4264,6 +4597,247 @@ the <a href="module-@lumjs_core_types.html#~LazyDef">LazyDef</a> object.</p></td
                     null
                 
                 </td>
+            
+
+            <td class="description last"><p>A custom error message.</p>
+<p>If not specified, a generic one will be used.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the type check failed.</p>
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">TypeError</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".needType"><span class="type-signature">(static) </span>needType<span class="signature">(type, v, msg<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>If a value is not a certain type, throw an error.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The type name as per <code>isType()</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The value we're testing.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>msg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
             
 
             <td class="description last"><p>A custom error message.</p></td>
@@ -4307,7 +4881,7 @@ the <a href="module-@lumjs_core_types.html#~LazyDef">LazyDef</a> object.</p></td
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line14">line 14</a>
+        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -4520,7 +5094,7 @@ If specified, it will override the error message that will be thrown.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line78">line 78</a>
+        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -4599,246 +5173,6 @@ If specified, it will override the error message that will be thrown.</p></td>
 
 </li>
     </ul>
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".needType"><span class="type-signature">(static) </span>needType<span class="signature">(type, v, msg<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>If a value is not a certain type, throw an error.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The type name as per <code>isType()</code>.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>v</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The value we're testing.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>msg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>A custom error message.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_needs.js.html">types/needs.js</a>, <a href="types_needs.js.html#line39">line 39</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Throws:</h5>
-
-        
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>If the type check failed.</p>
-        </div>
-    </dt>
-    <dd></dd>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">TypeError</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-    <dd></dd>
-</dl>
-
-
-    
 
 
 
@@ -5201,6 +5535,231 @@ If <code>false</code> (default) we want a regular <code>Array</code>.</p></td>
     <dd>
         
 <span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".ownCount"><span class="type-signature">(static) </span>ownCount<span class="signature">(v, level<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Return the number of <em>local</em> properties in an object.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The value we want the property count of.</p>
+<p>This can be any kind of <code>object</code>, or it can be a <code>function</code> that has
+a <code>prototype</code> property which is a <code>object</code>. Anything else is invalid.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>level</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Determine which properties to count.</p>
+<ul>
+<li><code>== 0</code> : Counts only enumerable properties.</li>
+<li><code>&gt; 0</code>  : Includes all properties with string names.</li>
+<li><code>&gt; 1</code>  : Also includes symbol properties.</li>
+</ul></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_owncount.js.html">types/owncount.js</a>, <a href="types_owncount.js.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The number of matching properties.</p>
+<p>If <code>v</code> was an invalid value, this will return <code>-1</code>.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
 
 
     </dd>
@@ -5735,12 +6294,359 @@ internal objects. Otherwise an <code>Array</code> of unbound objects may be used
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="~DescriptorTemplate"><span class="type-signature">(inner) </span>DescriptorTemplate<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Build a descriptor template using a simple property syntax.</p>
+<p>TODO: document this further.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_dt.js.html">types/dt.js</a>, <a href="types_dt.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
         <h3 class="subsection-title">Type Definitions</h3>
 
         
+                
+<h4 class="name" id="~IsArrayOfResult">IsArrayOfResult</h4>
+
+
+
+
+<div class="description">
+    <p>Extended return value from <code>isArrayOf()</code>.</p>
+<p>Used if the <code>opts.details</code> option was <code>true</code>.</p>
+</div>
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pass</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Did the <code>isArrayOf()</code> test pass?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>empty</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Was the array empty?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>failed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Failure information;
+Only addedd if <code>pass</code> is false.</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Index of item that caused the failure.
+Will be set to <code>-1</code> if the <code>opts.value</code> argument is not an Array,
+or if the array is empty and <code>opts.empty</code> was not set to <code>true</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">mixed</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The item that caused the failure.
+Will be the <code>opts.value</code> itself if <code>failed.index</code> is <code>-1</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="types_isa.js.html">types/isa.js</a>, <a href="types_isa.js.html#line191">line 191</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
                 
 <h4 class="name" id="~LazyDef">LazyDef</h4>
 
@@ -5934,7 +6840,8 @@ functions to override the default assignment rules.</p>
 <p>If this is <code>true</code> the return value will be assigned, replacing the
 lazy accessor property, even if the value is <code>undefined</code>.</p>
 <p>If this is <code>false</code>, the value will be returned, but will <strong>not</strong> be
-<em>assigned</em>, so the lazy accessor property will remain.</p></td>
+<em>assigned</em>, so the lazy accessor property will remain.</p>
+<p>Leave it <code>undefined</code> to use the default assignment behaviour.</p></td>
         </tr>
 
     
@@ -6086,7 +6993,7 @@ the value for <code>opts</code> when assigning the return value to the property.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line38">line 38</a>
+        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -6266,7 +7173,7 @@ an <code>Error</code> from this function.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line64">line 64</a>
+        <a href="types_lazy.js.html">types/lazy.js</a>, <a href="types_lazy.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -6335,13 +7242,13 @@ callback.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

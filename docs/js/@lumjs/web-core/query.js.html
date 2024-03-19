@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: query.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: query.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Query helpers
+ * @module @lumjs/web-core/query
+ */
+"use strict";
+
+const core = require('@lumjs/core');
+const {S,F,B,isObj} = core.types;
+
+const {isQueryable,getNested} = require('./utils');
+
+const SUB_QUERY = /[\s,>]+/;
+
+/**
+ * Is the string a query for a singular element?
+ * 
+ * @param {string} selector Query selector
+ * @returns {boolean}
+ * @alias module:@lumjs/web-core/query.isSingular
+ */
+function isSingular(selector)
+{
+  if (!typeof selector === S)
+  {
+    throw new TypeError("selector must be a string");
+  }
+
+  selector = selector.trim();
+  return (selector.startsWith('#') &amp;&amp; !SUB_QUERY.test(selector));
+}
+
+exports.isSingular = isSingular;
+
+/**
+ * A wrapper around querySelector and querySelectorAll,
+ * with some extra filtering features that adds significant power.
+ * 
+ * @param {...any} args - The type determines what the argument is for.
+ * 
+ * - A _queryable_ object instance will be used as the `node` to search in. 
+ *   If no node is explicitly specified, the global `document` will be used.
+ *   See {@link module:@lumjs/web-core/utils.isQueryable} for details.
+ *   Only **ONE** _queryable_ argument is supported.
+ * - A `boolean` value will explicitly set if we want _multiple_ matches.
+ *   Only **ONE** `boolean` argument is supported.
+ *   If **NO** `boolean` value is passed, the following logic will be used:
+ *   - A single selector starting with a `#` and having _NO_ spaces, commas,
+ *     or `>` symbols will set the _multiple_ option to `false`.
+ *   - Anything else will set the _multiple_ option to `true`.
+ * - Any `string` arguments will be assumed to be _selector queries_ for
+ *   the `querySelector*` methods. Any number may be passed; they will be
+ *   joined into a single selector `string` using commas.
+ * - Any `function` arguments will be used to filter the elements further.
+ *   Each function will be passed an element and must return a `boolean`
+ *   indicating if it passed the test and should be included. Unlike the
+ *   query strings where _any_ query may pass, _all_ filter tests must pass
+ *   for the element to be included in the returned list.
+ * - A plain `object` (non-instance) may be passed to be used as the options
+ *   for the `getNested()` function, which is only used if **NO** `string`
+ *   arguments were passed. Only **ONE** plain `object` is supported.
+ *   See {@link module:@lumjs/web-core/utils.getNested} for details.
+ * 
+ * At _least_ **ONE** `string` _OR_ `function` argument **MUST** be passed
+ * for this function to be valid. It will return `null` or an empty array 
+ * if neither of those arguments were specified.
+ * 
+ * @returns {mixed} Output depends on passed arguments.
+ * 
+ * - If the _multiple_ option is `false` then this will return either
+ *   a single `Element` or `null` if no elements passed the tests.
+ * 
+ * - If a filter `function` was specified then multiple elements will be
+ *   returned as an `Array`, otherwise the return value will be the 
+ *   `NodeList` from `querySelectorAll()`.
+ * 
+ * @alias module:@lumjs/web-core/query.find
+ * @type {function}
+ */
+function find(...args)
+{
+  const opts =
+  {
+    node: document,
+    multiple: null,
+    selectors:  [],
+    filters:    [],
+    nestOpts: null,
+  }
+
+  // Log errors/warnings with a common format.
+  const log = (at, msg, data) => console.error(msg, 
+  {
+    at, 
+    opts, 
+    args,
+    data,
+  });
+  
+  for (let a=0; a &lt; args.length; a++)
+  {
+    const arg = args[a];
+
+    if (typeof arg === B)
+    { 
+      if (opts.multiple === null)
+      {
+        opts.multiple = arg;
+      }
+      else
+      {
+        log(a, "the 'multiple' option was already set", arg);
+      }
+    }
+    else if (typeof arg === S)
+    { // A string is always considered a selector.
+      opts.selectors.push(arg);
+    }
+    else if (typeof arg === F)
+    { // A function is always considered a filter.
+      opts.filters.push(arg);
+    }
+    else if (isQueryable(arg))
+    { // The root node from which our query begins.
+      if (opts.node === document)
+      {
+        opts.node = arg;
+      }
+      else
+      {
+        log(a, "the 'node' option was already set", data);
+      }
+    }
+    else if (isObj(arg))
+    {
+      if (opts.nestOpts === null)
+      {
+        opts.nestOpts = arg;
+      }
+      else
+      {
+        log(a, "the 'nestOpts' option was already set", data);
+      }
+    }
+    else
+    {
+      log(a, "unsupported argument value", arg);
+    }
+
+  } // for args
+
+  if (opts.selectors.length === 0 &amp;&amp; opts.filters.length === 0)
+  {
+    log(-1, "no selectors or filters specified", opts);
+    return (opts.multiple ? [] : null);
+  }
+
+  if (opts.multiple === null)
+  { // Determine multiple option automatically.
+    opts.multiple = true;
+    if (opts.selectors.length === 1 &amp;&amp; isSingular(opts.selectors[0]))
+    { // Only one, '#id' type selector specified.
+      opts.multiple = false;
+    }
+  }
+
+  let found;
+
+  if (opts.selectors.length > 0)
+  { // Search using a query selector.
+    const query = opts.selectors.join(',');
+
+    if (opts.multiple)
+    {
+      found = opts.node.querySelectorAll(query);
+    }
+    else
+    {
+      found = opts.node.querySelector(query);
+    }
+  }
+  else
+  { 
+    if (opts.multiple)
+    { // Going to use all nested elements.
+      found = getNested(opts.node, opts.nestOpts);
+    }
+    else
+    { // Just the first child.
+      found = opts.node.firstElementChild;
+    }
+  }
+
+  if (opts.filters.length > 0)
+  { // Filters to apply.
+    if (!opts.multiple) 
+    { // Wrap the single in an array for simplicity.
+      found = [found];
+    }
+
+    const filtered = [];
+    
+    eachNode: for (const node of found)
+    {
+      for (const filter of opts.filters)
+      {
+        if (!filter(node))
+        { // Didn't pass a filter test, skip this node.
+          continue eachNode;
+        }
+      }
+      // If we reached here the node passed the tests.
+      filtered.push(node);
+    }
+
+    if (opts.multiple)
+    { // Use the filtered array as the list of found items.
+      found = filtered;
+    }
+    else
+    { // If the one item passed, return it, otherwise return null.
+      found = filtered.length ? filtered[0] : null;
+    }
+  }
+  
+  return found;
+
+} // query()
+
+exports.find = find;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_web-core.html">@lumjs/web-core</a></li><li><a href="module-@lumjs_web-core_content.html">@lumjs/web-core/content</a></li><li><a href="module-@lumjs_web-core_eventbuilder.html">@lumjs/web-core/eventbuilder</a></li><li><a href="module-@lumjs_web-core_events.html">@lumjs/web-core/events</a></li><li><a href="module-@lumjs_web-core_listcompiler.html">@lumjs/web-core/listcompiler</a></li><li><a href="module-@lumjs_web-core_parser.html">@lumjs/web-core/parser</a></li><li><a href="module-@lumjs_web-core_query.html">@lumjs/web-core/query</a></li><li><a href="module-@lumjs_web-core_utils.html">@lumjs/web-core/utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_web-core_listcompiler-ListBuilder.html">ListBuilder</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 13:06:00 GMT-0700 (Pacific Daylight Saving Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

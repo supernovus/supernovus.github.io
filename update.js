@@ -98,6 +98,7 @@ for (const proj of projects.projects)
 
   const rsync = new Rsync()
     .flags('a')
+    .delete()
     .source(srcdir)
     .destination(destdir)
     .exclude('.cache');

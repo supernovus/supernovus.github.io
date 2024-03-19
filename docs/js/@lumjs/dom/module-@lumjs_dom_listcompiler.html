@@ -28,18 +28,6 @@
 
 <header>
     
-        
-            
-                <div class="class-description"><p>The <code>ListCompiler</code> class for compiling DOM objects that don't
-have constructors.</p>
-<p>Some DOM objects like <code>NodeList</code>, and <code>HTMLCollection</code> don't have any
-regular constructors and normally cannot be manually created.</p>
-<p>We use some dark voodoo to create objects that conform to the APIs
-of the desired list class, <em>and</em> set the prototype to a valid instance
-of that class, so it simply works.</p></div>
-            
-        
-    
 </header>
 
 <article>
@@ -50,69 +38,6 @@ of that class, so it simply works.</p></div>
         
 
         
-            
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dom</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Our parent DOM helper instance.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
 <dl class="details">
@@ -154,24 +79,6 @@ of that class, so it simply works.</p></div>
 
     
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         
@@ -582,6 +489,112 @@ be added dynamically.</p></td>
     
 
     
+    <h4 class="name" id="buildTouchList"><span class="type-signature"></span>buildTouchList<span class="signature">()</span><span class="type-signature"> &rarr; {module:@lumjs/dom/listcompiler~ListBuilder}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Get a <code>ListBuilder</code> for <code>TouchList</code> objects.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line82">line 82</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">module:@lumjs/dom/listcompiler~ListBuilder</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="makeHTMLCollection"><span class="type-signature"></span>makeHTMLCollection<span class="signature">(&hellip;nodes)</span><span class="type-signature"> &rarr; {NodeList}</span></h4>
     
 
@@ -697,7 +710,7 @@ Only <code>Element</code> children of the list instances will be added.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line113">line 113</a>
+        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -865,7 +878,7 @@ May be instances of <code>Node</code>, <code>NodeList</code>, or <code>HTMLColle
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line84">line 84</a>
+        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line99">line 99</a>
     </li></ul></dd>
     
 
@@ -1076,7 +1089,7 @@ be a regular property descriptor at that point..</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line230">line 230</a>
+        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line245">line 245</a>
     </li></ul></dd>
     
 
@@ -1201,7 +1214,7 @@ In all cases it must be a valid non-null <code>object</code>.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line221">line 221</a>
+        <a href="listcompiler.js.html">listcompiler.js</a>, <a href="listcompiler.js.html#line236">line 236</a>
     </li></ul></dd>
     
 
@@ -1263,13 +1276,13 @@ In all cases it must be a valid non-null <code>object</code>.</p></td>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 11:01:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

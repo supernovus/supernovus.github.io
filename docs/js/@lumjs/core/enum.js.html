@@ -37,9 +37,62 @@ const ENUM_ID = new InternalObjectId({name: '$Enum'});
  * 
  * Like the built-in `Symbol`, this is called as a function, not a constructor.
  * 
- * @param {*} spec - TBD
- * @param {*} [opts] - TBD
+ * @param {(string[]|object)} spec - May be in one of two formats:
+ * 
+ * - An `Array` of strings. Each string represents the name of an Enum 
+ *   property name. The property value will be automatically determined
+ *   based on the options. The default is a series of sequential integers 
+ *   starting at `0`.
+ * 
+ * - A plain object used as a map of property names to underlying values.
+ *   In most cases the value can be whatever you want and will be directly
+ *   mapped as is. However if `opts.symbols` is `true`, and the value is a
+ *   string, the string will be used as the name for the symbol rather than
+ *   the property name.
+ * 
+ * @param {object} [opts] Options for creating the Enum
+ * 
+ * @param {bool} [opts.symbols=false] Use `Symbol` property values.
+ * 
+ * @param {bool} [opts.globals=false] Use `Symbol.for()` property values.
+ * 
+ * This option is only used if `opts.symbols` is `true`.
+ * 
+ * @param {bool} [opts.strings=false] The property name is also the value.
+ * 
+ * This is only used if `spec` is an `Array`, and `opts.symbols` is `false`.
+ * 
+ * @param {bool} [opts.flags=false] Use binary flag property values.
+ * 
+ * This is only used if `spec` is an `Array`, and both `opts.symbols` and
+ * `opts.strings` are `false`.
+ * 
+ * This handles incrementing automatically, so: `[1,2,4,8,16,...]`
+ * 
+ * @param {number} [opts.counter] The starting value when auto-incrementing.
+ * 
+ * The default value is `1` if `opts.flags` is `true` or `0` otherwise.
+ * 
+ * @param {bool} [opts.open=false] If `true` the Enum object won't be locked.
+ * If `false`, by default we use `Object.freeze()` to lock the object.
+ * 
+ * @param {(bool|object|Array)} [opts.lock=null] If this is *not* `null`, 
+ * use {@see module:@lumjs/core/obj.lock lock()} instead of `Object.freeze()`.
+ * 
+ * Only used if `opts.open` is `false`. The supported values are:
+ * 
+ * - `Array`: The `[cloneable, cloneOpts, useSeal]` parameters for `clone()`.
+ * - `object`: The `cloneOpts` parameter for `clone()`.
+ * - `bool`: The `cloneable` parameter for `clone()`.
+ * 
+ * @param {bool} [opts.configurable=false] Enum properties are configurable?
+ * 
+ * This option is ignored if `opts.open` is `false`.
+ * 
+ * @param {bool} [opts.enumerable=true] Enum properties are enumerable?
+ * 
  * @returns {object} A magic Enum object.
+ * @throws {TypeError} If an invalid value was passed.
  * @exports module:@lumjs/core/enum
  */
 function Enum (spec, opts={})
@@ -80,11 +133,10 @@ function Enum (spec, opts={})
 
   if (Array.isArray(spec))
   { // An array of strings is expected.
-    let counter = opts.counter ?? 1;
+    let counter = opts.counter ?? (opts.flags ? 1 : 0);
 
-    for (let i = 0; i &lt; spec.length; i++)
+    for (const name of spec)
     {
-      const name = spec[i];
       if (typeof name !== S)
       {
         throw new TypeError("Non-string passed in Enum object");
@@ -93,13 +145,17 @@ function Enum (spec, opts={})
       const val 
         = opts.strings 
         ? name 
-        : (opts.flags ? counter : i);
+        : counter;
 
       addVal(name, name, val);
 
       if (opts.flags)
       { // Increment the binary flag counter.
         counter *= 2;
+      }
+      else
+      { // Increment a regular counter.
+        counter++;
       }
     }
   }
@@ -113,30 +169,33 @@ function Enum (spec, opts={})
     }
   }
 
-  if (notNil(opts.lock))
-  { // Use lock() function.
-    let lockOpts;
-    if (Array.isArray(opts.lock))
-    { // Specified the lock parameters as an array.
-      lockOpts = opts.lock;
+  if (!opts.open)
+  {
+    if (notNil(opts.lock))
+    { // Use lock() function.
+      let lockOpts;
+      if (Array.isArray(opts.lock))
+      { // Specified the lock parameters as an array.
+        lockOpts = opts.lock;
+      }
+      else if (isObj(opts.lock))
+      { // An object is assumed to be the `cloneOpts` parameter.
+        lockOpts = [true, opts.lock, false];
+      }
+      else if (typeof opts.lock === B)
+      { // Boolean is assumed to be the `cloneable` parameter.
+        lockOpts = [opts.lock, null, false];
+      }
+      else 
+      { // Anything else is invalid.
+        throw new TypeError('opts.lock was not a valid value');
+      }
+      return lock(anEnum, ...lockOpts);
     }
-    else if (isObj(opts.lock))
-    { // An object is assumed to be the `cloneOpts` parameter.
-      lockOpts = [true, opts.lock, false];
+    else
+    { // Use Object.freeze()
+      return Object.freeze(anEnum);
     }
-    else if (typeof opts.lock === B)
-    { // Boolean is assumed to be the `cloneable` parameter.
-      lockOpts = [opts.lock, null, false];
-    }
-    else 
-    { // Anything else we use default values.
-      lockOpts = [];
-    }
-    return lock(anEnum, ...lockOpts);
-  }
-  else if (!opts.open) 
-  { // Use Object.freeze()
-    return Object.freeze(anEnum);
   }
 
   return anEnum;
@@ -182,13 +241,13 @@ const {lock} = require('./obj/lock');
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

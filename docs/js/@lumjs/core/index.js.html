@@ -50,121 +50,90 @@ const types = require('./types');
 /**
  * Define properties on an object or function
  * @name module:@lumjs/core.def
- * @function
  * @see module:@lumjs/core/types.def
  */
+const def = types.def;
 
 /**
- * Define properties on an object or function
- * @name module:@lumjs/core.lazy
- * @function
+ * Define *lazy* properties on an object or function
+ * @alias module:@lumjs/core.lazy
  * @see module:@lumjs/core/types.lazy
  */
+const lazy = types.lazy;
 
-// Get a descriptor for one of our sub-modules.
-function lib(name, def={})
-{
-  let value = def.value;
-  
-  if (value === undefined)
-  {
-    const module = def.module ?? name;
-    value = require('./'+module);
-
-    if (value &amp;&amp; def.prop &amp;&amp; value[def.prop] !== undefined)
-    { 
-      value = value[def.prop];
-    }
-  }
-
-  const desc = 
-  {
-    configurable: false, 
-    enumerable: true, 
-    writable: false,
-    value,
-  }
-
-  return desc;
-}
-
-// Export one of our always loaded properties.
-function has(name, def)
-{
-  types.def(exports, name, lib(name, def));
-}
-
-// Export one of our lazy loaded properties.
-function can(name, def)
-{
-  types.lazy(exports, name, () => lib(name, def), {enumerable: true});
-}
-
-// Export a set of always loaded properties from a sub-module
-function from(modname, ...libs)
-{
-  for (const lib of libs)
-  {
-    has(lib, {module: modname, prop: lib});
-  }
-}
-
-// Our fundamental bits.
-has('types', {value: types});
-has('def',   {value: types.def});
-has('lazy',  {value: types.lazy});
+def(exports, 'types', types);
+def(exports, 'def',   def);
+def(exports, 'lazy',  lazy);
 
 /**
  * Array utility functions «Lazy»
  * @name module:@lumjs/core.arrays
  * @type {module:@lumjs/core/arrays}
  */
-can('arrays');
+lazy(exports, 'arrays', () => require('./arrays'));
+
+/**
+ * Map utility functions «Lazy»
+ * @name module:@lumjs/core.maps
+ * @type {module:@lumjs/core/maps}
+ */
+lazy(exports, 'maps', () => require('./maps'));
 
 /**
  * Information about the JS context we're running in
  * @name module:@lumjs/core.context
  * @type {module:@lumjs/core/context}
  */
-has('context');
+def(exports, 'context', require('./context'));
 
 /**
  * Functions for working with strings and locales «Lazy»
  * @name module:@lumjs/core.strings
  * @type {module:@lumjs/core/strings}
  */
-can('strings');
+lazy(exports, 'strings', () => require('./strings'));
 
 /**
  * Functions for working with binary flags «Lazy»
  * @name module:@lumjs/core.flags
  * @type {module:@lumjs/core/flags}
  */
-can('flags');
+lazy(exports, 'flags', () => require('./flags'));
 
 /**
- * Functions for manipulating objects
+ * Functions for manipulating objects «Lazy»
  * @name module:@lumjs/core.obj
  * @type {module:@lumjs/core/obj}
  */
-has('obj');
+lazy(exports, 'obj', () => require('./obj'));
+
+/**
+ * A wrapper around the Javascript console.
+ * @name module:@lumjs/core.console
+ * @type {module:@lumjs/core/console}
+ */
+lazy(exports, 'console', () => require('./console'));
 
 /**
  * Functions for getting values and properties with fallback defaults «Lazy»
  * @name module:@lumjs/core.opt
  * @type {module:@lumjs/core/opt}
  */
-can('opt');
+const optOpts = {enumerable: true, def:{autoDesc: false}}
+lazy(exports, 'opt', () => require('./opt'), optOpts);
 
-/**
- * Meta functions related to JS modules «Lazy»
- * @alias module:@lumjs/core.modules
- * @see module:@lumjs/core/modules
- */
-can('modules');
+// Get a bunch of properties from a submodule.
+function from(submod, ...libs)
+{
+  for (const lib of libs)
+  {
+    def(exports, lib, submod[lib]);
+  }
+}
 
 // ObjectID stuff is imported directly without registering a sub-module.
-from('objectid', 'randomNumber', 'InternalObjectId');
+const objectid = require('./objectid');
+from(objectid, 'randomNumber', 'InternalObjectId');
 
 /**
  * Get a simplistic debugging stacktrace
@@ -194,15 +163,16 @@ from('objectid', 'randomNumber', 'InternalObjectId');
 
 // These are exported directly, but a meta sub-module also exists.
 // Unlike most sub-modules there is no `meta` property in the main library.
-from('meta', 'stacktrace', 'AbstractClass', 'Functions', 'NYI');
+const meta = require('./meta');
+from(meta, 'stacktrace', 'AbstractClass', 'Functions', 'NYI');
 
 /**
- * Create a magic *Enum* object
+ * Create a magic *Enum* object «Lazy»
  * @name module:@lumjs/core.Enum
  * @function
  * @see module:@lumjs/core/enum
  */
-has('Enum', {module: 'enum'});
+lazy(exports, 'Enum', () => require('./enum'));
 
 /**
  * Make an object support the *Observable* API «Lazy»
@@ -210,7 +180,8 @@ has('Enum', {module: 'enum'});
  * @function
  * @see module:@lumjs/core/observable
  */
-can('observable');
+lazy(exports, 'observable', () => require('./observable'));
+
 </code></pre>
         </article>
     </section>
@@ -221,13 +192,13 @@ can('observable');
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_core.html">@lumjs/core</a></li><li><a href="module-@lumjs_core_arrays.html">@lumjs/core/arrays</a></li><li><a href="module-@lumjs_core_console.html">@lumjs/core/console</a></li><li><a href="module-@lumjs_core_context.html">@lumjs/core/context</a></li><li><a href="module-@lumjs_core_enum.html">@lumjs/core/enum</a></li><li><a href="module-@lumjs_core_flags.html">@lumjs/core/flags</a></li><li><a href="module-@lumjs_core_maps.html">@lumjs/core/maps</a></li><li><a href="module-@lumjs_core_meta.html">@lumjs/core/meta</a></li><li><a href="module-@lumjs_core_modules.html">@lumjs/core/modules</a></li><li><a href="module-@lumjs_core_obj.html">@lumjs/core/obj</a></li><li><a href="module-@lumjs_core_observable.html">@lumjs/core/observable</a></li><li><a href="module-@lumjs_core_opt.html">@lumjs/core/opt</a></li><li><a href="module-@lumjs_core_strings.html">@lumjs/core/strings</a></li><li><a href="module-@lumjs_core_types.html">@lumjs/core/types</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-@lumjs_core_meta.Functions.html">Functions</a></li><li><a href="module-@lumjs_core_types.TYPES.html">TYPES</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_core.InternalObjectId.html">InternalObjectId</a></li><li><a href="module-@lumjs_core_arrays.List.html">List</a></li><li><a href="module-@lumjs_core_arrays.add.At.html">At</a></li><li><a href="module-@lumjs_core_meta.AbstractClass.html">AbstractClass</a></li><li><a href="module-@lumjs_core_obj-CopyProps.html">CopyProps</a></li><li><a href="module-@lumjs_core_opt.Opts.html">Opts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Oct 04 2022 17:49:01 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Mar 18 2024 11:45:00 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

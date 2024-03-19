@@ -28,10 +28,6 @@
 
 <header>
     
-        
-            
-        
-    
 </header>
 
 <article>
@@ -42,18 +38,244 @@
         
 
         
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">util.js</a>, <a href="util.js.html#line5">line 5</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".HTML_MODE"><span class="type-signature">(static) </span>HTML_MODE<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>An <code>Enum</code> of modes for the <code>html()</code> method.</p>
+</div>
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>AUTO</code></td>
             
 
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Auto-determine the return value.</p>
+<ul>
+<li>If there are <em>any</em> child elements in the <code>&lt;head/&gt;</code>, or there
+are <strong>no</strong> child elements in the <code>&lt;body/&gt;</code>, then the top-level
+<code>&lt;html/&gt;</code> element will be returned.</li>
+<li>If the <code>&lt;body/&gt;</code> has <em>only one</em> child element, then the single
+<em>child element</em> will be returned.</li>
+<li>If there are multiple elements in the body, return the <code>body.children</code>
+property which is an <code>HTMLCollection</code> of child elements.</li>
+</ul></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>AUTO_BODY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Auto-determine the return value.</p>
+<p>This is the same as the <code>AUTO</code> mode, except that if there are multiple
+elements in the body, this mode returns the <code>&lt;body/&gt;</code> element itself.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>DOC</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Return the <code>document</code> object itself.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>HTML</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Return the <code>&lt;html/&gt;</code> element.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>BODY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
 
 
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Return the <code>&lt;body/&gt;</code> element.</p>
+<p>If there is no body element, this mode will return <code>null</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -87,7 +309,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">util.js</a>, <a href="util.js.html#line4">line 4</a>
+        <a href="util.js.html">util.js</a>, <a href="util.js.html#line94">line 94</a>
     </li></ul></dd>
     
 
@@ -103,49 +325,9 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
         
             
-<h4 class="name" id=".NOTE_TYPE"><span class="type-signature">(static, constant) </span>NOTE_TYPE<span class="type-signature"></span></h4>
+<h4 class="name" id=".NODE_TYPE"><span class="type-signature">(static, constant) </span>NODE_TYPE<span class="type-signature"></span></h4>
 
 
 
@@ -494,7 +676,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">util.js</a>, <a href="util.js.html#line25">line 25</a>
+        <a href="util.js.html">util.js</a>, <a href="util.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -701,7 +883,7 @@ and our own <code>parseString()</code> wrapper around it.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">util.js</a>, <a href="util.js.html#line56">line 56</a>
+        <a href="util.js.html">util.js</a>, <a href="util.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -735,13 +917,13 @@ and our own <code>parseString()</code> wrapper around it.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 11:01:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>

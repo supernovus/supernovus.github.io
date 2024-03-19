@@ -27,12 +27,13 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const core = require('@lumjs/core');
-const {N,F,S,isObj} = core.types;
+const {N,F,S,isObj,isNil} = core.types;
 const 
 {
   NODE_TYPE: NT,
   PARSE_TYPE: PT, 
-  VALID_ROOTS
+  VALID_ROOTS,
+  HTML_MODE: HM,
 } = require('./util');
 
 /**
@@ -89,9 +90,23 @@ function isWindow(obj)
  * 
  * @property {Window} window - A reference to the top-level Window instance.
  * @property {object} options - Options passed to the constructor.
- * @property {boolean} [options.extendQueries=false]
- *   If `true` the results from `find()` and `get()` will be passed through
- *   `this.extender.extend()` before being returned.
+ * 
+ * @property {boolean} [options.autoExtend=false]
+ * If `true` the results from `find()`, `get()`, `html()`, and similar methods
+ * will be passed through `this.extender.extend()` automatically.
+ * 
+ * @property {boolean} [options.autoWrap=false]
+ * If `true` the results from the same methods mentioned in `autoExtend` will
+ * be passed through `this.wrapper.wrap()` automatically.
+ * 
+ * @property {number} [options.autoAdopt=3]
+ * Set if the `html()` and `xml()` methods will import created nodes
+ * into the current `document` automatically. This uses bitwise flags:
+ * 
+ * - `1` => Adopt `Element` results from `html()`.
+ * - `2` => Adopt `HTMLCollection` results from `html()`.
+ * - `4` => Adopt *valid* results from `xml()`.
+ * 
  * @exports module:@lumjs/dom
  */
 class LumDOM
@@ -100,12 +115,20 @@ class LumDOM
    * Build a DOM helper instance.
    * @param {Window} window - The top-level window object.
    * @param {object} [options] Options to customize behaviours.
+   * 
+   * See the list of `this.options` properties for a list of
+   * supported options.
+   * 
    * @throws {TypeError} 
    * If the `window` fails the 
    * [isWindow()]{@link module:@lumjs/dom.isWindow} test.
    */
   constructor(window, options={})
   {
+    if (isNil(window) &amp;&amp; core.context.isWindow)
+    { // A shortcut for browser usage.
+      window = core.context.root.window;
+    }
     if (!isWindow(window))
     {
       throw new TypeError("Invalid `window` object");
@@ -118,6 +141,7 @@ class LumDOM
    * A static shortcut method for building a new instance.
    * 
    * @param {Window} window - The `window` object.
+   * @param {object} [options] Options for the constructor.
    * @returns {module:@lumjs/dom}
    * @throws {TypeError} 
    * If the `window` fails the 
@@ -186,7 +210,6 @@ class LumDOM
    * @param {number} type - The `nodeType` integer value.
    * @param {object} node - The `Node` we are testing.
    * @returns {boolean}
-   * @alias module:@lumjs/dquery/util.isNodeType
    */
   isNodeType(type, node)
   {
@@ -267,10 +290,12 @@ class LumDOM
    * Given a string, parse it as HTML or XML using `DOMParser()`.
    * @param {string} string - The string to parse.
    * @param {(string|boolean)} [mimeType='text/html'] - The MIME type.
-   *   See the `PARSE_TYPE` enum for a full list of valid values.
    * 
-   *   If this is `true` we will use `text/xml`.
-   *   If this is `false`, `null`, or `undefined` we will use `text/html`.
+   * - If this is `true` we will use `text/xml`.
+   * - If this is `false`, `null`, or `undefined` we will use `text/html`.
+   * - If this is a `string` it must be one of the
+   *   [PARSE_TYPE]{@link module:@lumjs/dom/util.PARSE_TYPE} properties.
+   *  
    * @returns {Document} - Either an `HTMLDocument` or an `XMLDocument`.
    */
   parse(string, mimeType=PT.HTML)
@@ -285,43 +310,67 @@ class LumDOM
    * Parse a string as HTML, then return the main content elements.
    * 
    * @param {string} string - The HTML to parse.
-   * @returns {Element} Parsed element.
+   * @param {number} [mode=HTML_MODE.AUTO] How to handle return value.
    * 
-   *   What element is returned depends on the parsed content: 
+   * This should always be one of the values from the
+   * [HTML_MODES]{@link module:@lumjs/dom/util.HTML_MODE} Enum.
    * 
-   * - If there are *any* child elements in the `&lt;head/>`, or there
-   *   are **no** child elements in the `&lt;body/>`, then the top-level 
-   *   `&lt;html/>` element will be returned.
-   * - If the `&lt;body/>` has *only one* child element, then the single 
-   *   *child element* will be returned. 
-   * - If there is *more than one*, then the `&lt;body/>` itself will be returned.
+   * You can omit this parameter entirely and just pass an object
+   * of `opts` if you want.
    * 
-   *   If `this.options.extendQueries` is `true` then the return value
-   *   will be extended using `this.extend()` automatically.
+   * @param {object} [opts] Options
+   * @param {number} [opts.mode] Same as the `mode` parameter.
+   * @param {boolean} [opts.extend] Override `this.options.autoExtend`
+   * @param {boolean} [opts.wrap] Override `this.options.autoWrap`
+   * @param {boolean} [opts.adoptSingle] Adopt `Element` results?
+   * @param {boolean} [opts.adoptMultiple] Adopt `HTMLCollection` results?
+   * @param {boolean} [opts.adopt] Set both `adoptSingle` and `adoptMultiple`.
+   * 
+   * @returns {*} Parsed element(s).
+   * 
+   * The actual return value depends on the `mode` parameter.
+   * In the default mode (`AUTO`), the output will always be either
+   * an `Element` or an `HTMLCollection`.
    * 
    */
-  html(string)
+  html(string, mode=HM.AUTO, opts={})
   {
+    if (isObj(mode))
+    {
+      opts = mode;
+      mode = opts.mode ?? HM.AUTO;
+    }
+
     let res;
     const doc = this.parse(string);
+
+    if (mode === HM.DOC) return doc;
 
     const hasBody = doc.body &amp;&amp; doc.body.childElementCount > 0;
     const hasHead = doc.head &amp;&amp; doc.head.childElementCount > 0;
 
-    if (!hasBody || hasHead)
+    if (mode === HM.HTML || !hasBody || hasHead)
     { // If there's no body, or the head has elements, return the whole document.
       res = doc.documentElement;
+    }
+    else if (mode === HM.BODY)
+    { // Always return the body itself.
+      res = doc.body;
     }
     else if (doc.body.childElementCount === 1)
     { // A single element.
       res = doc.body.children[0];
     }
+    else if (mode === HM.AUTO_BODY)
+    { // The body element itself.
+      res = doc.body;
+    }
     else 
-    { // All of the children of the body.
+    { // The children of the body.
       res = doc.body.children;
     }
 
-    if (this.options.extendQueries)
+    if (this.options.autoExtend &amp;&amp; res)
     {
       this.extend(res);
     }
@@ -335,18 +384,18 @@ class LumDOM
    * @param {string} string - The XML to parse.
    * @returns {Element} Parsed element.
    * 
-   *   If `this.options.extendQueries` is `true` then the return value
+   *   If `this.options.autoExtend` is `true` then the return value
    *   will be extended using `this.extend()` automatically.
    * 
    *   NOTE: if there are XML parser errors, there will be a `&lt;parsererror/>`
    *   element in the returned element, as per the `DOMParser` specification.
    * 
    */
-  xml(string)
+  xml(string, opts={})
   {
     const doc = this.parse(string, PT.XML);
 
-    if (this.options.extendQueries)
+    if (this.options.autoExtend)
     {
       this.extend(doc.documentElement);
     }
@@ -444,14 +493,14 @@ class LumDOM
    *   If `true`, this will return an `HTMLCollection` instead of a `NodeList`.
    * @returns {(NodeList|HTMLCollection)}
    * 
-   * If `this.options.extendQueries` is `true`, the result
+   * If `this.options.autoExtend` is `true`, the result
    * will be extended using `this.extend()`.
    * 
    */
   find(query, inNode=this.document, asHTMLCollection=this.options.findHTML) 
   { 
     const res = this.query.find(query, inNode, asHTMLCollection);
-    if (this.options.extendQueries)
+    if (this.options.autoExtend)
     {
       this.extend(res);
     }
@@ -468,14 +517,14 @@ class LumDOM
    * @param {module:@lumjs/dom.QueryTarget} [inNode] - Node(s) to look in.
    * @returns {?Node}
    * 
-   * If `this.options.extendQueries` is `true`, the result
+   * If `this.options.autoExtend` is `true`, the result
    * will be extended using `this.extend()`.
    * 
    */
   get(query, inNode=this.document)  
   { 
     const res = this.query.get(query, inNode); 
-    if (this.options.extendQueries &amp;&amp; res)
+    if (this.options.autoExtend &amp;&amp; res)
     {
       this.extend(res);
     }
@@ -515,11 +564,92 @@ class LumDOM
     return this.extender.extend(node);
   }
 
+  /**
+   * Run a callback function when the DOM is ready.
+   * 
+   * If the DOM is ready when this is called, the callback
+   * will be executed immediately.
+   * 
+   * @param {function} callback
+   */
+  whenReady(callback)
+  {
+    if (this.document.readyState === 'loading')
+    {
+      this.document.addEventListener('DOMContentLoaded', callback);
+    }
+    else
+    {
+      callback.call(this.document);
+    }
+  }
+
+  /**
+   * Run a callback function when the Window is fully loaded.
+   * 
+   * If the Window is loaded when this is called, the callback
+   * will be executed immediately.
+   * 
+   * @param {function} callback 
+   */
+  whenWindowReady(callback)
+  {
+    if (this.document.readyState === 'complete')
+    {
+      callback.call(this.window);
+    }
+    else
+    {
+      this.window.addEventListener('load', callback);
+    }
+  }
+
+  /**
+   * Get a Promise that resolves using `whenReady()`
+   */
+  get ready()
+  {
+    return new Promise(resolve => 
+    {
+      this.whenReady(resolve);
+    });
+  }
+
+  /**
+   * Get a Promise that resolves using `whenWindowReady()`
+   */
+  get windowReady()
+  {
+    return new Promise(resolve =>
+    {
+      this.whenWindowReady(resolve);
+    });
+  }
+
 } // LumDOM class
 
 LumDOM.isWindow = isWindow;
 
+/**
+ * @alias module:@lumjs/dom.NODE_TYPE
+ * @see module:@lumjs/dom/util.NODE_TYPE
+ */
+ LumDOM.NODE_TYPE = NT;
+
+ /**
+  * @alias module:@lumjs/dom.PARSE_TYPE
+  * @see module:@lumjs/dom/util.PARSE_TYPE
+  */
+ LumDOM.PARSE_TYPE = PT;
+ 
+ /**
+  * @alias module:@lumjs/dom.HTML_MODE
+  * @see module:@lumjs/dom/util.HTML_MODE
+  */
+ LumDOM.HTML_MODE = HM;
+ 
 module.exports = LumDOM;
+
 </code></pre>
         </article>
     </section>
@@ -530,13 +660,13 @@ module.exports = LumDOM;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-@lumjs_dom.html">@lumjs/dom</a></li><li><a href="module-@lumjs_dom_events.html">@lumjs/dom/events</a></li><li><a href="module-@lumjs_dom_extend.html">@lumjs/dom/extend</a></li><li><a href="module-@lumjs_dom_listcompiler.html">@lumjs/dom/listcompiler</a></li><li><a href="module-@lumjs_dom_query.html">@lumjs/dom/query</a></li><li><a href="module-@lumjs_dom_util.html">@lumjs/dom/util</a></li></ul><h3>Classes</h3><ul><li><a href="module-@lumjs_dom_events.Handler.html">Handler</a></li><li><a href="module-@lumjs_dom_events.Plugin.html">Plugin</a></li><li><a href="module-@lumjs_dom_listcompiler.ListBuilder.html">ListBuilder</a></li><li><a href="module-@lumjs_dom_util.InvalidNode.html">InvalidNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Thu Sep 15 2022 13:18:41 GMT-0700 (Pacific Daylight Saving Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Mar 19 2024 11:01:36 GMT-0700 (Pacific Daylight Saving Time)
 </footer>
 
 <script> prettyPrint(); </script>
